@@ -79,7 +79,7 @@ public class Controller {
     @FXML
     void findInstructorSfq() {
     	buttonInstructorSfq.setDisable(true);
-    	textAreaConsole.setText(textAreaConsole.getText()+"\n"+textfieldSfqUrl.getText());
+    	textAreaConsole.setText(textAreaConsole.getText() + "\n" + textfieldSfqUrl.getText());
     }
 
     @FXML

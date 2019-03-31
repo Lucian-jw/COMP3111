@@ -1,5 +1,6 @@
 package comp3111.coursescraper;
 
+ 
 import java.util.Map;
 import java.util.HashMap;
 import java.time.LocalTime;
@@ -91,5 +92,21 @@ public class Slot {
 	public void setDay(int day) {
 		this.day = day;
 	}
+	/*
+	 * determine whether this slot starts in A.M
+	 */
+	public boolean isAM (Slot slot){
+		return slot.start.isBefore(LocalTime.NOON);
+		
+		
+	}
+	/*
+	 * determine whether this slot ends at P.M
+	 */
+	public boolean isPM (Slot slot){
+		return slot.start.isAfter(LocalTime.NOON)||slot.start.equals(LocalTime.NOON);
+				
+	}
+	
 
 }

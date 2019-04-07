@@ -8,6 +8,7 @@ public class Course {
 	private String title ; 
 	private String description ;
 	private String exclusion;
+	private String commoncore;
 	private Slot [] slots;
 	private int numSlots;
 	
@@ -76,6 +77,13 @@ public class Course {
 	public int getNumSlots() {
 		return numSlots;
 	}
+	
+	/*
+	 * @return commoncore information
+	 */
+	public String getCommoncore(){
+		return this.commoncore;
+	}
 
 	/**
 	 * @param numSlots the numSlots to set
@@ -83,6 +91,12 @@ public class Course {
 	public void setNumSlots(int numSlots) {
 		this.numSlots = numSlots;
 	}
+	/*
+	 * @param commoncore to set commoncore
+	 */
 	
+	public void setCommoncore(String commoncore){ 
+		this.commoncore= commoncore;
+	}
 
 }

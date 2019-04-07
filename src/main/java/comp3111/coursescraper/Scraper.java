@@ -87,7 +87,7 @@ public class Scraper {
 		client.getOptions().setJavaScriptEnabled(false);
 	}
 
-	private void addSlot(HtmlElement e, Course c, boolean secondRow) {
+	private void addSlot(HtmlElement e, Course c, boolean secondRow,String ins,String sectionType) {
 		String times[] =  e.getChildNodes().get(secondRow ? 0 : 3).asText().split(" ");
 		String venue = e.getChildNodes().get(secondRow ? 1 : 4).asText();
 		if (times[0].equals("TBA"))
@@ -101,6 +101,8 @@ public class Scraper {
 			s.setStart(times[1]);
 			s.setEnd(times[3]);
 			s.setVenue(venue);
+			s.setinstructor(ins);
+			s.setSectionType(sectionType);
 			c.addSlot(s);	
 		}
 
@@ -125,6 +127,7 @@ public class Scraper {
 				c.setTitle(title.asText());
 				
 				List<?> popupdetailslist = (List<?>) htmlItem.getByXPath(".//div[@class='popupdetail']/table/tbody/tr");
+				HtmlElement commoncore=null;
 				HtmlElement exclusion = null;
 				for ( HtmlElement e : (List<HtmlElement>)popupdetailslist) {
 					HtmlElement t = (HtmlElement) e.getFirstByXPath(".//th");
@@ -132,15 +135,24 @@ public class Scraper {
 					if (t.asText().equals("EXCLUSION")) {
 						exclusion = d;
 					}
+					if(t.asText().equals("ATTRIBUTES")){
+						commoncore=d;
+					}
 				}
 				c.setExclusion((exclusion == null ? "null" : exclusion.asText()));
+				c.setCommoncore((commoncore == null ? "null" : commoncore.asText()));
 				
 				List<?> sections = (List<?>) htmlItem.getByXPath(".//tr[contains(@class,'newsect')]");
-				for ( HtmlElement e: (List<HtmlElement>)sections) {
-					addSlot(e, c, false);
+				for ( HtmlElement e: (List<HtmlElement>)sections) {				
+					HtmlElement instructor=(HtmlElement) e.getFirstByXPath(".//a");
+					HtmlElement section=(HtmlElement)  e.getFirstByXPath(".//td");
+					String ins =(instructor == null ? "null" : instructor.asText());
+					String sectiontype =(section == null ? "null" : section.asText());
+					System.out.println(sectiontype);
+					addSlot(e, c, false,ins,sectiontype);
 					e = (HtmlElement)e.getNextSibling();
 					if (e != null && !e.getAttribute("class").contains("newsect"))
-						addSlot(e, c, true);
+						addSlot(e, c, true,ins,sectiontype);
 				}
 				
 				result.add(c);

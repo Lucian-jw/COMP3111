@@ -12,6 +12,8 @@ public class Slot {
 	private LocalTime start;
 	private LocalTime end;
 	private String venue;
+	private String instructor;
+	private String sectionType;
 	public static final String DAYS[] = {"Mo", "Tu", "We", "Th", "Fr", "Sa"};
 	public static final Map<String, Integer> DAYS_MAP = new HashMap<String, Integer>();
 	static {
@@ -26,6 +28,8 @@ public class Slot {
 		s.start = this.start;
 		s.end = this.end;
 		s.venue = this.venue;
+		s.instructor=this.instructor;
+		s.sectionType=this.sectionType;
 		return s;
 	}
 	public String toString() {
@@ -38,7 +42,7 @@ public class Slot {
 		return start.getMinute();
 	}
 	public int getEndHour() {
-		return end.getHour();
+		return end.getHour();//s
 	}
 	public int getEndMinute() {
 		return end.getMinute();
@@ -92,20 +96,56 @@ public class Slot {
 	public void setDay(int day) {
 		this.day = day;
 	}
+	
+	/*
+	 * set the ins
+	 */
+	public void setinstructor(String ins){
+		this.instructor=ins;
+	}
+	
+	/*
+	 * return the ins
+	 */
+	public String getinstructor(){
+		return instructor;
+	}
+	
+	/*
+	 * set the type:LA,L,LT
+	 */
+	public void setSectionType(String sectionType){
+		this.sectionType=sectionType;
+	}
+	/*
+	 * return the type:L , LA,LT
+	 */
+	public String getSectionType(){
+		return sectionType;
+	}
 	/*
 	 * determine whether this slot starts in A.M
 	 */
-	public boolean isAM (Slot slot){
-		return slot.start.isBefore(LocalTime.NOON);
+	public boolean isAM (){
+		if(this.start !=null)
+			return this.start.isBefore(LocalTime.NOON);
+		else{
+			return false;
+		}
 		
 		
 	}
 	/*
 	 * determine whether this slot ends at P.M
 	 */
-	public boolean isPM (Slot slot){
-		return slot.start.isAfter(LocalTime.NOON)||slot.start.equals(LocalTime.NOON);
-				
+	public boolean isPM (){
+		if(this.end!=null)
+			return this.end.isAfter(LocalTime.NOON)||this.end.equals(LocalTime.NOON);
+		else{
+			return false;
+		}
+		
+		
 	}
 	
 

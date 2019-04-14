@@ -79,7 +79,18 @@ public class Controller {
     
     @FXML
     void allSubjectSearch() {
-    	
+    	if (subjects.isEmpty()) {
+    		subjects = this.scraper.scrapeSubjects(this.textfieldURL.getText(), this.textfieldTerm.getText());
+    		this.textAreaConsole.setText(this.textAreaConsole.getText() + "\n" + "Total Number of Categories/Code Prefix: " + subjects.size());
+    	}
+    	else {
+    		for (String cur : subjects) {
+    			List<Course> v = this.scraper.scrape(this.textfieldURL.getText(), this.textfieldTerm.getText(),this.textfieldSubject.getText());
+    			allSubjects.add(v);
+    			this.textAreaConsole.setText(this.textAreaConsole.getText() + "\n" + cur + " is done");
+    			this.progressbar.setProgress((subjects.indexOf(cur) + 1) / subjects.size());
+    		}
+    	}
     }
 
     @FXML

@@ -71,6 +71,12 @@ public class Controller {
     
     private Scraper scraper = new Scraper();
     
+    private static List<String> subjects; // List to store subjects searched by first-time All Subject Search.
+    
+    private static List<List<Course>> allSubjects;
+    
+    private static List<Section> courses;
+    
     @FXML
     void allSubjectSearch() {
     	

@@ -1,14 +1,20 @@
 package comp3111.coursescraper;
 
 
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
@@ -18,12 +24,17 @@ import javafx.scene.layout.CornerRadii;
 import javafx.geometry.Insets;
 import javafx.scene.paint.Color;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.Callback;
 
 import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
 public class Controller {
-
+	private static List<Course> ScrapedCourse =new ArrayList<Course>();
+	private static List<Course> FilteredCourse= new ArrayList<Course>();//remember to edit it after searching and ALlsubjectSearching!
+	private static List<Section>EnrolledSection= new ArrayList<Section>();
+	public ObservableList<Section> data=FXCollections.observableArrayList();
     @FXML
     private Tab tabMain;
 
@@ -86,6 +97,24 @@ public class Controller {
 
     @FXML
     private Tab tabList;
+    
+    @FXML
+    private TableView<Section> ListTable;//change to section
+    
+    @FXML
+    private TableColumn<Section, String> CourseCode;
+
+    @FXML
+    private TableColumn<Section, String> Section;
+
+    @FXML
+    private TableColumn<Section, String> CourseName;
+
+    @FXML
+    private TableColumn<Section, String> Instructor;
+
+    @FXML
+    private TableColumn<Section, CheckBox> Enroll;
 
     @FXML
     private Tab tabTimetable;
@@ -224,6 +253,7 @@ public class Controller {
     @FXML
     void search() {
     	List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(),textfieldSubject.getText());
+    	
     	for (Course c : v) {
     		String newline = c.getTitle() + "\n";
     		for (int i = 0; i < c.getNumSlots(); i++) {
@@ -232,6 +262,7 @@ public class Controller {
     		}
     		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
     	}
+    	
     	
     	//Add a random block on Saturday
     	AnchorPane ap = (AnchorPane)tabTimetable.getContent();
@@ -250,11 +281,18 @@ public class Controller {
     	ap.getChildren().addAll(randomLabel);
     	
     	
-    	
+    	/*
+    	 * edit the tablecolumn after the search @Brother Liang implement it also in ALLSbujectSearch;
+    	 */
+    	ScrapedCourse.addAll(v);
+    	List();
     }
+    
+    
     void select(){//the console will display the corresponding courses under the restriction,by the way, Why do you read this,uh? 
     	textAreaConsole.setText(null);
-    	List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(),textfieldSubject.getText());
+    	List<Course> v =new ArrayList<Course>();//edit it to be a AllSubjectSearch course or normal search list!
+    	v.addAll(ScrapedCourse);
     	List<Course> found=new ArrayList<Course>();
     	for(Course c:v){
     		if(AM.isSelected()){
@@ -424,6 +462,9 @@ public class Controller {
     		}	
     	}
        	v.removeAll(found);//found is the union that doesn't satisfy any of requirement ,remove all of them,now V is what I want.
+       	FilteredCourse.clear();
+       	FilteredCourse.addAll(v);
+       	
     	for (Course c : v) {
     		String newline = c.getTitle() + "\n";
     		for (int i = 0; i < c.getNumSlots(); i++) {
@@ -438,9 +479,67 @@ public class Controller {
     		}
     		
     	}
-    	
+    	List();
     	
     	
     }
+    void List(){
+    	CourseCode.setCellValueFactory(cellData -> cellData.getValue().CourseCodeProperty());
+    	Section.setCellValueFactory(cellData -> cellData.getValue().SectionProperty());
+		CourseName.setCellValueFactory(cellData -> cellData.getValue().CourseNameProperty());
+		Instructor.setCellValueFactory(cellData -> cellData.getValue().InstructorProperty());
+		Enroll.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Section, CheckBox>, ObservableValue<CheckBox>>() {
+
+            @Override
+            public ObservableValue<CheckBox> call(TableColumn.CellDataFeatures<Section, CheckBox> arg0) {
+                Section sec = arg0.getValue();
+
+                CheckBox checkBox = new CheckBox();
+
+                checkBox.selectedProperty().setValue(sec.getEnrolledStatus());
+                checkBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+                    public void changed(ObservableValue<? extends Boolean> ov,
+                            Boolean old_val, Boolean new_val) {
+	                        sec.setEnrolledStatus((new_val));
+	                        if(sec.getEnrolledStatus()==true &&  !EnrolledSection.contains(sec)){
+	                        	EnrolledSection.add(sec);
+	                        }
+	                        if(sec.getEnrolledStatus()==false&& EnrolledSection.contains(sec)){
+	                        	EnrolledSection.remove(sec);
+	                        }
+	                        textAreaConsole.clear();
+	                        String newline = "The following sections are enrolled:" + "\n";
+	                        for(Section s:EnrolledSection){
+	                    		newline += s.getCourseCode()+" "+s.getSection()+" "+s.getCourseName()+" "+s.getInstructor()+" \n";
+	                    	}
+	                        if(textAreaConsole.getText()==null){
+	                    		textAreaConsole.setText('\n'+newline);//WTF? get Null WILL be "NULL"????
+	                    	}
+	                    	else{
+	                    		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+	                    	}
+                		}
+                    });
+                
+                return new SimpleObjectProperty<CheckBox>(checkBox);
+            }
+		});
+		if(FilteredCourse.isEmpty()){
+    		data.clear();
+    		for(Course c:ScrapedCourse){
+    			data.addAll(c.sections);
+    		}
+    		ListTable.setItems(data);
+    	}
+		else{
+			data.clear();
+	    	for(Course c:FilteredCourse){
+				data.addAll(c.sections);
+			}
+	    	ListTable.setItems(data);
+		}	
+    }
+    
+   
 
 }

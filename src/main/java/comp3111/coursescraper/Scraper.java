@@ -103,9 +103,24 @@ public class Scraper {
 			s.setVenue(venue);
 			s.setinstructor(ins);
 			s.setSectionType(sectionType);
-			c.addSlot(s);	
+			if(s.getSectionType().startsWith("L")||s.getSectionType().startsWith("T"))
+				c.addSlot(s);	
 		}
 
+	}
+	private void addSection( Course c,String ins,String sec){
+		String CourseCode=c.getTitle().substring(0, 10);
+		String CourseName=c.getTitle().substring(12, c.getTitle().length());
+		Section s=new Section();
+		s.setCourseCode(CourseCode);
+		s.setSection(sec);
+		s.setCourseName(CourseName);
+		s.setInstructor(ins);
+		s.setEnrolledStatus(false);
+		if(s.getSection()!=null &&(s.getSection().startsWith("L")||s.getSection().startsWith("T"))){
+			c.addSection(s);
+		}
+		
 	}
 
 	public List<Course> scrape(String baseurl, String term, String sub) {
@@ -146,15 +161,24 @@ public class Scraper {
 				for ( HtmlElement e: (List<HtmlElement>)sections) {				
 					HtmlElement instructor=(HtmlElement) e.getFirstByXPath(".//a");
 					HtmlElement section=(HtmlElement)  e.getFirstByXPath(".//td");
-					String ins =(instructor == null ? "null" : instructor.asText());
+					String ins =(instructor == null ? "TBA" : instructor.asText());
 					String sectiontype =(section == null ? "null" : section.asText());
-					System.out.println(sectiontype);
+					String sec=null;
+					if(sectiontype.startsWith("LA")){
+						sec=sectiontype.substring(0, 3);
+					}
+					else if (sectiontype.startsWith("L")){
+						sec=sectiontype.substring(0, 3);
+					}
+					else if (sectiontype.startsWith("T")){
+						sec=sectiontype.substring(0, 3);
+					}
+					addSection(c,ins,sec);
 					addSlot(e, c, false,ins,sectiontype);
 					e = (HtmlElement)e.getNextSibling();
 					if (e != null && !e.getAttribute("class").contains("newsect"))
 						addSlot(e, c, true,ins,sectiontype);
 				}
-				
 				result.add(c);
 			}
 			client.close();

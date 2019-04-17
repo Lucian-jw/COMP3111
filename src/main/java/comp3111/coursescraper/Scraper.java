@@ -136,7 +136,7 @@ public class Scraper {
 			// Select <b> elements containing course information
 			List<?> items = page.getByXPath("//b[matches(@id,'[A-Z]{4}')]");
 			
-			// Vector to save output data
+			// List to save output data
 			List<InstSFQScoreStruct> instScoreList = new ArrayList();
 			
 			for (int i = 0; i < items.size(); i++) {

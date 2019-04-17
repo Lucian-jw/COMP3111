@@ -88,6 +88,7 @@ public class Controller {
     		this.textAreaConsole.setText(this.textAreaConsole.getText() + "\n" + "Total Number of Categories/Code Prefix: " + subjects.size());
     	}
     	else {
+    		allSubjects.clear();
     		for (String cur : subjects) {
     			List<Course> v = this.scraper.scrape(this.textfieldURL.getText(), this.textfieldTerm.getText(),this.textfieldSubject.getText());
     			allSubjects.add(v);

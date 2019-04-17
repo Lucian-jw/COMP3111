@@ -18,6 +18,9 @@ import javafx.geometry.Insets;
 import javafx.scene.paint.Color;
 
 import java.util.Random;
+
+import comp3111.coursescraper.Scraper.InstSFQScoreStruct;
+
 import java.util.List;
 public class Controller {
 
@@ -95,6 +98,18 @@ public class Controller {
 
     @FXML
     void findInstructorSfq() {
+    	
+    	List<InstSFQScoreStruct> out = scraper.scrapeInstSFQ(textfieldSfqUrl.getText());
+    	
+    	for (int i = 0; i < out.size() - 1; i++) {
+    		List<String> curScore = out.get(i).score;
+    		float total = 0;
+    		for (int j = 0; j < curScore.size() - 1; j++) {
+    			total += Float.parseFloat(curScore.get(j));
+    		}
+    		total = total / curScore.size();
+    		textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Instructor: " + out.get(i).name + "\n" + "SFQ Score: " + total + "\n" + "\n");
+    	}
     	
     }
 

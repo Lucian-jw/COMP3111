@@ -1,6 +1,7 @@
 package comp3111.coursescraper;
 
 
+
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -28,14 +29,20 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
 
 import java.util.Random;
+
+import comp3111.coursescraper.Scraper.InstSFQScoreStruct;
+
 import java.util.List;
 import java.util.ArrayList;
 public class Controller {
-	private static List<Course> ScrapedCourse =new ArrayList<Course>();
+	private static List<Course> scrapedCourse =new ArrayList<Course>();
+  private static List<Course> courses=new ArrayList<Course>();
+  private static List<String> subjects; // List to store subjects searched by first-time All Subject Search.
 	private static List<Course> FilteredCourse= new ArrayList<Course>();//remember to edit it after searching and ALlsubjectSearching!
 	private static List<Section>EnrolledSection= new ArrayList<Section>();
 	public ObservableList<Section> data=FXCollections.observableArrayList();
-    @FXML
+    
+  @FXML
     private Tab tabMain;
 
     @FXML
@@ -139,6 +146,7 @@ public class Controller {
     
     private Scraper scraper = new Scraper();
     
+
     
 
     @FXML
@@ -236,22 +244,49 @@ public class Controller {
     
     @FXML
     void allSubjectSearch() {
-    	
+    	if (subjects.isEmpty()) {
+    		subjects = this.scraper.scrapeSubjects(this.textfieldURL.getText(), this.textfieldTerm.getText());
+    		this.textAreaConsole.setText(this.textAreaConsole.getText() + "\n" + "Total Number of Categories/Code Prefix: " + subjects.size());
+    	}
+    	else {
+    		scrapedCourses.clear();
+    		for (String cur : subjects) {
+    			List<Course> v = this.scraper.scrape(this.textfieldURL.getText(), this.textfieldTerm.getText(),this.textfieldSubject.getText());
+    			scrapedCourses.addAll(v);
+    			this.textAreaConsole.setText(this.textAreaConsole.getText() + "\n" + cur + " is done");
+    			this.progressbar.setProgress((subjects.indexOf(cur) + 1) / subjects.size());
+    		}
+    	}
     }
 
     @FXML
     void findInstructorSfq() {
-    	buttonInstructorSfq.setDisable(true);
-    	textAreaConsole.setText(textAreaConsole.getText() + "\n" + textfieldSfqUrl.getText());
+    	
+    	List<InstSFQScoreStruct> out = scraper.scrapeInstSFQ(textfieldSfqUrl.getText());
+    	
+    	for (int i = 0; i < out.size() - 1; i++) {
+    		List<String> curScore = out.get(i).score;
+    		float total = 0;
+    		for (int j = 0; j < curScore.size() - 1; j++) {
+    			total += Float.parseFloat(curScore.get(j));
+    		}
+    		total = total / curScore.size();
+    		textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Instructor: " + out.get(i).name + "\n" + "SFQ Score: " + total + "\n" + "\n");
+    	}
+    	
     }
 
     @FXML
     void findSfqEnrollCourse() {
-
+    	if (subjects.isEmpty())
+    		this.buttonSfqEnrollCourse.setDisable(true);
+    	else
+    		this.buttonSfqEnrollCourse.setDisable(false);
     }
 
     @FXML
     void search() {
+      scrapedCourse.clear();
     	List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(),textfieldSubject.getText());
     	
     	for (Course c : v) {
@@ -284,7 +319,7 @@ public class Controller {
     	/*
     	 * edit the tablecolumn after the search @Brother Liang implement it also in ALLSbujectSearch;
     	 */
-    	ScrapedCourse.addAll(v);
+    	scrapedCourse.addAll(v);
     	List();
     }
     
@@ -292,7 +327,7 @@ public class Controller {
     void select(){//the console will display the corresponding courses under the restriction,by the way, Why do you read this,uh? 
     	textAreaConsole.setText(null);
     	List<Course> v =new ArrayList<Course>();//edit it to be a AllSubjectSearch course or normal search list!
-    	v.addAll(ScrapedCourse);
+    	v.addAll(scrapedCourse);
     	List<Course> found=new ArrayList<Course>();
     	for(Course c:v){
     		if(AM.isSelected()){

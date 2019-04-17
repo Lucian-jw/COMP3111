@@ -1,6 +1,7 @@
 package comp3111.coursescraper;
 
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -9,8 +10,10 @@ import com.gargoylesoftware.htmlunit.html.DomNodeList;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+
+import comp3111.coursescraper.Scraper.InstSFQScoreStruct;
+
 import com.gargoylesoftware.htmlunit.html.DomText;
-import java.util.Vector;
 
 
 /**
@@ -108,6 +111,111 @@ public class Scraper {
 		}
 
 	}
+
+	
+	public class InstSFQScoreStruct {
+		public String name;
+		public List<String> score;
+	}
+	
+	/* WTF I'm doing in this method???
+	 * 1. page.getByXPath: Get all matching <b> elements, storing in items.
+	 * 		Here, I use some crazy BLACK TECHNOLOGIES to find them ^_^
+	 * 2. subItems: All the <tr> elements in the <b> of the outer loop.
+	 * 3. tdItems: All the <td> elements in the <tr> of the outer loop.
+	 * 4. testElement: The <td> element (i.e. The third (index = 2) element to test with the regex)
+	 * 5. if regex pattern matches (regex fact: Match string of arbitary length with first char as Uppercase)
+	 * 		Then the <tr> contains the score we needed, the String is the name of the Instructor.
+	 * 6. In the condition above, the third (index = 2) element's text is the Instructor's name, the fifth (index = 4)
+	 *    element's text is the Instructor overall.
+	 *    NOTE: The format of the score is like "xx.x(xx.x)xxxxxxxxxxx". It means that we should convert the first four(4)
+	 *    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^~~~~~~~~~~~~~~~~~
+	 *    chars into a float like xx.x
+	 */
+	public List<InstSFQScoreStruct> scrapeInstSFQ(String baseurl) {
+		try {
+			
+			HtmlPage page = this.client.getPage(baseurl);
+			
+			// Select <b> elements containing course information
+			List<?> items = page.getByXPath("//b[matches(@id,'[A-Z]{4}')]");
+			
+			// List to save output data
+			List<InstSFQScoreStruct> instScoreList = new ArrayList();
+			
+			for (int i = 0; i < items.size(); i++) {
+				
+				HtmlElement subItem = (HtmlElement) items.get(i);
+				List<?> subItems = subItem.getByXPath(".//tr");
+				
+				for (int j = 0; j < subItems.size(); j++) {
+					
+					HtmlElement trElement = (HtmlElement) subItems.get(j);
+					List<?> tdItems = trElement.getByXPath(".//td");
+					HtmlElement testElement = (HtmlElement) tdItems.get(2);
+					boolean isFound = false;
+					
+					// First, check whether the Instructor has already been recorded.
+					if (testElement.asText().matches("[A-Z][\s\S]+")) {
+						
+						for (int i = 0; i < instScoreList.size(); i++) {
+							
+							if (instScoreList.get(i).name.equals(testElement.asText())) {
+								
+								HtmlElement scoreElement = (HtmlElement) tdItems.get(4);
+								String scoreRaw = scoreElement.asText();
+								String scoreProc = scoreRaw.substring(0, 4);
+								instScoreList.get(i).score.add(scoreProc);
+								isFound = true;
+								break;
+							}
+						}
+						
+						if (!isFound) {
+							
+							HtmlElement scoreElement = (HtmlElement) tdItems.get(4);
+							String scoreRaw = scoreElement.asText();
+							String scoreProc = scoreRaw.substring(0, 4);
+							instScoreList.add(new InstSFQScoreStruct);
+							instScoreList.get(instScoreList.size()-1).name = testElement.asText();
+							instScoreList.get(instScoreList.size()-1).score.add(scoreProc);
+							
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return null;
+		
+	}
+
+	public List<String> scrapeSubjects(String baseurl, String term) {
+		try {
+			
+			HtmlPage page = this.client.getPage(baseurl + "/" + term);
+			
+			HtmlElement htmlItem = (HtmlElement) page.getByXPath("//div[@class='depts']");
+			
+			List<String> result = new ArrayList<String>();
+			
+			List<?> items = htmlItem.getByXPath(".//a");
+			
+			for (int i = 0; i < items.size(); i++) {
+				
+				HtmlElement htmlSubSubject = (HtmlElement) items.get(i);
+				result.add(htmlSubSubject.asText());
+				
+			}
+			return result;
+			
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
+
 	private void addSection( Course c,String ins,String sec){
 		String CourseCode=c.getTitle().substring(0, 10);
 		String CourseName=c.getTitle().substring(12, c.getTitle().length());
@@ -123,6 +231,7 @@ public class Scraper {
 		
 	}
 
+
 	public List<Course> scrape(String baseurl, String term, String sub) {
 
 		try {
@@ -132,7 +241,7 @@ public class Scraper {
 			
 			List<?> items = (List<?>) page.getByXPath("//div[@class='course']");
 			
-			Vector<Course> result = new Vector<Course>();
+			List<Course> result = new ArrayList<Course>();
 
 			for (int i = 0; i < items.size(); i++) {
 				Course c = new Course();

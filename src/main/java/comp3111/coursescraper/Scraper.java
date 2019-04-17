@@ -1,6 +1,7 @@
 package comp3111.coursescraper;
 
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -13,7 +14,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import comp3111.coursescraper.Scraper.InstSFQScoreStruct;
 
 import com.gargoylesoftware.htmlunit.html.DomText;
-import java.util.Vector;
 
 
 /**
@@ -137,7 +137,7 @@ public class Scraper {
 			List<?> items = page.getByXPath("//b[matches(@id,'[A-Z]{4}')]");
 			
 			// Vector to save output data
-			Vector<InstSFQScoreStruct> instScoreList = new Vector();
+			List<InstSFQScoreStruct> instScoreList = new ArrayList();
 			
 			for (int i = 0; i < items.size(); i++) {
 				
@@ -194,7 +194,7 @@ public class Scraper {
 			
 			HtmlElement htmlItem = (HtmlElement) page.getByXPath("//div[@class='depts']");
 			
-			Vector<String> result = new Vector<>();
+			List<String> result = new ArrayList<String>();
 			
 			List<?> items = htmlItem.getByXPath(".//a");
 			
@@ -221,7 +221,7 @@ public class Scraper {
 			
 			List<?> items = (List<?>) page.getByXPath("//div[@class='course']");
 			
-			Vector<Course> result = new Vector<Course>();
+			List<Course> result = new ArrayList<Course>();
 
 			for (int i = 0; i < items.size(); i++) {
 				Course c = new Course();

@@ -95,13 +95,15 @@ public class Controller {
 
     @FXML
     void findInstructorSfq() {
-    	buttonInstructorSfq.setDisable(true);
-    	textAreaConsole.setText(textAreaConsole.getText() + "\n" + textfieldSfqUrl.getText());
+    	
     }
 
     @FXML
     void findSfqEnrollCourse() {
-
+    	if (subjects.isEmpty())
+    		this.buttonSfqEnrollCourse.setDisable(true);
+    	else
+    		this.buttonSfqEnrollCourse.setDisable(false);
     }
 
     @FXML

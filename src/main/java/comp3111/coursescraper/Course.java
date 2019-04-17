@@ -1,5 +1,10 @@
 package comp3111.coursescraper;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
+
 
 
 public class Course {
@@ -8,13 +13,24 @@ public class Course {
 	private String title ; 
 	private String description ;
 	private String exclusion;
+	private String commoncore;
 	private Slot [] slots;
+	public  List<Section> sections;
 	private int numSlots;
 	
+
 	public Course() {
 		slots = new Slot[DEFAULT_MAX_SLOT];
+		sections=new ArrayList<Section>();
 		for (int i = 0; i < DEFAULT_MAX_SLOT; i++) slots[i] = null;
 		numSlots = 0;
+		
+	}
+	public void addSection(Section s){
+		this.sections.add(s);
+	}
+	public Section getSection(int i){
+		return sections.get(i);
 	}
 	
 	public void addSlot(Slot s) {
@@ -40,6 +56,7 @@ public class Course {
 	 */
 	public void setTitle(String title) {
 		this.title = title;
+		
 	}
 
 	/**
@@ -76,6 +93,13 @@ public class Course {
 	public int getNumSlots() {
 		return numSlots;
 	}
+	
+	/*
+	 * @return commoncore information
+	 */
+	public String getCommoncore(){
+		return this.commoncore;
+	}
 
 	/**
 	 * @param numSlots the numSlots to set
@@ -83,6 +107,14 @@ public class Course {
 	public void setNumSlots(int numSlots) {
 		this.numSlots = numSlots;
 	}
+	/*
+	 * @param commoncore to set commoncore
+	 */
+	
+	public void setCommoncore(String commoncore){ 
+		this.commoncore= commoncore;
+	}
+	
 	
 
 }

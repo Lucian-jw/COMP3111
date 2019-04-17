@@ -7,6 +7,8 @@ package comp3111.coursescraper;
 
 import static org.junit.Assert.*;
 
+import javafx.scene.control.CheckBox;
+
 import org.junit.Test;
 import org.testfx.assertions.api.Assertions;
 import org.testfx.framework.junit.ApplicationTest;
@@ -37,6 +39,7 @@ public class FxTest extends ApplicationTest {
 
 	
 	@Test
+
 	public void testButton() {
 		clickOn("#tabSfq");
 		clickOn("#buttonInstructorSfq");
@@ -44,4 +47,5 @@ public class FxTest extends ApplicationTest {
 		sleep(1000);
 		assertTrue(b.isDisabled());
 	}
+	
 }

@@ -1,7 +1,5 @@
 package comp3111.coursescraper;
 
-
-
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -35,14 +33,14 @@ import comp3111.coursescraper.Scraper.InstSFQScoreStruct;
 import java.util.List;
 import java.util.ArrayList;
 public class Controller {
-	private static List<Course> scrapedCourse =new ArrayList<Course>();
-  private static List<Course> courses=new ArrayList<Course>();
-  private static List<String> subjects; // List to store subjects searched by first-time All Subject Search.
-	private static List<Course> FilteredCourse= new ArrayList<Course>();//remember to edit it after searching and ALlsubjectSearching!
-	private static List<Section>EnrolledSection= new ArrayList<Section>();
-	public ObservableList<Section> data=FXCollections.observableArrayList();
+	private static List<Course> scrapedCourse = new ArrayList<Course>();
+	private static List<Course> courses = new ArrayList<Course>();
+	private static List<String> subjects; // List to store subjects searched by first-time All Subject Search.
+	private static List<Course> FilteredCourse = new ArrayList<Course>(); // remember to edit it after searching and ALlsubjectSearching!
+	private static List<Section> EnrolledSection = new ArrayList<Section>();
+	public ObservableList<Section> data = FXCollections.observableArrayList();
     
-  @FXML
+	@FXML
     private Tab tabMain;
 
     @FXML
@@ -106,7 +104,7 @@ public class Controller {
     private Tab tabList;
     
     @FXML
-    private TableView<Section> ListTable;//change to section
+    private TableView<Section> ListTable; // change to section
     
     @FXML
     private TableColumn<Section, String> CourseCode;
@@ -146,69 +144,65 @@ public class Controller {
     
     private Scraper scraper = new Scraper();
     
-
-    
-
     @FXML
     void AM_Selection(ActionEvent event) {
-    	select(); //once you click the checkbox, it will select
+    	select(); // Once you click the checkbox, it will select
     }
 
     @FXML
     void CommonCore_Selection(ActionEvent event) {
-    	select();//once you click the checkbox, it will select
+    	select(); // Once you click the checkbox, it will select
     }
 
     @FXML
     void Fri_Selection(ActionEvent event) {
-    	select();//once you click the checkbox, it will select
+    	select(); // Once you click the checkbox, it will select
     }
 
     @FXML
     void Mon_Action(ActionEvent event) {
-    	select();//once you click the checkbox, it will select
+    	select(); // Once you click the checkbox, it will select
     }
 
     @FXML
     void NoExlusion_Selection(ActionEvent event) {
-    	select();
-    }//once you click the checkbox, it will select
+    	select(); // Once you click the checkbox, it will select
+    }
 
     @FXML
     void PM_Selection(ActionEvent event) {
-    	select();//once you click the checkbox, it will select
+    	select(); // Once you click the checkbox, it will select
     }
 
     @FXML
     void Sat_Selection(ActionEvent event) {
-    	select();//once you click the checkbox, it will select
+    	select(); // Once you click the checkbox, it will select
     }
-
 
     @FXML
     void Thur_Selection(ActionEvent event) {
-    	select();//once you click the checkbox, it will select
+    	select(); // Once you click the checkbox, it will select
     }
 
     @FXML
     void Tue_Selection(ActionEvent event) {
-    	select();//once you click the checkbox, it will select
+    	select(); // Once you click the checkbox, it will select
     }
 
     @FXML
     void Wed_Selection(ActionEvent event) {
-    	select();//once you click the checkbox, it will select
+    	select(); // Once you click the checkbox, it will select
     }
 
     @FXML
     void WithLabsorTutorial_selection(ActionEvent event) {
-    	select();//once you click the checkbox, it will select
+    	select(); // Once you click the checkbox, it will select
     }
     
     @FXML
     void SelectAll_Action(ActionEvent event) {
     	
-    	if(SelectAll.getText()!="De-select All"){//If it is "Select-All,change to"De" and change all the statuses to selected,do the selection.
+    	if (SelectAll.getText() != "De-select All") { // If it is "Select-All, change to "De" and change all the statuses to selected, do the selection.	
     		System.out.println("hi");
     		SelectAll.setText("De-select All");
     		AM.setSelected(true);
@@ -222,10 +216,9 @@ public class Controller {
     		CommonCore.setSelected(true);
     		NoExclusion.setSelected(true);
     		WithLabsorTutorial.setSelected(true);
-    
     	}
-    	else{
-	    	SelectAll.setText("Select All");//If it is "DeSelect-All,change to"Se" and change all the statuses to selected,do the selection.
+    	else {	
+	    	SelectAll.setText("Select All"); // If it is "DeSelect-All,change to"Se" and change all the statuses to selected,do the selection.
 	    	AM.setSelected(false);
 	   		PM.setSelected(false);
 	   		Mon.setSelected(false);
@@ -249,10 +242,10 @@ public class Controller {
     		this.textAreaConsole.setText(this.textAreaConsole.getText() + "\n" + "Total Number of Categories/Code Prefix: " + subjects.size());
     	}
     	else {
-    		scrapedCourses.clear();
+    		scrapedCourse.clear();
     		for (String cur : subjects) {
     			List<Course> v = this.scraper.scrape(this.textfieldURL.getText(), this.textfieldTerm.getText(),this.textfieldSubject.getText());
-    			scrapedCourses.addAll(v);
+    			scrapedCourse.addAll(v);
     			this.textAreaConsole.setText(this.textAreaConsole.getText() + "\n" + cur + " is done");
     			this.progressbar.setProgress((subjects.indexOf(cur) + 1) / subjects.size());
     		}
@@ -324,60 +317,60 @@ public class Controller {
     }
     
     
-    void select(){//the console will display the corresponding courses under the restriction,by the way, Why do you read this,uh? 
+    void select(){ //the console will display the corresponding courses under the restriction,by the way, Why do you read this,uh? 
     	textAreaConsole.setText(null);
-    	List<Course> v =new ArrayList<Course>();//edit it to be a AllSubjectSearch course or normal search list!
+    	List<Course> v = new ArrayList<Course>(); // edit it to be a AllSubjectSearch course or normal search list!
     	v.addAll(scrapedCourse);
-    	List<Course> found=new ArrayList<Course>();
-    	for(Course c:v){
-    		if(AM.isSelected()){
+    	List<Course> found = new ArrayList<Course>();
+    	for (Course c : v) {
+    		if(AM.isSelected()) {
     			int i=0;
-    			if(c.getNumSlots()==0){//If it does not have any slots
+    			if(c.getNumSlots() == 0){//If it does not have any slots
     				found.add(c);
     				continue;
     			}
     			while(!c.getSlot(i).isAM()){
-    				if(i==c.getNumSlots()-1){
+    				if(i == c.getNumSlots() - 1){
     					found.add(c);//find the course not satisfy them 
     					break;
     				}
     				i++;
     			}
-    			if(found.contains(c)){
+    			if (found.contains(c)) {
     				continue;
     			}
     		}
-    		if(PM.isSelected()){
-    			int i=0;
-    			if(c.getNumSlots()==0){//If it does not have any slots
+    		if (PM.isSelected()) {
+    			int i = 0;
+    			if (c.getNumSlots() == 0){ //If it does not have any slots
     				found.add(c);
     				continue;
     			}
-    			while(!c.getSlot(i).isPM()){
-    				if(i==c.getNumSlots()-1){
+    			while (!c.getSlot(i).isPM()) {
+    				if (i == c.getNumSlots() - 1) {
     					found.add(c);
     					break;
     				}
     				i++;
     			}
-    			if(found.contains(c)){
+    			if(found.contains(c)) {
     				continue;
     			}
     		}
-    		if(Mon.isSelected()){
-    			int i=0;
-    			if(c.getNumSlots()==0){//If it does not have any slots
+    		if(Mon.isSelected()) {
+    			int i = 0;
+    			if(c.getNumSlots() == 0){ //If it does not have any slots
     				found.add(c);
     				continue;
     			}
-    			while(!(c.getSlot(i).getDay()==0)){//0 means Monday,1,2,3,4,5 means Tue....
-    				if(i==c.getNumSlots()-1){
+    			while(!(c.getSlot(i).getDay() == 0)){ //0 means Monday,1,2,3,4,5 means Tue....
+    				if(i == c.getNumSlots() - 1){
     					found.add(c);
     					break;
     				}
     				i++;
     			}
-    			if(found.contains(c)){
+    			if (found.contains(c)) {
     				continue;
     			}
     		}
@@ -575,6 +568,4 @@ public class Controller {
 		}	
     }
     
-   
-
 }

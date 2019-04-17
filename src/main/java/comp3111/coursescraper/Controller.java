@@ -554,7 +554,7 @@ public class Controller {
 		});
 		if(FilteredCourse.isEmpty()){
     		data.clear();
-    		for(Course c:ScrapedCourse){
+    		for(Course c : scrapedCourse){
     			data.addAll(c.sections);
     		}
     		ListTable.setItems(data);

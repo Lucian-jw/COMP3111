@@ -156,16 +156,16 @@ public class Scraper {
 					boolean isFound = false;
 					
 					// First, check whether the Instructor has already been recorded.
-					if (testElement.asText().matches("[A-Z][\s\S]+")) {
+					if (testElement.asText().matches("[A-Z][\\s\\S]+")) {
 						
-						for (int i = 0; i < instScoreList.size(); i++) {
+						for (int i1 = 0; i1 < instScoreList.size(); i1++) {
 							
-							if (instScoreList.get(i).name.equals(testElement.asText())) {
+							if (instScoreList.get(i1).name.equals(testElement.asText())) {
 								
 								HtmlElement scoreElement = (HtmlElement) tdItems.get(4);
 								String scoreRaw = scoreElement.asText();
 								String scoreProc = scoreRaw.substring(0, 4);
-								instScoreList.get(i).score.add(scoreProc);
+								instScoreList.get(i1).score.add(scoreProc);
 								isFound = true;
 								break;
 							}
@@ -176,7 +176,7 @@ public class Scraper {
 							HtmlElement scoreElement = (HtmlElement) tdItems.get(4);
 							String scoreRaw = scoreElement.asText();
 							String scoreProc = scoreRaw.substring(0, 4);
-							instScoreList.add(new InstSFQScoreStruct);
+							instScoreList.add(new InstSFQScoreStruct());
 							instScoreList.get(instScoreList.size()-1).name = testElement.asText();
 							instScoreList.get(instScoreList.size()-1).score.add(scoreProc);
 							

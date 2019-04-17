@@ -87,7 +87,7 @@ public class Scraper {
 		client.getOptions().setJavaScriptEnabled(false);
 	}
 
-	private void addSlot(HtmlElement e, Course c, boolean secondRow) {
+	private void addSlot(HtmlElement e, Course c, boolean secondRow,String ins,String sectionType) {
 		String times[] =  e.getChildNodes().get(secondRow ? 0 : 3).asText().split(" ");
 		String venue = e.getChildNodes().get(secondRow ? 1 : 4).asText();
 		if (times[0].equals("TBA"))
@@ -101,9 +101,26 @@ public class Scraper {
 			s.setStart(times[1]);
 			s.setEnd(times[3]);
 			s.setVenue(venue);
-			c.addSlot(s);	
+			s.setinstructor(ins);
+			s.setSectionType(sectionType);
+			if(s.getSectionType().startsWith("L")||s.getSectionType().startsWith("T"))
+				c.addSlot(s);	
 		}
 
+	}
+	private void addSection( Course c,String ins,String sec){
+		String CourseCode=c.getTitle().substring(0, 10);
+		String CourseName=c.getTitle().substring(12, c.getTitle().length());
+		Section s=new Section();
+		s.setCourseCode(CourseCode);
+		s.setSection(sec);
+		s.setCourseName(CourseName);
+		s.setInstructor(ins);
+		s.setEnrolledStatus(false);
+		if(s.getSection()!=null &&(s.getSection().startsWith("L")||s.getSection().startsWith("T"))){
+			c.addSection(s);
+		}
+		
 	}
 
 	public List<Course> scrape(String baseurl, String term, String sub) {
@@ -125,6 +142,7 @@ public class Scraper {
 				c.setTitle(title.asText());
 				
 				List<?> popupdetailslist = (List<?>) htmlItem.getByXPath(".//div[@class='popupdetail']/table/tbody/tr");
+				HtmlElement commoncore=null;
 				HtmlElement exclusion = null;
 				for ( HtmlElement e : (List<HtmlElement>)popupdetailslist) {
 					HtmlElement t = (HtmlElement) e.getFirstByXPath(".//th");
@@ -132,17 +150,35 @@ public class Scraper {
 					if (t.asText().equals("EXCLUSION")) {
 						exclusion = d;
 					}
+					if(t.asText().equals("ATTRIBUTES")){
+						commoncore=d;
+					}
 				}
 				c.setExclusion((exclusion == null ? "null" : exclusion.asText()));
+				c.setCommoncore((commoncore == null ? "null" : commoncore.asText()));
 				
 				List<?> sections = (List<?>) htmlItem.getByXPath(".//tr[contains(@class,'newsect')]");
-				for ( HtmlElement e: (List<HtmlElement>)sections) {
-					addSlot(e, c, false);
+				for ( HtmlElement e: (List<HtmlElement>)sections) {				
+					HtmlElement instructor=(HtmlElement) e.getFirstByXPath(".//a");
+					HtmlElement section=(HtmlElement)  e.getFirstByXPath(".//td");
+					String ins =(instructor == null ? "TBA" : instructor.asText());
+					String sectiontype =(section == null ? "null" : section.asText());
+					String sec=null;
+					if(sectiontype.startsWith("LA")){
+						sec=sectiontype.substring(0, 3);
+					}
+					else if (sectiontype.startsWith("L")){
+						sec=sectiontype.substring(0, 3);
+					}
+					else if (sectiontype.startsWith("T")){
+						sec=sectiontype.substring(0, 3);
+					}
+					addSection(c,ins,sec);
+					addSlot(e, c, false,ins,sectiontype);
 					e = (HtmlElement)e.getNextSibling();
 					if (e != null && !e.getAttribute("class").contains("newsect"))
-						addSlot(e, c, true);
+						addSlot(e, c, true,ins,sectiontype);
 				}
-				
 				result.add(c);
 			}
 			client.close();

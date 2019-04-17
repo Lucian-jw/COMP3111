@@ -74,7 +74,7 @@ public class Controller {
     
     private static List<String> subjects; // List to store subjects searched by first-time All Subject Search.
     
-    private static List<List<Course>> allSubjects;
+    private static List<Course> scrapedCourses; // List to store courses scraped by (All Subject) Search.
     
     private static List<Course> courses;
     
@@ -85,10 +85,10 @@ public class Controller {
     		this.textAreaConsole.setText(this.textAreaConsole.getText() + "\n" + "Total Number of Categories/Code Prefix: " + subjects.size());
     	}
     	else {
-    		allSubjects.clear();
+    		scrapedCourses.clear();
     		for (String cur : subjects) {
     			List<Course> v = this.scraper.scrape(this.textfieldURL.getText(), this.textfieldTerm.getText(),this.textfieldSubject.getText());
-    			allSubjects.add(v);
+    			scrapedCourses.addAll(v);
     			this.textAreaConsole.setText(this.textAreaConsole.getText() + "\n" + cur + " is done");
     			this.progressbar.setProgress((subjects.indexOf(cur) + 1) / subjects.size());
     		}

@@ -1,8 +1,5 @@
 package comp3111.coursescraper;
 
-
-import java.awt.event.ActionEvent;
-
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -79,7 +76,7 @@ public class Controller {
     
     private static List<List<Course>> allSubjects;
     
-    private static List<Section> courses;
+    private static List<Course> courses;
     
     @FXML
     void allSubjectSearch() {

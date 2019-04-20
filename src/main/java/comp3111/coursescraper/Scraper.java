@@ -90,8 +90,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
  * 
  * <pre>
  * {
- *     &#64;code
- *     List<?> items = (List<?>) page.getByXPath("//div[@class='course']");
+ * 	&#64;code
+ * 	List<?> items = (List<?>) page.getByXPath("//div[@class='course']");
  * }
  * </pre>
  * 
@@ -103,219 +103,198 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
  *
  */
 public class Scraper {
-    private WebClient client;
+	private WebClient client;
 
-    /**
-     * Default Constructor
-     */
-    public Scraper() {
-	client = new WebClient();
-	client.getOptions().setCssEnabled(false);
-	client.getOptions().setJavaScriptEnabled(false);
-    }
-
-    private void addSlot(HtmlElement e, Course c, boolean secondRow, String ins, String sectionType) {
-	String times[] = e.getChildNodes().get(secondRow ? 0 : 3).asText().split(" ");
-	String venue = e.getChildNodes().get(secondRow ? 1 : 4).asText();
-	if (times[0].equals("TBA"))
-	    return;
-	for (int j = 0; j < times[0].length(); j += 2) {
-	    String code = times[0].substring(j, j + 2);
-	    if (Slot.DAYS_MAP.get(code) == null)
-		break;
-	    Slot s = new Slot();
-	    s.setDay(Slot.DAYS_MAP.get(code));
-	    s.setStart(times[1]);
-	    s.setEnd(times[3]);
-	    s.setVenue(venue);
-	    s.setinstructor(ins);
-	    s.setSectionType(sectionType);
-	    if (s.getSectionType().startsWith("L") || s.getSectionType().startsWith("T"))
-		c.addSlot(s);
+	/**
+	 * Default Constructor
+	 */
+	public Scraper() {
+		client = new WebClient();
+		client.getOptions().setCssEnabled(false);
+		client.getOptions().setJavaScriptEnabled(false);
 	}
 
-    }
-
-    public class InstSFQScoreStruct {
-	public String name;
-	public List<String> score;
-    }
-
-    /*
-     * WTF I'm doing in this method??? 1. page.getByXPath: Get all matching <b>
-     * elements, storing in items. Here, I use some crazy BLACK TECHNOLOGIES to find
-     * them ^_^ 2. subItems: All the <tr> elements in the <b> of the outer loop. 3.
-     * tdItems: All the <td> elements in the <tr> of the outer loop. 4. testElement:
-     * The <td> element (i.e. The third (index = 2) element to test with the regex)
-     * 5. if regex pattern matches (regex fact: Match string of arbitary length with
-     * first char as Uppercase) Then the <tr> contains the score we needed, the
-     * String is the name of the Instructor. 6. In the condition above, the third
-     * (index = 2) element's text is the Instructor's name, the fifth (index = 4)
-     * element's text is the Instructor overall. NOTE: The format of the score is
-     * like "xx.x(xx.x)xxxxxxxxxxx". It means that we should convert the first
-     * four(4) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^~~~~~~~~~~~~~~~~~ chars
-     * into a float like xx.x
-     */
-    public List<InstSFQScoreStruct> scrapeInstSFQ(String baseurl) {
-	try {
-
-	    HtmlPage page = this.client.getPage(baseurl);
-
-	    // Select <b> elements containing course information
-	    List<?> items = page.getByXPath("//b[matches(@id,'[A-Z]{4}')]");
-
-	    // List to save output data
-	    List<InstSFQScoreStruct> instScoreList = new ArrayList<InstSFQScoreStruct>();
-
-	    for (int i = 0; i < items.size(); i++) {
-
-		HtmlElement subItem = (HtmlElement) items.get(i);
-		List<?> subItems = subItem.getByXPath(".//tr");
-
-		for (int j = 0; j < subItems.size(); j++) {
-
-		    HtmlElement trElement = (HtmlElement) subItems.get(j);
-		    List<?> tdItems = trElement.getByXPath(".//td");
-		    HtmlElement testElement = (HtmlElement) tdItems.get(2);
-		    boolean isFound = false;
-
-		    // First, check whether the Instructor has already been recorded.
-		    if (testElement.asText().matches("[A-Z][\\s\\S]+")) {
-
-			for (int i1 = 0; i1 < instScoreList.size(); i1++) {
-
-			    if (instScoreList.get(i1).name.equals(testElement.asText())) {
-
-				HtmlElement scoreElement = (HtmlElement) tdItems.get(4);
-				String scoreRaw = scoreElement.asText();
-				String scoreProc = scoreRaw.substring(0, 4);
-				instScoreList.get(i1).score.add(scoreProc);
-				isFound = true;
+	private void addSlot(HtmlElement e, Course c, boolean secondRow, String ins, String sectionType) {
+		String times[] = e.getChildNodes().get(secondRow ? 0 : 3).asText().split(" ");
+		String venue = e.getChildNodes().get(secondRow ? 1 : 4).asText();
+		if (times[0].equals("TBA"))
+			return;
+		for (int j = 0; j < times[0].length(); j += 2) {
+			String code = times[0].substring(j, j + 2);
+			if (Slot.DAYS_MAP.get(code) == null)
 				break;
-			    }
+			Slot s = new Slot();
+			s.setDay(Slot.DAYS_MAP.get(code));
+			s.setStart(times[1]);
+			s.setEnd(times[3]);
+			s.setVenue(venue);
+			s.setinstructor(ins);
+			s.setSectionType(sectionType);
+			if (s.getSectionType().startsWith("L") || s.getSectionType().startsWith("T"))
+				c.addSlot(s);
+		}
+
+	}
+
+	public class InstSFQScoreStruct {
+		public String name;
+		public List<String> score;
+	}
+
+	public List<InstSFQScoreStruct> scrapeInstSFQ(String baseurl) {
+		try {
+
+			HtmlPage page = this.client.getPage(baseurl);
+
+			// Select <table> elements containing course information
+			List<?> tables = page.getByXPath("//table[@border='1']");
+
+			// List to save output data
+			List<InstSFQScoreStruct> instScoreList = new ArrayList<InstSFQScoreStruct>();
+
+			for (int i = 0; i < tables.size(); i++) {
+
+				HtmlElement table = (HtmlElement) tables.get(i);
+				List<?> tableRows = table.getByXPath(".//tr");
+
+				for (int j = 0; j < tableRows.size(); j++) {
+
+					HtmlElement tableRow = (HtmlElement) tableRows.get(j);
+					List<?> tableEntries = tableRow.getByXPath(".//td");
+					HtmlElement tableEntryTest = (HtmlElement) tableEntries.get(2);
+					boolean isFound = false;
+
+					// First, check whether the Instructor has already been recorded.
+					if (tableEntryTest.asText().matches("[A-Z][\\s\\S]+")) {
+						for (int i1 = 0; i1 < instScoreList.size(); i1++) {
+							if (instScoreList.get(i1).name.equals(tableEntryTest.asText())) {
+								HtmlElement scoreElement = (HtmlElement) tableEntries.get(4);
+								String scoreRaw = scoreElement.asText();
+								String scoreProc = scoreRaw.substring(0, 4);
+								instScoreList.get(i1).score.add(scoreProc);
+								isFound = true;
+								break;
+							}
+						}
+						if (!isFound) {
+							HtmlElement scoreElement = (HtmlElement) tableEntries.get(4);
+							String scoreRaw = scoreElement.asText();
+							String scoreProc = scoreRaw.substring(0, 4);
+							instScoreList.add(new InstSFQScoreStruct());
+							instScoreList.get(instScoreList.size() - 1).name = tableEntryTest.asText();
+							instScoreList.get(instScoreList.size() - 1).score.add(scoreProc);
+						}
+					}
+				}
 			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return null;
 
-			if (!isFound) {
+	}
 
-			    HtmlElement scoreElement = (HtmlElement) tdItems.get(4);
-			    String scoreRaw = scoreElement.asText();
-			    String scoreProc = scoreRaw.substring(0, 4);
-			    instScoreList.add(new InstSFQScoreStruct());
-			    instScoreList.get(instScoreList.size() - 1).name = testElement.asText();
-			    instScoreList.get(instScoreList.size() - 1).score.add(scoreProc);
+	public List<String> scrapeSubjects(String baseurl, String term) {
+		try {
+
+			HtmlPage page = client.getPage(baseurl + term + "/");
+
+			HtmlElement depts = page.getFirstByXPath("//div[@class='depts']");
+
+			List<String> result = new ArrayList<String>();
+
+			List<HtmlElement> subItems = depts.getByXPath(".//a");
+
+			for (int i = 0; i < subItems.size(); i++) {
+
+				HtmlElement htmlSubSubject = subItems.get(i);
+				result.add(htmlSubSubject.asText());
 
 			}
-		    }
+			return result;
+
+		} catch (Exception e) {
+			System.out.println(e);
 		}
-	    }
-	} catch (Exception e) {
-	    System.out.println(e);
-	}
-	return null;
-
-    }
-
-    public List<String> scrapeSubjects(String baseurl, String term) {
-	try {
-
-	    HtmlPage page = client.getPage(baseurl + term + "/");
-
-	    HtmlElement depts = page.getFirstByXPath("//div[@class='depts']");
-
-	    List<String> result = new ArrayList<String>();
-
-	    List<HtmlElement> subItems = depts.getByXPath(".//a");
-
-	    for (int i = 0; i < subItems.size(); i++) {
-
-		HtmlElement htmlSubSubject = subItems.get(i);
-		result.add(htmlSubSubject.asText());
-
-	    }
-	    return result;
-
-	} catch (Exception e) {
-	    System.out.println(e);
-	}
-	return null;
-    }
-
-    private void addSection(Course c, String ins, String sec) {
-	String CourseCode = c.getTitle().substring(0, 10);
-	String CourseName = c.getTitle().substring(12, c.getTitle().length());
-	Section s = new Section();
-	s.setCourseCode(CourseCode);
-	s.setSection(sec);
-	s.setCourseName(CourseName);
-	s.setInstructor(ins);
-	s.setEnrolledStatus(false);
-	if (s.getSection() != null && (s.getSection().startsWith("L") || s.getSection().startsWith("T"))) {
-	    c.addSection(s);
+		return null;
 	}
 
-    }
-
-    public List<Course> scrape(String baseurl, String term, String sub) {
-
-	try {
-
-	    HtmlPage page = client.getPage(baseurl + "/" + term + "/subject/" + sub);
-
-	    List<?> items = page.getByXPath("//div[@class='course']");
-
-	    List<Course> result = new ArrayList<Course>();
-
-	    for (int i = 0; i < items.size(); i++) {
-		Course c = new Course();
-		HtmlElement htmlItem = (HtmlElement) items.get(i);
-
-		HtmlElement title = (HtmlElement) htmlItem.getFirstByXPath(".//h2");
-		c.setTitle(title.asText());
-
-		List<?> popupdetailslist = htmlItem.getByXPath(".//div[@class='popupdetail']/table/tbody/tr");
-		HtmlElement commoncore = null;
-		HtmlElement exclusion = null;
-		for (HtmlElement e : (List<HtmlElement>) popupdetailslist) {
-		    HtmlElement t = (HtmlElement) e.getFirstByXPath(".//th");
-		    HtmlElement d = (HtmlElement) e.getFirstByXPath(".//td");
-		    if (t.asText().equals("EXCLUSION")) {
-			exclusion = d;
-		    }
-		    if (t.asText().equals("ATTRIBUTES")) {
-			commoncore = d;
-		    }
+	private void addSection(Course c, String ins, String sec) {
+		String CourseCode = c.getTitle().substring(0, 10);
+		String CourseName = c.getTitle().substring(12, c.getTitle().length());
+		Section s = new Section();
+		s.setCourseCode(CourseCode);
+		s.setSection(sec);
+		s.setCourseName(CourseName);
+		s.setInstructor(ins);
+		s.setEnrolledStatus(false);
+		if (s.getSection() != null && (s.getSection().startsWith("L") || s.getSection().startsWith("T"))) {
+			c.addSection(s);
 		}
-		c.setExclusion((exclusion == null ? "null" : exclusion.asText()));
-		c.setCommoncore((commoncore == null ? "null" : commoncore.asText()));
 
-		List<?> sections = htmlItem.getByXPath(".//tr[contains(@class,'newsect')]");
-		for (HtmlElement e : (List<HtmlElement>) sections) {
-		    HtmlElement instructor = (HtmlElement) e.getFirstByXPath(".//a");
-		    HtmlElement section = (HtmlElement) e.getFirstByXPath(".//td");
-		    String ins = (instructor == null ? "TBA" : instructor.asText());
-		    String sectiontype = (section == null ? "null" : section.asText());
-		    String sec = null;
-		    if (sectiontype.startsWith("LA")) {
-			sec = sectiontype.substring(0, 3);
-		    } else if (sectiontype.startsWith("L")) {
-			sec = sectiontype.substring(0, 3);
-		    } else if (sectiontype.startsWith("T")) {
-			sec = sectiontype.substring(0, 3);
-		    }
-		    addSection(c, ins, sec);
-		    addSlot(e, c, false, ins, sectiontype);
-		    e = (HtmlElement) e.getNextSibling();
-		    if (e != null && !e.getAttribute("class").contains("newsect"))
-			addSlot(e, c, true, ins, sectiontype);
-		}
-		result.add(c);
-	    }
-	    client.close();
-	    return result;
-	} catch (Exception e) {
-	    System.out.println(e);
 	}
-	return null;
-    }
+
+	public List<Course> scrape(String baseurl, String term, String sub) {
+
+		try {
+
+			HtmlPage page = client.getPage(baseurl + "/" + term + "/subject/" + sub);
+
+			List<?> items = page.getByXPath("//div[@class='course']");
+
+			List<Course> result = new ArrayList<Course>();
+
+			for (int i = 0; i < items.size(); i++) {
+				Course c = new Course();
+				HtmlElement htmlItem = (HtmlElement) items.get(i);
+
+				HtmlElement title = (HtmlElement) htmlItem.getFirstByXPath(".//h2");
+				c.setTitle(title.asText());
+
+				List<?> popupdetailslist = htmlItem.getByXPath(".//div[@class='popupdetail']/table/tbody/tr");
+				HtmlElement commoncore = null;
+				HtmlElement exclusion = null;
+				for (HtmlElement e : (List<HtmlElement>) popupdetailslist) {
+					HtmlElement t = (HtmlElement) e.getFirstByXPath(".//th");
+					HtmlElement d = (HtmlElement) e.getFirstByXPath(".//td");
+					if (t.asText().equals("EXCLUSION")) {
+						exclusion = d;
+					}
+					if (t.asText().equals("ATTRIBUTES")) {
+						commoncore = d;
+					}
+				}
+				c.setExclusion((exclusion == null ? "null" : exclusion.asText()));
+				c.setCommoncore((commoncore == null ? "null" : commoncore.asText()));
+
+				List<?> sections = htmlItem.getByXPath(".//tr[contains(@class,'newsect')]");
+				for (HtmlElement e : (List<HtmlElement>) sections) {
+					HtmlElement instructor = (HtmlElement) e.getFirstByXPath(".//a");
+					HtmlElement section = (HtmlElement) e.getFirstByXPath(".//td");
+					String ins = (instructor == null ? "TBA" : instructor.asText());
+					String sectiontype = (section == null ? "null" : section.asText());
+					String sec = null;
+					if (sectiontype.startsWith("LA")) {
+						sec = sectiontype.substring(0, 3);
+					} else if (sectiontype.startsWith("L")) {
+						sec = sectiontype.substring(0, 3);
+					} else if (sectiontype.startsWith("T")) {
+						sec = sectiontype.substring(0, 3);
+					}
+					addSection(c, ins, sec);
+					addSlot(e, c, false, ins, sectiontype);
+					e = (HtmlElement) e.getNextSibling();
+					if (e != null && !e.getAttribute("class").contains("newsect"))
+						addSlot(e, c, true, ins, sectiontype);
+				}
+				result.add(c);
+			}
+			client.close();
+			return result;
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
 
 }

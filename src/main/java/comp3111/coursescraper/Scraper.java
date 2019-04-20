@@ -143,7 +143,6 @@ public class Scraper {
 
 	public List<InstSFQScoreStruct> scrapeInstSFQ(String baseurl) {
 		try {
-
 			HtmlPage page = this.client.getPage(baseurl);
 
 			// Select <table> elements containing course information
@@ -153,29 +152,30 @@ public class Scraper {
 			List<InstSFQScoreStruct> instScoreList = new ArrayList<InstSFQScoreStruct>();
 
 			for (int i = 0; i < tables.size(); i++) {
-
 				HtmlElement table = (HtmlElement) tables.get(i);
 				List<?> tableRows = table.getByXPath(".//tr");
-
 				for (int j = 0; j < tableRows.size(); j++) {
-
 					HtmlElement tableRow = (HtmlElement) tableRows.get(j);
 					List<?> tableEntries = tableRow.getByXPath(".//td");
 					HtmlElement tableEntryTest = (HtmlElement) tableEntries.get(2);
 					boolean isFound = false;
 
-					// First, check whether the Instructor has already been recorded.
+					// Check whether this <tr> element contains Instructor SFQ data
 					if (tableEntryTest.asText().matches("[A-Z][\\s\\S]+")) {
-						for (int i1 = 0; i1 < instScoreList.size(); i1++) {
-							if (instScoreList.get(i1).name.equals(tableEntryTest.asText())) {
+
+						// If Instructor has been recorded -- Direct append:
+						for (int k = 0; k < instScoreList.size(); k++) {
+							if (instScoreList.get(k).name.equals(tableEntryTest.asText())) {
 								HtmlElement scoreElement = (HtmlElement) tableEntries.get(4);
 								String scoreRaw = scoreElement.asText();
 								String scoreProc = scoreRaw.substring(0, 4);
-								instScoreList.get(i1).score.add(scoreProc);
+								instScoreList.get(k).score.add(scoreProc);
 								isFound = true;
 								break;
 							}
 						}
+
+						// If Instructor has NOT been recorded -- Create one:
 						if (!isFound) {
 							HtmlElement scoreElement = (HtmlElement) tableEntries.get(4);
 							String scoreRaw = scoreElement.asText();

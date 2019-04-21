@@ -141,6 +141,58 @@ public class Scraper {
 		public List<String> score;
 	}
 
+	public class CourseSFQStruct {
+		public Section section;
+		public String score;
+	}
+
+	public List<CourseSFQStruct> scrapeCourseSFQ(String baseurl, List<Section> sections) {
+		try {
+			HtmlPage page = this.client.getPage(baseurl);
+
+			// List to save output data
+			List<CourseSFQStruct> courseScoreList = new ArrayList<CourseSFQStruct>();
+
+			for (Section curSection : sections) {
+				String courseCode = curSection.getCourseCode();
+				String courseSub = courseCode.substring(0, 4);
+				String XPathIn = ".//b[@id='" + courseSub + "']";
+				HtmlElement header = page.getFirstByXPath(XPathIn);
+				header = (HtmlElement) header.getNextSibling();
+				HtmlElement table = (HtmlElement) header.getNextSibling();
+				List<?> tableRows = table.getByXPath(".//tr");
+				for (int j = 0; j < tableRows.size(); j++) {
+					HtmlElement tableRow = (HtmlElement) tableRows.get(j);
+					HtmlElement htmlCourseCode = tableRow.getFirstByXPath(".//td[@colspan='3']");
+					if ((htmlCourseCode != null) && (htmlCourseCode.asText() == courseCode)) {
+						String XPathInput = ".//td[contains(" + curSection.getSection() + ")]";
+						HtmlElement curRow = tableRow;
+						while (true) {
+							HtmlElement testSectionAttr = curRow.getFirstByXPath(XPathInput);
+							if (testSectionAttr != null) {
+								List<?> attrListSect = curRow.getByXPath(".//td");
+								HtmlElement sectScore = (HtmlElement) attrListSect.get(3);
+								String sectScoreRaw = sectScore.asText();
+								String sectScoreProc = sectScoreRaw.substring(0, 4);
+								CourseSFQStruct out = new CourseSFQStruct();
+								out.section = curSection;
+								out.score = sectScoreProc;
+								courseScoreList.add(out);
+								break;
+							}
+							curRow = (HtmlElement) curRow.getNextSibling();
+						}
+					}
+				}
+			}
+			return courseScoreList;
+
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
+
 	public List<InstSFQScoreStruct> scrapeInstSFQ(String baseurl) {
 		try {
 			HtmlPage page = this.client.getPage(baseurl);
@@ -157,6 +209,10 @@ public class Scraper {
 				for (int j = 0; j < tableRows.size(); j++) {
 					HtmlElement tableRow = (HtmlElement) tableRows.get(j);
 					List<?> tableEntries = tableRow.getByXPath(".//td");
+
+					// For any <tr> element containing Instructor SFQ data, the third <td> element
+					// of the <tr> must begin with Uppercase letter. (Which is the name of the
+					// Instructor)
 					HtmlElement tableEntryTest = (HtmlElement) tableEntries.get(2);
 					boolean isFound = false;
 
@@ -191,28 +247,19 @@ public class Scraper {
 			System.out.println(e);
 		}
 		return null;
-
 	}
 
 	public List<String> scrapeSubjects(String baseurl, String term) {
 		try {
-
 			HtmlPage page = client.getPage(baseurl + term + "/");
-
 			HtmlElement depts = page.getFirstByXPath("//div[@class='depts']");
-
 			List<String> result = new ArrayList<String>();
-
 			List<HtmlElement> subItems = depts.getByXPath(".//a");
-
 			for (int i = 0; i < subItems.size(); i++) {
-
 				HtmlElement htmlSubSubject = subItems.get(i);
 				result.add(htmlSubSubject.asText());
-
 			}
 			return result;
-
 		} catch (Exception e) {
 			System.out.println(e);
 		}

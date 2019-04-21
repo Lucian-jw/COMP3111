@@ -154,22 +154,39 @@ public class Scraper {
 			List<CourseSFQStruct> courseScoreList = new ArrayList<CourseSFQStruct>();
 
 			for (Section curSection : sections) {
+
+				// Get the table containing all sections of the subject
 				String courseCode = curSection.getCourseCode();
 				String courseSub = courseCode.substring(0, 4);
 				String XPathIn = ".//b[@id='" + courseSub + "']";
 				HtmlElement header = page.getFirstByXPath(XPathIn);
 				header = (HtmlElement) header.getNextSibling();
 				HtmlElement table = (HtmlElement) header.getNextSibling();
+
+				// Spilt all table rows for further analysis
 				List<?> tableRows = table.getByXPath(".//tr");
 				for (int j = 0; j < tableRows.size(); j++) {
+
+					// Row being analyzed now
 					HtmlElement tableRow = (HtmlElement) tableRows.get(j);
+
+					// Whether the row contains the course code attr: asText() = XXXX1111
 					HtmlElement htmlCourseCode = tableRow.getFirstByXPath(".//td[@colspan='3']");
+
+					// Indicator: whether this section has been found (to skip the outer loop)
+					boolean sectFound = false;
 					if ((htmlCourseCode != null) && (htmlCourseCode.asText() == courseCode)) {
-						String XPathInput = ".//td[contains(" + curSection.getSection() + ")]";
-						HtmlElement curRow = tableRow;
+
+						// This while loop iterate Rows down, find the row containing the section.
+						String XPathInput = ".//td[contains('" + curSection.getSection() + "')]";
+						HtmlElement curRow = (HtmlElement) tableRow.getNextSibling();
 						while (true) {
 							HtmlElement testSectionAttr = curRow.getFirstByXPath(XPathInput);
+
+							// Found
 							if (testSectionAttr != null) {
+
+								// Break this row into attrs, making access of particular attr easier
 								List<?> attrListSect = curRow.getByXPath(".//td");
 								HtmlElement sectScore = (HtmlElement) attrListSect.get(3);
 								String sectScoreRaw = sectScore.asText();
@@ -178,11 +195,14 @@ public class Scraper {
 								out.section = curSection;
 								out.score = sectScoreProc;
 								courseScoreList.add(out);
+								sectFound = true;
 								break;
 							}
 							curRow = (HtmlElement) curRow.getNextSibling();
 						}
 					}
+					if (sectFound)
+						break;
 				}
 			}
 			return courseScoreList;

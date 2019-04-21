@@ -146,7 +146,7 @@ public class Scraper {
 		public String score;
 	}
 
-	public List<CourseSFQStruct> scrapeCourseSFQ(String baseurl, List<Section> sections) {
+	public List<CourseSFQStruct> scrapeCourseSFQ(String baseurl, final List<Section> sections) {
 		try {
 			HtmlPage page = this.client.getPage(baseurl);
 

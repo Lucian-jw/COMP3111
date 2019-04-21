@@ -218,7 +218,7 @@ public class Scraper {
 			HtmlPage page = this.client.getPage(baseurl);
 
 			// Select <table> elements containing course information
-			List<?> tables = page.getByXPath("//table[@border='1']");
+			List<?> tables = page.getByXPath(".//table[@border='1']");
 
 			// List to save output data
 			List<InstSFQScoreStruct> instScoreList = new ArrayList<InstSFQScoreStruct>();
@@ -234,10 +234,10 @@ public class Scraper {
 					// of the <tr> must begin with Uppercase letter. (Which is the name of the
 					// Instructor)
 					HtmlElement tableEntryTest = (HtmlElement) tableEntries.get(2);
-					boolean isFound = false;
 
 					// Check whether this <tr> element contains Instructor SFQ data
 					if (tableEntryTest.asText().matches("[A-Z][\\s\\S]+")) {
+						boolean isFound = false;
 
 						// If Instructor has been recorded -- Direct append:
 						for (int k = 0; k < instScoreList.size(); k++) {
@@ -256,9 +256,10 @@ public class Scraper {
 							HtmlElement scoreElement = (HtmlElement) tableEntries.get(4);
 							String scoreRaw = scoreElement.asText();
 							String scoreProc = scoreRaw.substring(0, 4);
-							instScoreList.add(new InstSFQScoreStruct());
-							instScoreList.get(instScoreList.size() - 1).name = tableEntryTest.asText();
-							instScoreList.get(instScoreList.size() - 1).score.add(scoreProc);
+							InstSFQScoreStruct instStructAppend = new InstSFQScoreStruct();
+							instStructAppend.name = tableEntryTest.asText();
+							instStructAppend.score.add(scoreProc);
+							instScoreList.add(instStructAppend);
 						}
 					}
 				}

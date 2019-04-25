@@ -114,6 +114,13 @@ public class Scraper {
 		client.getOptions().setJavaScriptEnabled(false);
 	}
 
+	private static final boolean isNullScore(String s) {
+		if (s.equals("-"))
+			return true;
+		else
+			return false;
+	}
+
 	private void addSlot(HtmlElement e, Course c, boolean secondRow, String ins, String sectionType) {
 		String times[] = e.getChildNodes().get(secondRow ? 0 : 3).asText().split(" ");
 		String venue = e.getChildNodes().get(secondRow ? 1 : 4).asText();
@@ -138,7 +145,7 @@ public class Scraper {
 
 	public class InstSFQScoreStruct {
 		public String name;
-		public List<String> score;
+		public List<String> score = new ArrayList<String>();
 	}
 
 	public class CourseSFQStruct {
@@ -233,19 +240,24 @@ public class Scraper {
 					// For any <tr> element containing Instructor SFQ data, the third <td> element
 					// of the <tr> must begin with Uppercase letter. (Which is the name of the
 					// Instructor)
+					if (tableEntries.size() != 8)
+						continue;
 					HtmlElement tableEntryTest = (HtmlElement) tableEntries.get(2);
+					String testString = tableEntryTest.asText().trim();
 
 					// Check whether this <tr> element contains Instructor SFQ data
-					if (tableEntryTest.asText().matches("[A-Z][\\s\\S]+")) {
+					if (testString.matches("[A-Z][\\s\\S]+")) {
 						boolean isFound = false;
 
 						// If Instructor has been recorded -- Direct append:
 						for (int k = 0; k < instScoreList.size(); k++) {
-							if (instScoreList.get(k).name.equals(tableEntryTest.asText())) {
+							if (instScoreList.get(k).name.equals(testString)) {
+								System.out.println("exist");
 								HtmlElement scoreElement = (HtmlElement) tableEntries.get(4);
 								String scoreRaw = scoreElement.asText();
-								String scoreProc = scoreRaw.substring(0, 4);
-								instScoreList.get(k).score.add(scoreProc);
+								String scoreProc = scoreRaw.substring(0, scoreRaw.indexOf("("));
+								if (!isNullScore(scoreProc))
+									instScoreList.get(k).score.add(scoreProc);
 								isFound = true;
 								break;
 							}
@@ -255,15 +267,18 @@ public class Scraper {
 						if (!isFound) {
 							HtmlElement scoreElement = (HtmlElement) tableEntries.get(4);
 							String scoreRaw = scoreElement.asText();
-							String scoreProc = scoreRaw.substring(0, 4);
-							InstSFQScoreStruct instStructAppend = new InstSFQScoreStruct();
-							instStructAppend.name = tableEntryTest.asText();
-							instStructAppend.score.add(scoreProc);
-							instScoreList.add(instStructAppend);
+							String scoreProc = scoreRaw.substring(0, scoreRaw.indexOf("("));
+							if (!isNullScore(scoreProc)) {
+								InstSFQScoreStruct instStructAppend = new InstSFQScoreStruct();
+								instStructAppend.name = testString;
+								instStructAppend.score.add(scoreProc);
+								instScoreList.add(instStructAppend);
+							}
 						}
 					}
 				}
 			}
+			return instScoreList;
 		} catch (Exception e) {
 			System.out.println(e);
 		}

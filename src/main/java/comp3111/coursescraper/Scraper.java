@@ -87,7 +87,7 @@ public class Scraper {
 		client.getOptions().setJavaScriptEnabled(false);
 	}
 
-	private void addSlot(HtmlElement e, Section sec, Course c, boolean secondRow,String ins,String sectionType) {
+	private void addSlot(HtmlElement e, Course c, boolean secondRow,String ins,String sectionType) {
 		String times[] =  e.getChildNodes().get(secondRow ? 0 : 3).asText().split(" ");
 		String venue = e.getChildNodes().get(secondRow ? 1 : 4).asText();
 		if (times[0].equals("TBA"))
@@ -105,11 +105,10 @@ public class Scraper {
 			s.setSectionType(sectionType);
 			if(s.getSectionType().startsWith("L")||s.getSectionType().startsWith("T"))
 				c.addSlot(s);	
-			sec.slots.add(s);
 		}
 
 	}
-	private Section addSection( Course c,String ins,String sec){
+	private void addSection( Course c,String ins,String sec){
 		String CourseCode=c.getTitle().substring(0, 10);
 		String CourseName=c.getTitle().substring(12, c.getTitle().length());
 		Section s=new Section();
@@ -121,7 +120,7 @@ public class Scraper {
 		if(s.getSection()!=null &&(s.getSection().startsWith("L")||s.getSection().startsWith("T"))){
 			c.addSection(s);
 		}
-		return s;
+		
 	}
 
 	public List<Course> scrape(String baseurl, String term, String sub) {
@@ -159,15 +158,12 @@ public class Scraper {
 				c.setCommoncore((commoncore == null ? "null" : commoncore.asText()));
 				
 				List<?> sections = (List<?>) htmlItem.getByXPath(".//tr[contains(@class,'newsect')]");
-				for ( HtmlElement e: (List<HtmlElement>)sections) {	
-					
+				for ( HtmlElement e: (List<HtmlElement>)sections) {				
 					HtmlElement instructor=(HtmlElement) e.getFirstByXPath(".//a");
 					HtmlElement section=(HtmlElement)  e.getFirstByXPath(".//td");
-					
 					String ins =(instructor == null ? "TBA" : instructor.asText());
 					String sectiontype =(section == null ? "null" : section.asText());
 					String sec=null;
-					
 					if(sectiontype.startsWith("LA")){
 						sec=sectiontype.substring(0, 3);
 					}
@@ -177,14 +173,11 @@ public class Scraper {
 					else if (sectiontype.startsWith("T")){
 						sec=sectiontype.substring(0, 3);
 					}
-					
-					Section addedSection = addSection(c,ins,sec);
-					if (e != null && !e.getAttribute("class").contains("newsect"))
-						addSlot(e, addedSection, c, true,ins,sectiontype);
-					
-					addSlot(e, addedSection, c, false,ins,sectiontype);
-					
+					addSection(c,ins,sec);
+					addSlot(e, c, false,ins,sectiontype);
 					e = (HtmlElement)e.getNextSibling();
+					if (e != null && !e.getAttribute("class").contains("newsect"))
+						addSlot(e, c, true,ins,sectiontype);
 				}
 				result.add(c);
 			}

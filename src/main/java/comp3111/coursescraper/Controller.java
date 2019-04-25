@@ -21,7 +21,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.VBox;
 import javafx.geometry.Insets;
 import javafx.scene.paint.Color;
 import javafx.scene.control.CheckBox;
@@ -30,34 +29,12 @@ import javafx.util.Callback;
 
 import java.util.Random;
 import java.util.List;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
-
 public class Controller {
 	private static List<Course> ScrapedCourse =new ArrayList<Course>();
 	private static List<Course> FilteredCourse= new ArrayList<Course>();//remember to edit it after searching and ALlsubjectSearching!
 	private static List<Section>EnrolledSection= new ArrayList<Section>();
 	public ObservableList<Section> data=FXCollections.observableArrayList();
-	
-	@FXML
-	private Label instructionText1;
-	
-	@FXML
-	private Label instructionText2;
-	
-	@FXML
-	private Label instructionText3;
-	
-	@FXML
-	private Label displayText1;
-	
-	@FXML
-	private Label displayText2;
-	
-	@FXML
-	private Label displayText3;
-	
     @FXML
     private Tab tabMain;
 
@@ -160,15 +137,7 @@ public class Controller {
     @FXML
     private TextArea textAreaConsole;
     
-    private static final int mondayX = 100;
-    
-    private static final int lengthX = 101;
-    
     private Scraper scraper = new Scraper();
-    
-    private static ArrayList<Color> colors = new ArrayList<Color>();
-    
-    private static ArrayList<Color> unusedColors = new ArrayList<Color>();
     
     
 
@@ -280,52 +249,43 @@ public class Controller {
     void findSfqEnrollCourse() {
 
     }
-    
-    private void checkValidURL(String url) throws FailingHttpStatusCodeException{
-    	if (url.indexOf("w5.ab.ust.hk/wcq/cgi-bin") == -1) {
-    		throw new FailingHttpStatusCodeException("Invalid URL input", null);
-    	}
-    }
 
     @FXML
     void search() {
-    	try {
-    		checkValidURL(textfieldURL.getText());
-    		
-    		// The implementation of color
-    		// For task 4
-        	this.addBaseColor();
-        	unusedColors = (ArrayList<Color>) colors.clone();
-        	
-    		List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(),textfieldSubject.getText());
-        	
-        	for (Course c : v) {
-        		String newline = c.getTitle() + "\n";
-        		for (int i = 0; i < c.getNumSlots(); i++) {
-        			Slot t = c.getSlot(i);
-        			newline += "Slot " + i + ":" + t + "\n";
-        		}
-        		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
-        	}
-        	
-        	
-        	
-        	/*
-        	 * edit the tablecolumn after the search @Brother Liang implement it also in ALLSbujectSearch;
-        	 */
-        	ScrapedCourse.addAll(v);
-        	List();
-        	System.out.println("Hello world.");
-        	if (EnrolledSection.isEmpty()) {
-        		System.out.println("The enrolled section is empty.");
-        	}
-        	
-        }
-    	catch (FailingHttpStatusCodeException failingException) {
-    		// Some unsatisfied conditions: the empty URL cannot be handled gracefully.
-    		displayText1.setText("Please input HKUST class schedule website to the Base URL.");
-    		textAreaConsole.setText("Invalid URL. Please input a valid one.");
+    	List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(),textfieldSubject.getText());
+    	
+    	for (Course c : v) {
+    		String newline = c.getTitle() + "\n";
+    		for (int i = 0; i < c.getNumSlots(); i++) {
+    			Slot t = c.getSlot(i);
+    			newline += "Slot " + i + ":" + t + "\n";
+    		}
+    		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
     	}
+    	
+    	
+    	//Add a random block on Saturday
+    	AnchorPane ap = (AnchorPane)tabTimetable.getContent();
+    	Label randomLabel = new Label("COMP1022\nL1");
+    	Random r = new Random();
+    	double start = (r.nextInt(10) + 1) * 20 + 40;
+
+    	randomLabel.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+    	randomLabel.setLayoutX(600.0);
+    	randomLabel.setLayoutY(start);
+    	randomLabel.setMinWidth(100.0);
+    	randomLabel.setMaxWidth(100.0);
+    	randomLabel.setMinHeight(60);
+    	randomLabel.setMaxHeight(60);
+    
+    	ap.getChildren().addAll(randomLabel);
+    	
+    	
+    	/*
+    	 * edit the tablecolumn after the search @Brother Liang implement it also in ALLSbujectSearch;
+    	 */
+    	ScrapedCourse.addAll(v);
+    	List();
     }
     
     
@@ -523,69 +483,6 @@ public class Controller {
     	
     	
     }
-    
-    private void addCourseToTimetable(Section s) {
-    	// Generate color
-    	Color c;
-    	Random random = new Random();
-    	if (!unusedColors.isEmpty()) {
-    		int index = random.nextInt(unusedColors.size());
-    		unusedColors.remove(index);
-    		c = unusedColors.get(index);
-    	}
-    	c = Color.rgb(128 + random.nextInt(128), 128 + random.nextInt(128), 128 + random.nextInt(128));
-    	for(Slot slot:s.slots) {
-    		AnchorPane ap = (AnchorPane) tabTimetable.getContent();
-        	String content = s.getCourseCode() + "\n" + s.getSection();
-        	Label label = new Label(content);
-        	Random r = new Random();
-        	double sumTimeStart = slot.getStartHour() + slot.getStartMinute()/60;
-    		double start = (sumTimeStart - 9 + 1) * 20 + 40;
-    		double duration = slot.getEnd().getHour() - slot.getStart().getHour() + (slot.getEndMinute() - slot.getStartMinute())/60;
-
-    		label.setBackground(new Background(new BackgroundFill(c, CornerRadii.EMPTY, Insets.EMPTY)));
-    		label.setLayoutX(100.0 * slot.getDay());
-    		label.setLayoutY(start);
-    		label.setMinWidth(100.0);
-    		label.setMaxWidth(100.0);
-    		label.setMinHeight(60 * duration);
-    		label.setMaxHeight(60 * duration);
-    		ap.getChildren().addAll(label);
-    	}
-    }
-    
-    // The standard color list have in total 15 base colors.
-    void addBaseColor() {
-    	colors.add(Color.web("FF3939"));
-    	colors.add(Color.web("FF6699"));
-    	colors.add(Color.web("F26D7D"));
-    	colors.add(Color.web("F58345"));
-    	colors.add(Color.web("FFBF7F"));
-    	colors.add(Color.web("F5FF7D"));
-    	colors.add(Color.web("99FF99"));
-    	colors.add(Color.web("12E3DB"));
-    	colors.add(Color.web("00B6BD"));
-    	colors.add(Color.web("00B6BD"));
-    	colors.add(Color.web("63A5C3"));
-    	colors.add(Color.web("0338D0"));
-    	colors.add(Color.web("9C27B0"));
-    	colors.add(Color.web("7853A8"));
-    	colors.add(Color.web("8F5873"));
-    }
-    
-    private Color generateColor() {
-    	// Generate a random integer and convert it to hex string.
-    	// In this way, the color can be displayed.
-    	Random random = new Random();
-    	if (!unusedColors.isEmpty()) {
-    		int index = random.nextInt(unusedColors.size());
-    		unusedColors.remove(index);
-    		return unusedColors.get(index);
-    	}
-    	return Color.rgb(128 + random.nextInt(128), 128 + random.nextInt(128), 128 + random.nextInt(128));
-    	
-    }
-    
     void List(){
     	CourseCode.setCellValueFactory(cellData -> cellData.getValue().CourseCodeProperty());
     	Section.setCellValueFactory(cellData -> cellData.getValue().SectionProperty());
@@ -606,12 +503,10 @@ public class Controller {
 	                        sec.setEnrolledStatus((new_val));
 	                        if(sec.getEnrolledStatus()==true &&  !EnrolledSection.contains(sec)){
 	                        	EnrolledSection.add(sec);
-	                        	addCourseToTimetable(sec);
 	                        }
 	                        if(sec.getEnrolledStatus()==false&& EnrolledSection.contains(sec)){
 	                        	EnrolledSection.remove(sec);
 	                        }
-	                        
 	                        textAreaConsole.clear();
 	                        String newline = "The following sections are enrolled:" + "\n";
 	                        for(Section s:EnrolledSection){

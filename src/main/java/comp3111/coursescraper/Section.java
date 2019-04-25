@@ -4,7 +4,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import java.util.*;
 
 
 public class Section {
@@ -13,7 +12,6 @@ public class Section {
     private SimpleStringProperty Instructor;
     private SimpleStringProperty CourseName;
     private SimpleBooleanProperty  EnrolledStatus;
-    ArrayList<Slot> slots = new ArrayList<Slot>();
    
     @Override
 	public Section clone() {
@@ -25,10 +23,6 @@ public class Section {
 		s.setEnrolledStatus(this.getEnrolledStatus());
 		return s;
 	}
-    
-    public boolean equals(Section s) {
-    	return getCourseCode().equals(s.getCourseCode()) && getSection().equals(s.getSection());
-    }
     
     public String getCourseCode() {
         return CourseCode.get();

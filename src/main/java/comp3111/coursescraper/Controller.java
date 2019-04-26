@@ -1,49 +1,44 @@
 package comp3111.coursescraper;
 
+
+
+import java.io.FileNotFoundException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import comp3111.coursescraper.Scraper.CourseSFQStruct;
+import comp3111.coursescraper.Scraper.InstSFQScoreStruct;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
-import javafx.geometry.Insets;
 import javafx.scene.paint.Color;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.text.Font;
 import javafx.util.Callback;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.text.*;
-
-import java.util.Random;
-import java.util.List;
-import java.io.FileNotFoundException;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.time.LocalTime;
-import java.util.ArrayList;
-
-import org.eclipse.jetty.util.thread.Scheduler.Task;
-
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
-
-import comp3111.coursescraper.Scraper.CourseSFQStruct;
-import comp3111.coursescraper.Scraper.InstSFQScoreStruct;
+import javafx.scene.control.*;
 
 
 public class Controller {

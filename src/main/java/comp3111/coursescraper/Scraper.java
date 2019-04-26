@@ -221,7 +221,7 @@ public class Scraper {
 		    addSlot(addedSection, e, c, false, ins, sectiontype);
 		    e = (HtmlElement) e.getNextSibling();
 		    if (e != null && !e.getAttribute("class").contains("newsect"))
-			addSlot(e, c, true, ins, sectiontype);
+			addSlot(addedSection, e, c, true, ins, sectiontype);
 		}
 		result.add(c);
 	    }

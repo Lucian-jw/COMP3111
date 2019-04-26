@@ -261,17 +261,22 @@ public class Controller {
 		total += Float.parseFloat(curScore.get(j));
 	    total = total / curScore.size();
 	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Instructor: " + out.get(i).name + "\n"
-		    + "SFQ Score: " + total + "\n" + "\n");
+		    + "SFQ Score: " + total + "\n");
 	}
     }
 
     @FXML
     void findSfqEnrollCourse() {
-	final List<CourseSFQStruct> out = scraper.scrapeCourseSFQ(textfieldSfqUrl.getText(),
-		Controller.EnrolledSection);
-	for (int i = 0; i < out.size(); i++)
-	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Section: " + out.get(i).section.getCourseCode()
-		    + ' ' + out.get(i).section.getSection() + "\n" + "SFQ Score: " + out.get(i).score + "\n" + "\n");
+	final List<CourseSFQStruct> out = scraper.scrapeCourseSFQ(textfieldSfqUrl.getText(), EnrolledSection);
+	for (int i = 0; i < out.size(); i++) {
+	    final List<String> curScore = out.get(i).score;
+	    float total = 0;
+	    for (int j = 0; j < curScore.size(); j++)
+		total += Float.parseFloat(curScore.get(j));
+	    total = total / curScore.size();
+	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Course: " + out.get(i).courseCode + "\n"
+		    + "SFQ Score: " + total + "\n");
+	}
     }
 
     @FXML

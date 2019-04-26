@@ -9,8 +9,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 public class Scraper {
     public class CourseSFQStruct {
-	public Section section;
-	public String score;
+	public String courseCode;
+	public List<String> score = new ArrayList<>();
     }
 
     public class InstSFQScoreStruct {
@@ -129,6 +129,7 @@ public class Scraper {
 		final String courseCode = curSection.getCourseCode();
 		final String courseSub = courseCode.substring(0, 4);
 		final String courseNum = courseCode.substring(5, 9);
+		final String courseCodeProc = courseSub + courseNum;
 		final String XPathIn = ".//b[@id='" + courseSub + "']";
 		final HtmlElement header = page.getFirstByXPath(XPathIn);
 		final HtmlElement table = (HtmlElement) header.getNextSibling().getNextSibling();
@@ -144,10 +145,19 @@ public class Scraper {
 			final String scoreRaw = sectScore.asText();
 			final String scoreProc = scoreRaw.substring(0, scoreRaw.indexOf("("));
 			if (!Scraper.isNullScore(scoreProc)) {
-			    final CourseSFQStruct out = new CourseSFQStruct();
-			    out.section = curSection;
-			    out.score = scoreProc;
-			    courseScoreList.add(out);
+			    boolean isFound = false;
+			    for (final CourseSFQStruct cur : courseScoreList)
+				if (cur.courseCode.equals(courseCodeProc)) {
+				    cur.score.add(scoreProc);
+				    isFound = true;
+				    break;
+				}
+			    if (!isFound) {
+				final CourseSFQStruct out = new CourseSFQStruct();
+				out.courseCode = courseCodeProc;
+				out.score.add(scoreProc);
+				courseScoreList.add(out);
+			    }
 			}
 			break;
 		    }

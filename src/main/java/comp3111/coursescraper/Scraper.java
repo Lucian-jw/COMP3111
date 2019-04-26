@@ -165,55 +165,45 @@ public class Scraper {
 				// Get the table containing all sections of the subject
 				String courseCode = curSection.getCourseCode();
 				String courseSub = courseCode.substring(0, 4);
+				String courseNum = courseCode.substring(4, 8);
 				String XPathIn = ".//b[@id='" + courseSub + "']";
 				HtmlElement header = page.getFirstByXPath(XPathIn);
 				header = (HtmlElement) header.getNextSibling();
 				HtmlElement table = (HtmlElement) header.getNextSibling();
 
-				// Spilt all table rows for further analysis
-				List<?> tableRows = table.getByXPath(".//tr");
-				for (int j = 0; j < tableRows.size(); j++) {
+				// Find the <tr> row containing the courseCode XXXX1111
+				HtmlElement tableRow = table.getFirstByXPath(".//tr[td[contains(text(),'" + courseNum + "')]]");
 
-					// Row being analyzed now
-					HtmlElement tableRow = (HtmlElement) tableRows.get(j);
+				// Indicator: whether this section has been found (to skip the outer loop)
+				boolean sectFound = false;
 
-					// Whether the row contains the course code attr: asText() = XXXX1111
-					HtmlElement htmlCourseCode = tableRow.getFirstByXPath(".//td[@colspan='3']");
+				// This while loop iterate Rows down, find the row containing the section.
+				HtmlElement curRow = (HtmlElement) tableRow.getNextSibling();
+				while (true) {
+					List<?> tableEntries = curRow.getByXPath(".//td");
+					HtmlElement testSectionAttr = (HtmlElement) tableEntries.get(1);
+					String testSection = testSectionAttr.asText().trim();
 
-					// Indicator: whether this section has been found (to skip the outer loop)
-					boolean sectFound = false;
-					if ((htmlCourseCode != null) && (htmlCourseCode.asText() == courseCode)) {
-
-						// This while loop iterate Rows down, find the row containing the section.
-						String XPathInput = ".//td[contains('" + curSection.getSection() + "')]";
-						HtmlElement curRow = (HtmlElement) tableRow.getNextSibling();
-						while (true) {
-							HtmlElement testSectionAttr = curRow.getFirstByXPath(XPathInput);
-
-							// Found
-							if (testSectionAttr != null) {
-
-								// Break this row into attrs, making access of particular attr easier
-								List<?> attrListSect = curRow.getByXPath(".//td");
-								HtmlElement sectScore = (HtmlElement) attrListSect.get(3);
-								String sectScoreRaw = sectScore.asText();
-								String sectScoreProc = sectScoreRaw.substring(0, 4);
-								CourseSFQStruct out = new CourseSFQStruct();
-								out.section = curSection;
-								out.score = sectScoreProc;
-								courseScoreList.add(out);
-								sectFound = true;
-								break;
-							}
-							curRow = (HtmlElement) curRow.getNextSibling();
+					// Found
+					if (testSection == curSection.getSection()) {
+						HtmlElement sectScore = (HtmlElement) tableEntries.get(3);
+						String scoreRaw = sectScore.asText();
+						String scoreProc = scoreRaw.substring(0, scoreRaw.indexOf("("));
+						if (!isNullScore(scoreProc)) {
+							CourseSFQStruct out = new CourseSFQStruct();
+							out.section = curSection;
+							out.score = scoreProc;
+							courseScoreList.add(out);
+							sectFound = true;
+							break;
 						}
 					}
-					if (sectFound)
-						break;
+					curRow = (HtmlElement) curRow.getNextSibling();
 				}
+				if (sectFound)
+					break;
 			}
 			return courseScoreList;
-
 		} catch (Exception e) {
 			System.out.println(e);
 		}

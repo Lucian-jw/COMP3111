@@ -196,6 +196,9 @@ public class Scraper {
 							courseScoreList.add(out);
 							sectFound = true;
 							break;
+						} else {
+							sectFound = true;
+							break;
 						}
 					}
 					curRow = (HtmlElement) curRow.getNextSibling();

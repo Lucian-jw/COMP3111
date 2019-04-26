@@ -18,22 +18,7 @@ public class Scraper {
 	public List<String> score = new ArrayList<>();
     }
 
-    private static final boolean isNullScore(final String s) {
-	if (s.equals("-"))
-	    return true;
-	else
-	    return false;
-    }
-
-    private final WebClient client;
-
-    public Scraper() {
-	client = new WebClient();
-	client.getOptions().setCssEnabled(false);
-	client.getOptions().setJavaScriptEnabled(false);
-    }
-
-    private Section addSection(final Course c, final String ins, final String sec) {
+    private static Section addSection(final Course c, final String ins, final String sec) {
 	final String CourseCode = c.getTitle().substring(0, 10);
 	final String CourseName = c.getTitle().substring(12, c.getTitle().length());
 	final Section s = new Section();
@@ -47,7 +32,7 @@ public class Scraper {
 	return s;
     }
 
-    private void addSlot(final Section section, final HtmlElement e, final Course c, final boolean secondRow,
+    private static void addSlot(final Section section, final HtmlElement e, final Course c, final boolean secondRow,
 	    final String ins, final String sectionType) {
 	final String times[] = e.getChildNodes().get(secondRow ? 0 : 3).asText().split(" ");
 	final String venue = e.getChildNodes().get(secondRow ? 1 : 4).asText();
@@ -68,6 +53,20 @@ public class Scraper {
 		c.addSlot(s);
 	    section.addSlot(s);
 	}
+    }
+
+    private static final boolean isNullScore(final String s) {
+	if (s.equals("-"))
+	    return true;
+	return false;
+    }
+
+    private final WebClient client;
+
+    public Scraper() {
+	client = new WebClient();
+	client.getOptions().setCssEnabled(false);
+	client.getOptions().setJavaScriptEnabled(false);
     }
 
     public List<Course> scrape(final String baseurl, final String term, final String sub) {

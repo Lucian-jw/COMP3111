@@ -32,8 +32,16 @@ import javafx.scene.text.*;
 import java.util.Random;
 import java.util.List;
 import java.io.FileNotFoundException;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.time.LocalTime;
 import java.util.ArrayList;
+
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+
+
 public class Controller {
 	private static List<Course> ScrapedCourse =new ArrayList<Course>();
 	private static List<Course> FilteredCourse= new ArrayList<Course>();//remember to edit it after searching and ALlsubjectSearching!
@@ -529,11 +537,41 @@ public class Controller {
     }
     
     private void checkValidURL(String url) throws FileNotFoundException {
-    	if (url.indexOf("w5.ab.ust.hk/wcq/cgi-bin") < 0) {
+    	try {
+    		if (url.indexOf("w5.ab.ust.hk/wcq/cgi-bin") < 0) {
+        		throw new FileNotFoundException(url);
+        	}
+    		
+    	    URI uri = new URI(url);
+    	    
+    	    // perform checks for scheme, authority, host, etc., based on your requirements
+    	    if (uri.getHost() == null) {
+    	    	throw new FileNotFoundException(url);
+    	    }
+    	    if (!exists(url)) {
+    	    	throw new FileNotFoundException(url);
+    	    }
+
+    	} catch (URISyntaxException e) {
     		throw new FileNotFoundException(url);
     	}
-    	
     }
+    
+    public static boolean exists(String URLName){
+        try {
+          HttpURLConnection.setFollowRedirects(false);
+          // note : you may also need
+          //        HttpURLConnection.setInstanceFollowRedirects(false)
+          HttpURLConnection con =
+             (HttpURLConnection) new URL(URLName).openConnection();
+          con.setRequestMethod("HEAD");
+          return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+        }
+        catch (Exception e) {
+           e.printStackTrace();
+           return false;
+        }
+      }  
     
     void List(){
     	CourseCode.setCellValueFactory(cellData -> cellData.getValue().CourseCodeProperty());

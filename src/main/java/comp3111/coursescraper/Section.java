@@ -25,23 +25,33 @@ public class Section {
 	}
     
     public String getCourseCode() {
-        return CourseCode.get();
-    }
+    
+    	return CourseCode.get();
+    	
+    }	
     
     public String getSection() {
-        return Section.get();
+    	
+    	return Section.get();
+    	
     }
     
     public String getInstructor() {
-        return Instructor.get();
+    	
+    	return Instructor.get();
+    	
     }
     
     public String getCourseName() {
-        return CourseName.get();
+    	
+    	return CourseName.get();
+    	
     }
     
     public Boolean getEnrolledStatus(){
+    	
     	return EnrolledStatus.get();
+    	
     }
     
     public void setCourseCode(String CCode){

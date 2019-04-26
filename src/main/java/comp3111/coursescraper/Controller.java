@@ -334,136 +334,72 @@ public class Controller {
 		List<Course> found = new ArrayList<Course>();
 		for (Course c : v) {
 			if (AM.isSelected()) {
-				int i = 0;
-				if (c.getNumSlots() == 0) {// If it does not have any slots
+				
+				if(!c.containsAM()){
 					found.add(c);
-					continue;
-				}
-				while (!c.getSlot(i).isAM()) {
-					if (i == c.getNumSlots() - 1) {
-						found.add(c);// find the course not satisfy them
-						break;
-					}
-					i++;
 				}
 				if (found.contains(c)) {
 					continue;
 				}
 			}
 			if (PM.isSelected()) {
-				int i = 0;
-				if (c.getNumSlots() == 0) { // If it does not have any slots
+				
+				if(!c.containsPM()){
 					found.add(c);
-					continue;
-				}
-				while (!c.getSlot(i).isPM()) {
-					if (i == c.getNumSlots() - 1) {
-						found.add(c);
-						break;
-					}
-					i++;
 				}
 				if (found.contains(c)) {
 					continue;
 				}
 			}
 			if (Mon.isSelected()) {
-				int i = 0;
-				if (c.getNumSlots() == 0) { // If it does not have any slots
+				
+				if(!c.containsMon()){
 					found.add(c);
-					continue;
-				}
-				while (!(c.getSlot(i).getDay() == 0)) { // 0 means Monday,1,2,3,4,5 means Tue....
-					if (i == c.getNumSlots() - 1) {
-						found.add(c);
-						break;
-					}
-					i++;
 				}
 				if (found.contains(c)) {
 					continue;
 				}
 			}
 			if (Tue.isSelected()) {
-				int i = 0;
-				if (c.getNumSlots() == 0) {// If it does not have any slots
+				
+				if(!c.containsTue()){
 					found.add(c);
-					continue;
-				}
-				while (!(c.getSlot(i).getDay() == 1)) {
-					if (i == c.getNumSlots() - 1) {
-						found.add(c);
-						break;
-					}
-					i++;
 				}
 				if (found.contains(c)) {
 					continue;
 				}
 			}
 			if (Wed.isSelected()) {
-				int i = 0;
-				if (c.getNumSlots() == 0) {// If it does not have any slots
+				
+				if(!c.containsWed()){
 					found.add(c);
-					continue;
-				}
-				while (!(c.getSlot(i).getDay() == 2)) {
-					if (i == c.getNumSlots() - 1) {
-						found.add(c);
-						break;
-					}
-					i++;
 				}
 				if (found.contains(c)) {
 					continue;
 				}
 			}
 			if (Thur.isSelected()) {
-				int i = 0;
-				if (c.getNumSlots() == 0) {// If it does not have any slots
+				
+				if(!c.containsThurs()){
 					found.add(c);
-					continue;
-				}
-				while (!(c.getSlot(i).getDay() == 3)) {
-					if (i == c.getNumSlots() - 1) {
-						found.add(c);
-						break;
-					}
-					i++;
 				}
 				if (found.contains(c)) {
 					continue;
 				}
 			}
 			if (Fri.isSelected()) {
-				int i = 0;
-				if (c.getNumSlots() == 0) {// If it does not have any slots
+				
+				if(!c.containsFri()){
 					found.add(c);
-					continue;
-				}
-				while (!(c.getSlot(i).getDay() == 4)) {
-					if (i == c.getNumSlots() - 1) {
-						found.add(c);
-						break;
-					}
-					i++;
 				}
 				if (found.contains(c)) {
 					continue;
 				}
 			}
 			if (Sat.isSelected()) {// hope god bless these poor guys :D
-				int i = 0;
-				if (c.getNumSlots() == 0) {// If it does not have any slots
+				
+				if(!c.containsSat()){
 					found.add(c);
-					continue;
-				}
-				while (!(c.getSlot(i).getDay() == 5)) {
-					if (i == c.getNumSlots() - 1) {
-						found.add(c);
-						break;
-					}
-					i++;
 				}
 				if (found.contains(c)) {
 					continue;
@@ -482,19 +418,9 @@ public class Controller {
 				}
 			}
 			if (WithLabsorTutorial.isSelected()) {
-				int i = 0;
-				if (c.getNumSlots() == 0) {// If it does not have any slots
+				
+				if(!c.containsLab()){
 					found.add(c);
-					continue;
-				}
-				while (c.getSlot(i).getSectionType() == null || (!(c.getSlot(i).getSectionType().startsWith("L"))
-						&& !(c.getSlot(i).getSectionType().startsWith("T")))) {
-					if (i == c.getNumSlots() - 1) { // either it is null or not(it starts with 'L' or it starts with 't'
-						// )
-						found.add(c);
-						break;
-					}
-					i++;
 				}
 				if (found.contains(c)) {
 					continue;

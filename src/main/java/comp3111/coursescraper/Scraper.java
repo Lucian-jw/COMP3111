@@ -7,107 +7,9 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
-/**
- * WebScraper provide a sample code that scrape web content. After it is
- * constructed, you can call the method scrape with a keyword, the client will
- * go to the default url and parse the page by looking at the HTML DOM. <br>
- * In this particular sample code, it access to HKUST class schedule and quota
- * page (COMP). <br>
- * https://w5.ab.ust.hk/wcq/cgi-bin/1830/subject/COMP <br>
- * where 1830 means the third spring term of the academic year 2018-19 and COMP
- * is the course code begins with COMP. <br>
- * Assume you are working on Chrome, paste the url into your browser and press
- * F12 to load the source code of the HTML. You might be freak out if you have
- * never seen a HTML source code before. Keep calm and move on. Press
- * Ctrl-Shift-C (or CMD-Shift-C if you got a mac) and move your mouse cursor
- * around, different part of the HTML code and the corresponding the HTML
- * objects will be highlighted. Explore your HTML page from body &rarr; div
- * id="classes" &rarr; div class="course" &rarr;. You might see something like
- * this: <br>
- * 
- * <pre>
- * {@code
- * <div class="course">
- * <div class="courseanchor" style=
-"position: relative; float: left; visibility: hidden; top: -164px;"><a name=
-"COMP1001">&nbsp;</a></div>
- * <div class="courseinfo">
- * <div class="popup attrword"><span class=
-"crseattrword">[3Y10]</span><div class=
-"popupdetail">CC for 3Y 2010 &amp; 2011 cohorts</div></div><div class=
-"popup attrword"><span class="crseattrword">[3Y12]</span><div class=
-"popupdetail">CC for 3Y 2012 cohort</div></div><div class=
-"popup attrword"><span class="crseattrword">[4Y]</span><div class=
-"popupdetail">CC for 4Y 2012 and after</div></div><div class=
-"popup attrword"><span class="crseattrword">[DELI]</span><div class=
-"popupdetail">Mode of Delivery</div></div>	
- *    <div class="courseattr popup">
- * 	    <span style=
-"font-size: 12px; color: #688; font-weight: bold;">COURSE INFO</span>
- * 	    <div class="popupdetail">
- * 	    <table width="400">
- *         <tbody>
- *             <tr><th>ATTRIBUTES</th><td>Common Core (S&amp;T) for 2010 &amp; 2011 3Y programs<br>Common Core (S&amp;T) for 2012 3Y programs<br>Common Core (S&amp;T) for 4Y programs<br>[BLD] Blended learning</td></tr><tr><th>EXCLUSION</th><td>ISOM 2010, any COMP courses of 2000-level or above</td></tr><tr><th>DESCRIPTION</th><td>This course is an introduction to computers and computing tools. It introduces the organization and basic working mechanism of a computer system, including the development of the trend of modern computer system. It covers the fundamentals of computer hardware design and software application development. The course emphasizes the application of the state-of-the-art software tools to solve problems and present solutions via a range of skills related to multimedia and internet computing tools such as internet, e-mail, WWW, webpage design, computer animation, spread sheet charts/figures, presentations with graphics and animations, etc. The course also covers business, accessibility, and relevant security issues in the use of computers and Internet.</td>
- *             </tr>	
- *          </tbody>
- *      </table>
- * 	    </div>
- *    </div>
- * </div>
- *  <h2>COMP 1001 - Exploring Multimedia and Internet Computing (3 units)</h2>
- *  <table class="sections" width="1012">
- *   <tbody>
- *    <tr>
- *        <th width="85">Section</th><th width="190" style=
-"text-align: left">Date &amp; Time</th><th width="160" style=
-"text-align: left">Room</th><th width="190" style=
-"text-align: left">Instructor</th><th width="45">Quota</th><th width=
-"45">Enrol</th><th width="45">Avail</th><th width="45">Wait</th><th width=
-"81">Remarks</th>
- *    </tr>
- *    <tr class="newsect secteven">
- *        <td align="center">L1 (1765)</td>
- *        <td>We 02:00PM - 03:50PM</td><td>Rm 5620, Lift 31-32 (70)</td><td><a href
-=
-"/wcq/cgi-bin/1830/instructor/LEUNG, Wai Ting">LEUNG, Wai Ting</a></td><td align
-="center">67</td><td align="center">0</td><td align="center">67</td><td align=
-"center">0</td><td align="center">&nbsp;</td></tr><tr class="newsect sectodd">
- *        <td align="center">LA1 (1766)</td>
- *        <td>Tu 09:00AM - 10:50AM</td><td>Rm 4210, Lift 19 (67)</td><td><a href
-=
-"/wcq/cgi-bin/1830/instructor/LEUNG, Wai Ting">LEUNG, Wai Ting</a></td><td align
-="center">67</td><td align="center">0</td><td align="center">67</td><td align=
-"center">0</td><td align="center">&nbsp;</td>
- *    </tr>
- *   </tbody>
- *  </table>
- * </div>
- *}
- * </pre>
- * 
- * <br>
- * The code
- * 
- * <pre>
- * {
- *     &#64;code
- *     List<?> items = (List<?>) page.getByXPath("//div[@class='course']");
- * }
- * </pre>
- * 
- * extracts all result-row and stores the corresponding HTML elements to a list
- * called items. Later in the loop it extracts the anchor tag &lsaquo; a
- * &rsaquo; to retrieve the display text (by .asText()) and the link (by
- * .getHrefAttribute()).
- * 
- *
- */
 public class Scraper {
     private WebClient client;
 
-    /**
-     * Default Constructor
-     */
     public Scraper() {
 	client = new WebClient();
 	client.getOptions().setCssEnabled(false);
@@ -140,7 +42,6 @@ public class Scraper {
 	    if (s.getSectionType().startsWith("L") || s.getSectionType().startsWith("T"))
 		c.addSlot(s);
 	}
-
     }
 
     public class InstSFQScoreStruct {
@@ -156,41 +57,21 @@ public class Scraper {
     public List<CourseSFQStruct> scrapeCourseSFQ(String baseurl, final List<Section> sections) {
 	try {
 	    HtmlPage page = this.client.getPage(baseurl);
-
-	    // List to save output data
 	    List<CourseSFQStruct> courseScoreList = new ArrayList<CourseSFQStruct>();
-	    // System.out.println(sections.size());
 	    for (Section curSection : sections) {
-
-		// Get the table containing all sections of the subject
 		String courseCode = curSection.getCourseCode();
-		// System.out.println(courseCode);
 		String courseSub = courseCode.substring(0, 4);
-		// System.out.println(courseSub);
 		String courseNum = courseCode.substring(5, 9);
-		// System.out.println(courseNum);
 		String XPathIn = ".//b[@id='" + courseSub + "']";
 		HtmlElement header = page.getFirstByXPath(XPathIn);
-		// System.out.println(header.asText());
 		HtmlElement table = (HtmlElement) header.getNextSibling().getNextSibling();
-
-		// Find the <tr> row containing the courseCode XXXX1111
 		HtmlElement tableRow = table.getFirstByXPath(".//tr[td[contains(text(),'" + courseNum + "')]]");
-		/*
-		 * if (tableRow == null) System.out.println("NULL");
-		 */
-		// System.out.println(tableRow.getChildElementCount());
-		// This while loop iterate Rows down, find the row containing the section.
 		HtmlElement curRow = (HtmlElement) tableRow.getNextElementSibling();
-		// System.out.println("OK");
 		while (true) {
 		    List<?> tableEntries = curRow.getByXPath(".//td");
 		    HtmlElement testSectionAttr = (HtmlElement) tableEntries.get(1);
 		    String testSection = testSectionAttr.asText().trim();
-		    // System.out.println(testSection);
 		    String curSectionCode = curSection.getSection().trim();
-		    // System.out.println(curSectionCode);
-		    // Found
 		    if (testSection.equals(curSectionCode)) {
 			HtmlElement sectScore = (HtmlElement) tableEntries.get(3);
 			String scoreRaw = sectScore.asText();
@@ -204,10 +85,8 @@ public class Scraper {
 			break;
 		    }
 		    curRow = (HtmlElement) curRow.getNextElementSibling();
-		    if (curRow == null) {
-			// System.out.println("END");
+		    if (curRow == null)
 			break;
-		    }
 		}
 	    }
 	    return courseScoreList;
@@ -220,33 +99,20 @@ public class Scraper {
     public List<InstSFQScoreStruct> scrapeInstSFQ(String baseurl) {
 	try {
 	    HtmlPage page = this.client.getPage(baseurl);
-
-	    // Select <table> elements containing course information
 	    List<?> tables = page.getByXPath(".//table[@border='1']");
-
-	    // List to save output data
 	    List<InstSFQScoreStruct> instScoreList = new ArrayList<InstSFQScoreStruct>();
-
 	    for (int i = 0; i < tables.size(); i++) {
 		HtmlElement table = (HtmlElement) tables.get(i);
 		List<?> tableRows = table.getByXPath(".//tr");
 		for (int j = 0; j < tableRows.size(); j++) {
 		    HtmlElement tableRow = (HtmlElement) tableRows.get(j);
 		    List<?> tableEntries = tableRow.getByXPath(".//td");
-
-		    // For any <tr> element containing Instructor SFQ data, the third <td> element
-		    // of the <tr> must begin with Uppercase letter. (Which is the name of the
-		    // Instructor)
 		    if (tableEntries.size() != 8)
 			continue;
 		    HtmlElement tableEntryTest = (HtmlElement) tableEntries.get(2);
 		    String testString = tableEntryTest.asText().trim();
-
-		    // Check whether this <tr> element contains Instructor SFQ data
 		    if (testString.matches("[A-Z][\\s\\S]+")) {
 			boolean isFound = false;
-
-			// If Instructor has been recorded -- Direct append:
 			for (int k = 0; k < instScoreList.size(); k++) {
 			    if (instScoreList.get(k).name.equals(testString)) {
 				HtmlElement scoreElement = (HtmlElement) tableEntries.get(4);
@@ -258,8 +124,6 @@ public class Scraper {
 				break;
 			    }
 			}
-
-			// If Instructor has NOT been recorded -- Create one:
 			if (!isFound) {
 			    HtmlElement scoreElement = (HtmlElement) tableEntries.get(4);
 			    String scoreRaw = scoreElement.asText();
@@ -310,26 +174,18 @@ public class Scraper {
 	if (s.getSection() != null && (s.getSection().startsWith("L") || s.getSection().startsWith("T"))) {
 	    c.addSection(s);
 	}
-
     }
 
     public List<Course> scrape(String baseurl, String term, String sub) {
-
 	try {
-
 	    HtmlPage page = client.getPage(baseurl + "/" + term + "/subject/" + sub);
-
 	    List<?> items = page.getByXPath("//div[@class='course']");
-
 	    List<Course> result = new ArrayList<Course>();
-
 	    for (int i = 0; i < items.size(); i++) {
 		Course c = new Course();
 		HtmlElement htmlItem = (HtmlElement) items.get(i);
-
 		HtmlElement title = (HtmlElement) htmlItem.getFirstByXPath(".//h2");
 		c.setTitle(title.asText());
-
 		List<?> popupdetailslist = htmlItem.getByXPath(".//div[@class='popupdetail']/table/tbody/tr");
 		HtmlElement commoncore = null;
 		HtmlElement exclusion = null;
@@ -345,7 +201,6 @@ public class Scraper {
 		}
 		c.setExclusion((exclusion == null ? "null" : exclusion.asText()));
 		c.setCommoncore((commoncore == null ? "null" : commoncore.asText()));
-
 		List<?> sections = htmlItem.getByXPath(".//tr[contains(@class,'newsect')]");
 		for (HtmlElement e : (List<HtmlElement>) sections) {
 		    HtmlElement instructor = (HtmlElement) e.getFirstByXPath(".//a");
@@ -375,5 +230,4 @@ public class Scraper {
 	}
 	return null;
     }
-
 }

@@ -26,9 +26,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.text.*;
 
 import java.util.Random;
 import java.util.List;
+import java.io.FileNotFoundException;
+import java.time.LocalTime;
 import java.util.ArrayList;
 public class Controller {
 	private static List<Course> ScrapedCourse =new ArrayList<Course>();
@@ -252,40 +256,28 @@ public class Controller {
 
     @FXML
     void search() {
-    	List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(),textfieldSubject.getText());
-    	
-    	for (Course c : v) {
-    		String newline = c.getTitle() + "\n";
-    		for (int i = 0; i < c.getNumSlots(); i++) {
-    			Slot t = c.getSlot(i);
-    			newline += "Slot " + i + ":" + t + "\n";
-    		}
-    		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+    	try {
+    		checkValidURL(textfieldURL.getText() + "/" + textfieldTerm.getText() + "/subject/" + textfieldSubject.getText());
+    		List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(),textfieldSubject.getText());
+        	
+        	for (Course c : v) {
+        		String newline = c.getTitle() + "\n";
+        		for (int i = 0; i < c.getNumSlots(); i++) {
+        			Slot t = c.getSlot(i);
+        			newline += "Slot " + i + ":" + t + "\n";
+        		}
+        		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+        	}
+        	
+        	/*
+        	 * edit the tablecolumn after the search @Brother Liang implement it also in ALLSbujectSearch;
+        	 */
+        	ScrapedCourse.addAll(v);
+        	List();
     	}
-    	
-    	
-    	//Add a random block on Saturday
-    	AnchorPane ap = (AnchorPane)tabTimetable.getContent();
-    	Label randomLabel = new Label("COMP1022\nL1");
-    	Random r = new Random();
-    	double start = (r.nextInt(10) + 1) * 20 + 40;
-
-    	randomLabel.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
-    	randomLabel.setLayoutX(600.0);
-    	randomLabel.setLayoutY(start);
-    	randomLabel.setMinWidth(100.0);
-    	randomLabel.setMaxWidth(100.0);
-    	randomLabel.setMinHeight(60);
-    	randomLabel.setMaxHeight(60);
-    
-    	ap.getChildren().addAll(randomLabel);
-    	
-    	
-    	/*
-    	 * edit the tablecolumn after the search @Brother Liang implement it also in ALLSbujectSearch;
-    	 */
-    	ScrapedCourse.addAll(v);
-    	List();
+    	catch (FileNotFoundException e) {
+    		textAreaConsole.setText("Invalid URL.");
+    	}
     }
     
     
@@ -483,6 +475,66 @@ public class Controller {
     	
     	
     }
+    
+    private void displayToTimetable(Section section) {
+    	// Generate color from the list.
+    	Color c;
+    	Random random = new Random();
+    	c = Color.rgb(128 + random.nextInt(128), 128 + random.nextInt(128), 128 + random.nextInt(128));
+    	
+    	// Get the slot information of the section.
+    	for (int i = 0; i < section.getSlotSize(); i++) {        	
+        	// Display the content to the timetable.
+        	AnchorPane ap = (AnchorPane)tabTimetable.getContent();
+        	
+        	// Y on 9 AM: 48
+        	// Y on 20: 270
+        	LocalTime startTime = section.getSlot(i).getStart();
+        	LocalTime endTime = section.getSlot(i).getEnd();
+        	double startHour = startTime.getHour();
+        	double startMinute = startTime.getMinute();
+        	double endHour = endTime.getHour();
+        	double endMinute = endTime.getMinute();
+        	double timeStart = startHour + startMinute/60;
+        	double timeEnd = endHour + endMinute/60;
+        	double start = 49 + (timeStart - 9) * 20;
+        	double duration = (timeEnd - timeStart) * 20;
+        	String content = section.getCourseCode() + "\n" + section.getSection();
+        	if (duration <= 21) {
+        		content = section.getCourseCode() + " " + section.getSection();
+        	}
+        	
+        	Label courseLabel = new Label(content);
+        	courseLabel.setFont(new Font("Ariel", 12));
+        	courseLabel.setContentDisplay(ContentDisplay.TOP);
+        	courseLabel.setBackground(new Background(new BackgroundFill(c, CornerRadii.EMPTY, Insets.EMPTY)));
+        	courseLabel.setLayoutX(section.getSlot(i).getDay() * 100 + 101);
+        	courseLabel.setLayoutY(start);
+        	courseLabel.setMinWidth(100.0);
+        	courseLabel.setMaxWidth(100.0);
+        	courseLabel.setMinHeight(duration);
+        	courseLabel.setMaxHeight(duration);
+        
+        	ap.getChildren().addAll(courseLabel);
+    	}
+    }
+    
+    private ArrayList<Slot> getOverlappedSections(Slot slot){
+    	ArrayList<Slot> overlappedSlots = new ArrayList<Slot>();
+    	return overlappedSlots;
+    }
+    
+    private void removeFromTimetable() {
+    	
+    }
+    
+    private void checkValidURL(String url) throws FileNotFoundException {
+    	if (url.indexOf("w5.ab.ust.hk/wcq/cgi-bin") < 0) {
+    		throw new FileNotFoundException(url);
+    	}
+    	
+    }
+    
     void List(){
     	CourseCode.setCellValueFactory(cellData -> cellData.getValue().CourseCodeProperty());
     	Section.setCellValueFactory(cellData -> cellData.getValue().SectionProperty());
@@ -503,6 +555,7 @@ public class Controller {
 	                        sec.setEnrolledStatus((new_val));
 	                        if(sec.getEnrolledStatus()==true &&  !EnrolledSection.contains(sec)){
 	                        	EnrolledSection.add(sec);
+	                        	displayToTimetable(sec);
 	                        }
 	                        if(sec.getEnrolledStatus()==false&& EnrolledSection.contains(sec)){
 	                        	EnrolledSection.remove(sec);

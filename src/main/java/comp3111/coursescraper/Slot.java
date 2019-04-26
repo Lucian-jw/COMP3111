@@ -14,8 +14,10 @@ public class Slot {
 	private String venue;
 	private String instructor;
 	private String sectionType;
+	private Section belongedSection;
 	public static final String DAYS[] = {"Mo", "Tu", "We", "Th", "Fr", "Sa"};
 	public static final Map<String, Integer> DAYS_MAP = new HashMap<String, Integer>();
+	
 	static {
 		for (int i = 0; i < DAYS.length; i++)
 			DAYS_MAP.put(DAYS[i], i);
@@ -32,9 +34,19 @@ public class Slot {
 		s.sectionType=this.sectionType;
 		return s;
 	}
+	
 	public String toString() {
 		return DAYS[day] + start.toString() + "-" + end.toString() + ":" + venue;
 	}
+	
+	public void setSection(Section s) {
+		this.belongedSection = s.clone();
+	}
+	
+	public Section getSection() {
+		return belongedSection.clone();
+	}
+	
 	public int getStartHour() {
 		return start.getHour();
 	}

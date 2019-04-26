@@ -284,10 +284,35 @@ public class Controller {
         	List();
     	}
     	catch (FileNotFoundException e) {
-    		textAreaConsole.setText("Invalid URL.");
+    		String consoleComponent = "Invalid URL for " + e.getMessage();
+    		consoleComponent += ". Please input a valid HKUST URL.";
+    		
+    		textAreaConsole.setText(consoleComponent);
     	}
     }
     
+    private void checkValidURL(String url) throws FileNotFoundException {
+    	
+    	if (url.indexOf("w5.ab.ust.hk/wcq/cgi-bin") < 0) {
+        	throw new FileNotFoundException(url);
+        }
+    		
+    	if (!exists(url)) {
+    	    throw new FileNotFoundException(url);
+    	}    
+    }
+    
+    private static boolean exists(String URLName){
+        try {
+          HttpURLConnection.setFollowRedirects(false);
+          HttpURLConnection con = (HttpURLConnection) new URL(URLName).openConnection();
+          con.setRequestMethod("HEAD");
+          return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+        }
+        catch (Exception e) {
+           return false;
+        }
+    }
     
     void select(){//the console will display the corresponding courses under the restriction,by the way, Why do you read this,uh? 
     	textAreaConsole.setText(null);
@@ -488,7 +513,7 @@ public class Controller {
     	// Generate color from the list.
     	Color c;
     	Random random = new Random();
-    	c = Color.rgb(128 + random.nextInt(128), 128 + random.nextInt(128), 128 + random.nextInt(128));
+    	c = Color.rgb(54 + random.nextInt(202), 54 + random.nextInt(202), 54 + random.nextInt(202));
     	
     	// Get the slot information of the section.
     	for (int i = 0; i < section.getSlotSize(); i++) {        	
@@ -513,6 +538,7 @@ public class Controller {
         	}
         	
         	Label courseLabel = new Label(content);
+        	courseLabel.setOpacity(0.5);
         	courseLabel.setFont(new Font("Ariel", 12));
         	courseLabel.setContentDisplay(ContentDisplay.TOP);
         	courseLabel.setBackground(new Background(new BackgroundFill(c, CornerRadii.EMPTY, Insets.EMPTY)));
@@ -535,41 +561,6 @@ public class Controller {
     private void removeFromTimetable() {
     	
     }
-    
-    private void checkValidURL(String url) throws FileNotFoundException {
-    	try {
-    		if (url.indexOf("w5.ab.ust.hk/wcq/cgi-bin") < 0) {
-        		throw new FileNotFoundException(url);
-        	}
-    		
-    	    URI uri = new URI(url);
-    	    
-    	    // perform checks for scheme, authority, host, etc., based on your requirements
-    	    if (uri.getHost() == null) {
-    	    	throw new FileNotFoundException(url);
-    	    }
-    	    if (!exists(url)) {
-    	    	throw new FileNotFoundException(url);
-    	    }
-
-    	} catch (URISyntaxException e) {
-    		throw new FileNotFoundException(url);
-    	}
-    }
-    
-    public static boolean exists(String URLName){
-        try {
-          HttpURLConnection.setFollowRedirects(false);
-          // note : you may also need
-          //        HttpURLConnection.setInstanceFollowRedirects(false)
-          HttpURLConnection con = (HttpURLConnection) new URL(URLName).openConnection();
-          con.setRequestMethod("HEAD");
-          return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
-        }
-        catch (Exception e) {
-           return false;
-        }
-    }  
     
     void List(){
     	CourseCode.setCellValueFactory(cellData -> cellData.getValue().CourseCodeProperty());

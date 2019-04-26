@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import comp3111.coursescraper.Scraper.CourseSFQStruct;
 import comp3111.coursescraper.Scraper.InstSFQScoreStruct;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -266,28 +267,25 @@ public class Controller {
 
 	@FXML
 	void findInstructorSfq() {
-
 		List<InstSFQScoreStruct> out = scraper.scrapeInstSFQ(textfieldSfqUrl.getText());
-
 		for (int i = 0; i < out.size(); i++) {
 			List<String> curScore = out.get(i).score;
 			float total = 0;
-			for (int j = 0; j < curScore.size() - 1; j++) {
+			for (int j = 0; j < curScore.size(); j++) {
 				total += Float.parseFloat(curScore.get(j));
 			}
 			total = total / curScore.size();
 			textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Instructor: " + out.get(i).name + "\n"
 					+ "SFQ Score: " + total + "\n" + "\n");
 		}
-
 	}
 
 	@FXML
 	void findSfqEnrollCourse() {
-		if (subjects.isEmpty())
-			this.buttonSfqEnrollCourse.setDisable(true);
-		else
-			this.buttonSfqEnrollCourse.setDisable(false);
+		List<CourseSFQStruct> out = scraper.scrapeCourseSFQ(textfieldSfqUrl.getText(), EnrolledSection);
+		for (int i = 0; i < out.size(); i++)
+			textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Section: " + out.get(i).section.getCourseCode()
+					+ ' ' + out.get(i).section.getSection() + "\n" + "SFQ Score: " + out.get(i).score + "\n" + "\n");
 	}
 
 	@FXML
@@ -526,6 +524,8 @@ public class Controller {
 	}
 
 	void List() {
+		// TODO: Add a logic to disable the button buttonSfqEnrollCourse when no course
+		// in enrolledSection
 		CourseCode.setCellValueFactory(cellData -> cellData.getValue().CourseCodeProperty());
 		Section.setCellValueFactory(cellData -> cellData.getValue().SectionProperty());
 		CourseName.setCellValueFactory(cellData -> cellData.getValue().CourseNameProperty());

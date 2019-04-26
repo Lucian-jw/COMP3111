@@ -245,7 +245,6 @@ public class Scraper {
 						// If Instructor has been recorded -- Direct append:
 						for (int k = 0; k < instScoreList.size(); k++) {
 							if (instScoreList.get(k).name.equals(testString)) {
-								System.out.println("exist");
 								HtmlElement scoreElement = (HtmlElement) tableEntries.get(4);
 								String scoreRaw = scoreElement.asText();
 								String scoreProc = scoreRaw.substring(0, scoreRaw.indexOf("("));

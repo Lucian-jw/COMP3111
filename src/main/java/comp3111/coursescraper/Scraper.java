@@ -174,9 +174,6 @@ public class Scraper {
 				// Find the <tr> row containing the courseCode XXXX1111
 				HtmlElement tableRow = table.getFirstByXPath(".//tr[td[contains(text(),'" + courseNum + "')]]");
 
-				// Indicator: whether this section has been found (to skip the outer loop)
-				boolean sectFound = false;
-
 				// This while loop iterate Rows down, find the row containing the section.
 				HtmlElement curRow = (HtmlElement) tableRow.getNextSibling();
 				while (true) {
@@ -194,17 +191,11 @@ public class Scraper {
 							out.section = curSection;
 							out.score = scoreProc;
 							courseScoreList.add(out);
-							sectFound = true;
-							break;
-						} else {
-							sectFound = true;
-							break;
 						}
+						break;
 					}
 					curRow = (HtmlElement) curRow.getNextSibling();
 				}
-				if (sectFound)
-					break;
 			}
 			return courseScoreList;
 		} catch (Exception e) {

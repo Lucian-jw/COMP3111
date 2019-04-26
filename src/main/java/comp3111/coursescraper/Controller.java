@@ -508,8 +508,8 @@ public class Controller {
         	double start = 49 + (timeStart - 9) * 20;
         	double duration = (timeEnd - timeStart) * 20;
         	String content = section.getCourseCode() + "\n" + section.getSection();
-        	if (duration <= 21) {
-        		content = section.getCourseCode() + " " + section.getSection();
+        	if ((timeEnd - timeStart) <= 1.2) {
+        		content = section.getCourseCode() + " (" + section.getSection() + ")";
         	}
         	
         	Label courseLabel = new Label(content);
@@ -562,16 +562,14 @@ public class Controller {
           HttpURLConnection.setFollowRedirects(false);
           // note : you may also need
           //        HttpURLConnection.setInstanceFollowRedirects(false)
-          HttpURLConnection con =
-             (HttpURLConnection) new URL(URLName).openConnection();
+          HttpURLConnection con = (HttpURLConnection) new URL(URLName).openConnection();
           con.setRequestMethod("HEAD");
           return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
         }
         catch (Exception e) {
-           e.printStackTrace();
            return false;
         }
-      }  
+    }  
     
     void List(){
     	CourseCode.setCellValueFactory(cellData -> cellData.getValue().CourseCodeProperty());

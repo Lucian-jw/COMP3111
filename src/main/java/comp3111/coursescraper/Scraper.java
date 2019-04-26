@@ -23,7 +23,7 @@ public class Scraper {
 	    return false;
     }
 
-    private void addSlot(HtmlElement e, Course c, boolean secondRow, String ins, String sectionType) {
+    private void addSlot(Section section, HtmlElement e, Course c, boolean secondRow, String ins, String sectionType) {
 	String times[] = e.getChildNodes().get(secondRow ? 0 : 3).asText().split(" ");
 	String venue = e.getChildNodes().get(secondRow ? 1 : 4).asText();
 	if (times[0].equals("TBA"))
@@ -41,6 +41,7 @@ public class Scraper {
 	    s.setSectionType(sectionType);
 	    if (s.getSectionType().startsWith("L") || s.getSectionType().startsWith("T"))
 		c.addSlot(s);
+	    section.addSlot(s);
 	}
     }
 
@@ -162,7 +163,7 @@ public class Scraper {
 	return null;
     }
 
-    private void addSection(Course c, String ins, String sec) {
+    private Section addSection(Course c, String ins, String sec) {
 	String CourseCode = c.getTitle().substring(0, 10);
 	String CourseName = c.getTitle().substring(12, c.getTitle().length());
 	Section s = new Section();
@@ -174,6 +175,7 @@ public class Scraper {
 	if (s.getSection() != null && (s.getSection().startsWith("L") || s.getSection().startsWith("T"))) {
 	    c.addSection(s);
 	}
+	return s;
     }
 
     public List<Course> scrape(String baseurl, String term, String sub) {
@@ -215,8 +217,8 @@ public class Scraper {
 		    } else if (sectiontype.startsWith("T")) {
 			sec = sectiontype.substring(0, 3);
 		    }
-		    addSection(c, ins, sec);
-		    addSlot(e, c, false, ins, sectiontype);
+		    Section addedSection = addSection(c, ins, sec);
+		    addSlot(addedSection, e, c, false, ins, sectiontype);
 		    e = (HtmlElement) e.getNextSibling();
 		    if (e != null && !e.getAttribute("class").contains("newsect"))
 			addSlot(e, c, true, ins, sectiontype);

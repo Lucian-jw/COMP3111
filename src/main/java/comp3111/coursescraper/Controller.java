@@ -1,36 +1,50 @@
 package comp3111.coursescraper;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import comp3111.coursescraper.Scraper.CourseSFQStruct;
-import comp3111.coursescraper.Scraper.InstSFQScoreStruct;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
+import javafx.geometry.Insets;
 import javafx.scene.paint.Color;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.text.*;
+
+import java.util.Random;
+import java.util.List;
+import java.io.FileNotFoundException;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.time.LocalTime;
+import java.util.ArrayList;
+
+import org.eclipse.jetty.util.thread.Scheduler.Task;
+
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+
+import comp3111.coursescraper.Scraper.CourseSFQStruct;
+import comp3111.coursescraper.Scraper.InstSFQScoreStruct;
+
 
 public class Controller {
 	private static List<Course> scrapedCourse = new ArrayList<Course>();
@@ -41,202 +55,205 @@ public class Controller {
 	private static List<Section> EnrolledSection = new ArrayList<Section>();
 	public ObservableList<Section> data = FXCollections.observableArrayList();
 
-	@FXML
-	private Tab tabMain;
+	
+    @FXML
+    private Tab tabMain;
 
-	@FXML
-	private TextField textfieldTerm;
+    @FXML
+    private TextField textfieldTerm;
 
-	@FXML
-	private TextField textfieldSubject;
+    @FXML
+    private TextField textfieldSubject;
 
-	@FXML
-	private Button buttonSearch;
+    @FXML
+    private Button buttonSearch;
 
-	@FXML
-	private TextField textfieldURL;
+    @FXML
+    private TextField textfieldURL;
 
-	@FXML
-	private Tab tabStatistic;
+    @FXML
+    private Tab tabStatistic;
 
-	@FXML
-	private ComboBox<?> comboboxTimeSlot;
+    @FXML
+    private ComboBox<?> comboboxTimeSlot;
 
-	@FXML
-	private Tab tabFilter;
+    @FXML
+    private Tab tabFilter;
+    
+    @FXML
+    private CheckBox AM;
 
-	@FXML
-	private CheckBox AM;
+    @FXML
+    private CheckBox PM;
 
-	@FXML
-	private CheckBox PM;
+    @FXML
+    private CheckBox Mon;
 
-	@FXML
-	private CheckBox Mon;
+    @FXML
+    private CheckBox Tue;
 
-	@FXML
-	private CheckBox Tue;
+    @FXML
+    private CheckBox Wed;
 
-	@FXML
-	private CheckBox Wed;
+    @FXML
+    private CheckBox Thur;
 
-	@FXML
-	private CheckBox Thur;
+    @FXML
+    private CheckBox Fri;
 
-	@FXML
-	private CheckBox Fri;
+    @FXML
+    private CheckBox Sat;
 
-	@FXML
-	private CheckBox Sat;
+    @FXML
+    private Button SelectAll;
 
-	@FXML
-	private Button SelectAll;
+    @FXML
+    private CheckBox CommonCore;
 
-	@FXML
-	private CheckBox CommonCore;
+    @FXML
+    private CheckBox NoExclusion;
 
-	@FXML
-	private CheckBox NoExclusion;
+    @FXML
+    private CheckBox WithLabsorTutorial;
 
-	@FXML
-	private CheckBox WithLabsorTutorial;
+    @FXML
+    private Tab tabList;
+    
+    @FXML
+    private TableView<Section> ListTable;//change to section
+    
+    @FXML
+    private TableColumn<Section, String> CourseCode;
 
-	@FXML
-	private Tab tabList;
+    @FXML
+    private TableColumn<Section, String> Section;
 
-	@FXML
-	private TableView<Section> ListTable; // change to section
+    @FXML
+    private TableColumn<Section, String> CourseName;
 
-	@FXML
-	private TableColumn<Section, String> CourseCode;
+    @FXML
+    private TableColumn<Section, String> Instructor;
 
-	@FXML
-	private TableColumn<Section, String> Section;
+    @FXML
+    private TableColumn<Section, CheckBox> Enroll;
 
-	@FXML
-	private TableColumn<Section, String> CourseName;
+    @FXML
+    private Tab tabTimetable;
 
-	@FXML
-	private TableColumn<Section, String> Instructor;
+    @FXML
+    private Tab tabAllSubject;
 
-	@FXML
-	private TableColumn<Section, CheckBox> Enroll;
+    @FXML
+    private ProgressBar progressbar;
 
-	@FXML
-	private Tab tabTimetable;
+    @FXML
+    private TextField textfieldSfqUrl;
 
-	@FXML
-	private Tab tabAllSubject;
+    @FXML
+    private Button buttonSfqEnrollCourse;
 
-	@FXML
-	private ProgressBar progressbar;
+    @FXML
+    private Button buttonInstructorSfq;
 
-	@FXML
-	private TextField textfieldSfqUrl;
+    @FXML
+    private TextArea textAreaConsole;
+    
+    private Scraper scraper = new Scraper();
+    
+    
 
-	@FXML
-	private Button buttonSfqEnrollCourse;
+    @FXML
+    void AM_Selection(ActionEvent event) {
+    	select(); //once you click the checkbox, it will select
+    }
 
-	@FXML
-	private Button buttonInstructorSfq;
+    @FXML
+    void CommonCore_Selection(ActionEvent event) {
+    	select();//once you click the checkbox, it will select
+    }
 
-	@FXML
-	private TextArea textAreaConsole;
+    @FXML
+    void Fri_Selection(ActionEvent event) {
+    	select();//once you click the checkbox, it will select
+    }
 
-	private Scraper scraper = new Scraper();
+    @FXML
+    void Mon_Action(ActionEvent event) {
+    	select();//once you click the checkbox, it will select
+    }
 
-	@FXML
-	void AM_Selection(ActionEvent event) {
-		select(); // Once you click the checkbox, it will select
-	}
+    @FXML
+    void NoExlusion_Selection(ActionEvent event) {
+    	select();
+    }//once you click the checkbox, it will select
 
-	@FXML
-	void CommonCore_Selection(ActionEvent event) {
-		select(); // Once you click the checkbox, it will select
-	}
+    @FXML
+    void PM_Selection(ActionEvent event) {
+    	select();//once you click the checkbox, it will select
+    }
 
-	@FXML
-	void Fri_Selection(ActionEvent event) {
-		select(); // Once you click the checkbox, it will select
-	}
+    @FXML
+    void Sat_Selection(ActionEvent event) {
+    	select();//once you click the checkbox, it will select
+    }
 
-	@FXML
-	void Mon_Action(ActionEvent event) {
-		select(); // Once you click the checkbox, it will select
-	}
 
-	@FXML
-	void NoExlusion_Selection(ActionEvent event) {
-		select(); // Once you click the checkbox, it will select
-	}
+    @FXML
+    void Thur_Selection(ActionEvent event) {
+    	select();//once you click the checkbox, it will select
+    }
 
-	@FXML
-	void PM_Selection(ActionEvent event) {
-		select(); // Once you click the checkbox, it will select
-	}
+    @FXML
+    void Tue_Selection(ActionEvent event) {
+    	select();//once you click the checkbox, it will select
+    }
 
-	@FXML
-	void Sat_Selection(ActionEvent event) {
-		select(); // Once you click the checkbox, it will select
-	}
+    @FXML
+    void Wed_Selection(ActionEvent event) {
+    	select();//once you click the checkbox, it will select
+    }
 
-	@FXML
-	void Thur_Selection(ActionEvent event) {
-		select(); // Once you click the checkbox, it will select
-	}
-
-	@FXML
-	void Tue_Selection(ActionEvent event) {
-		select(); // Once you click the checkbox, it will select
-	}
-
-	@FXML
-	void Wed_Selection(ActionEvent event) {
-		select(); // Once you click the checkbox, it will select
-	}
-
-	@FXML
-	void WithLabsorTutorial_selection(ActionEvent event) {
-		select(); // Once you click the checkbox, it will select
-	}
-
-	@FXML
-	void SelectAll_Action(ActionEvent event) {
-
-		if (SelectAll.getText() != "De-select All") { // If it is "Select-All, change to "De" and change all the
-			// statuses to selected, do the selection.
-			System.out.println("hi");
-			SelectAll.setText("De-select All");
-			AM.setSelected(true);
-			PM.setSelected(true);
-			Mon.setSelected(true);
-			Tue.setSelected(true);
-			Wed.setSelected(true);
-			Thur.setSelected(true);
-			Fri.setSelected(true);
-			Sat.setSelected(true);
-			CommonCore.setSelected(true);
-			NoExclusion.setSelected(true);
-			WithLabsorTutorial.setSelected(true);
-		} else {
-			SelectAll.setText("Select All"); // If it is "DeSelect-All,change to"Se" and change all the statuses to
-			// selected,do the selection.
-			AM.setSelected(false);
-			PM.setSelected(false);
-			Mon.setSelected(false);
-			Tue.setSelected(false);
-			Wed.setSelected(false);
-			Thur.setSelected(false);
-			Fri.setSelected(false);
-			Sat.setSelected(false);
-			CommonCore.setSelected(false);
-			NoExclusion.setSelected(false);
-			WithLabsorTutorial.setSelected(false);
-		}
-		select();
-	}
-
-	final Task<Void> allSSThread = new Task<Void>() {
+    @FXML
+    void WithLabsorTutorial_selection(ActionEvent event) {
+    	select();//once you click the checkbox, it will select
+    }
+    
+    @FXML
+    void SelectAll_Action(ActionEvent event) {
+    	
+    	if(SelectAll.getText()!="De-select All"){//If it is "Select-All,change to"De" and change all the statuses to selected,do the selection.
+    		System.out.println("hi");
+    		SelectAll.setText("De-select All");
+    		AM.setSelected(true);
+    		PM.setSelected(true);
+    		Mon.setSelected(true);
+    		Tue.setSelected(true);
+    		Wed.setSelected(true);
+    		Thur.setSelected(true);
+    		Fri.setSelected(true);
+    		Sat.setSelected(true);
+    		CommonCore.setSelected(true);
+    		NoExclusion.setSelected(true);
+    		WithLabsorTutorial.setSelected(true);
+    
+    	}
+    	else{
+	    	SelectAll.setText("Select All");//If it is "DeSelect-All,change to"Se" and change all the statuses to selected,do the selection.
+	    	AM.setSelected(false);
+	   		PM.setSelected(false);
+	   		Mon.setSelected(false);
+	   		Tue.setSelected(false);
+	   		Wed.setSelected(false);
+	   		Thur.setSelected(false);
+	   		Fri.setSelected(false);
+	   		Sat.setSelected(false);
+	   		CommonCore.setSelected(false);
+	   		NoExclusion.setSelected(false);
+	   		WithLabsorTutorial.setSelected(false);
+    	}
+    	select();
+    }
+    final Task<Void> allSSThread = new Task<Void>() {
 		@Override
 		protected Void call() throws Exception {
 			for (int i = 0; i < subjects.size(); i++) {
@@ -250,6 +267,8 @@ public class Controller {
 		}
 	};
 
+    
+    
 	@FXML
 	void allSubjectSearch() {
 		if (subjects.isEmpty()) {
@@ -287,48 +306,61 @@ public class Controller {
 			textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Section: " + out.get(i).section.getCourseCode()
 					+ ' ' + out.get(i).section.getSection() + "\n" + "SFQ Score: " + out.get(i).score + "\n" + "\n");
 	}
-
-	@FXML
-	void search() {
-		scrapedCourse.clear();
-		List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(), textfieldSubject.getText());
-
-		for (Course c : v) {
-			String newline = c.getTitle() + "\n";
-			for (int i = 0; i < c.getNumSlots(); i++) {
-				Slot t = c.getSlot(i);
-				newline += "Slot " + i + ":" + t + "\n";
-			}
-			textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
-		}
-
-		// Add a random block on Saturday
-		AnchorPane ap = (AnchorPane) tabTimetable.getContent();
-		Label randomLabel = new Label("COMP1022\nL1");
-		Random r = new Random();
-		double start = (r.nextInt(10) + 1) * 20 + 40;
-
-		randomLabel.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
-		randomLabel.setLayoutX(600.0);
-		randomLabel.setLayoutY(start);
-		randomLabel.setMinWidth(100.0);
-		randomLabel.setMaxWidth(100.0);
-		randomLabel.setMinHeight(60);
-		randomLabel.setMaxHeight(60);
-
-		ap.getChildren().addAll(randomLabel);
-
-		/*
-		 * edit the tablecolumn after the search @Brother Liang implement it also in
-		 * ALLSbujectSearch;
-		 */
-		scrapedCourse.addAll(v);
-		List();
-	}
-
-	void select() { // the console will display the corresponding courses under the restriction,by
-		// the way, Why do you read this,uh?
-		textAreaConsole.setText(null);
+	
+    @FXML
+    void search() {
+    	try {
+    		checkValidURL(textfieldURL.getText() + "/" + textfieldTerm.getText() + "/subject/" + textfieldSubject.getText());
+    		List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(),textfieldSubject.getText());
+        	
+        	for (Course c : v) {
+        		String newline = c.getTitle() + "\n";
+        		for (int i = 0; i < c.getNumSlots(); i++) {
+        			Slot t = c.getSlot(i);
+        			newline += "Slot " + i + ":" + t + "\n";
+        		}
+        		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+        	}
+        	
+        	/*
+        	 * edit the tablecolumn after the search @Brother Liang implement it also in ALLSbujectSearch;
+        	 */
+        	scrapedCourse.addAll(v);
+        	List();
+    	}
+    	catch (FileNotFoundException e) {
+    		String consoleComponent = "Invalid URL for " + e.getMessage();
+    		consoleComponent += ". Please input a valid HKUST URL.";
+    		
+    		textAreaConsole.setText(consoleComponent);
+    	}
+    }
+    
+    private void checkValidURL(String url) throws FileNotFoundException {
+    	
+    	if (url.indexOf("w5.ab.ust.hk/wcq/cgi-bin") < 0) {
+        	throw new FileNotFoundException(url);
+        }
+    		
+    	if (!exists(url)) {
+    	    throw new FileNotFoundException(url);
+    	}    
+    }
+    
+    private static boolean exists(String URLName){
+        try {
+          HttpURLConnection.setFollowRedirects(false);
+          HttpURLConnection con = (HttpURLConnection) new URL(URLName).openConnection();
+          con.setRequestMethod("HEAD");
+          return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+        }
+        catch (Exception e) {
+           return false;
+        }
+    }
+    
+    void select(){//the console will display the corresponding courses under the restriction,by the way, Why do you read this,uh? 
+    	textAreaConsole.setText(null);
 		List<Course> v = new ArrayList<Course>(); // edit it to be a AllSubjectSearch course or normal search list!
 		v.addAll(scrapedCourse);
 		List<Course> found = new ArrayList<Course>();
@@ -446,67 +478,119 @@ public class Controller {
 
 		}
 		List();
-
-	}
-
-	void List() {
-		// TODO: Add a logic to disable the button buttonSfqEnrollCourse when no course
-		// in enrolledSection
-		CourseCode.setCellValueFactory(cellData -> cellData.getValue().CourseCodeProperty());
-		Section.setCellValueFactory(cellData -> cellData.getValue().SectionProperty());
+    }
+    
+    private void displayToTimetable(Section section) {
+    	// Generate color from the list.
+    	Color c;
+    	Random random = new Random();
+    	c = Color.rgb(54 + random.nextInt(202), 54 + random.nextInt(202), 54 + random.nextInt(202));
+    	
+    	// Get the slot information of the section.
+    	for (int i = 0; i < section.getSlotSize(); i++) {        	
+        	// Display the content to the timetable.
+        	AnchorPane ap = (AnchorPane)tabTimetable.getContent();
+        	
+        	// Y on 9 AM: 48
+        	// Y on 20: 270
+        	LocalTime startTime = section.getSlot(i).getStart();
+        	LocalTime endTime = section.getSlot(i).getEnd();
+        	double startHour = startTime.getHour();
+        	double startMinute = startTime.getMinute();
+        	double endHour = endTime.getHour();
+        	double endMinute = endTime.getMinute();
+        	double timeStart = startHour + startMinute/60;
+        	double timeEnd = endHour + endMinute/60;
+        	double start = 49 + (timeStart - 9) * 20;
+        	double duration = (timeEnd - timeStart) * 20;
+        	String content = section.getCourseCode() + "\n" + section.getSection();
+        	if ((timeEnd - timeStart) <= 1.2) {
+        		content = section.getCourseCode() + " (" + section.getSection() + ")";
+        	}
+        	
+        	Label courseLabel = new Label(content);
+        	courseLabel.setOpacity(0.5);
+        	courseLabel.setFont(new Font("Ariel", 12));
+        	courseLabel.setContentDisplay(ContentDisplay.TOP);
+        	courseLabel.setBackground(new Background(new BackgroundFill(c, CornerRadii.EMPTY, Insets.EMPTY)));
+        	courseLabel.setLayoutX(section.getSlot(i).getDay() * 100 + 101);
+        	courseLabel.setLayoutY(start);
+        	courseLabel.setMinWidth(100.0);
+        	courseLabel.setMaxWidth(100.0);
+        	courseLabel.setMinHeight(duration);
+        	courseLabel.setMaxHeight(duration);
+        
+        	ap.getChildren().addAll(courseLabel);
+    	}
+    }
+    
+    private ArrayList<Slot> getOverlappedSections(Slot slot){
+    	ArrayList<Slot> overlappedSlots = new ArrayList<Slot>();
+    	return overlappedSlots;
+    }
+    
+    private void removeFromTimetable() {
+    	
+    }
+    
+    void List(){
+    	CourseCode.setCellValueFactory(cellData -> cellData.getValue().CourseCodeProperty());
+    	Section.setCellValueFactory(cellData -> cellData.getValue().SectionProperty());
 		CourseName.setCellValueFactory(cellData -> cellData.getValue().CourseNameProperty());
 		Instructor.setCellValueFactory(cellData -> cellData.getValue().InstructorProperty());
-		Enroll.setCellValueFactory(
-				new Callback<TableColumn.CellDataFeatures<Section, CheckBox>, ObservableValue<CheckBox>>() {
+		Enroll.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Section, CheckBox>, ObservableValue<CheckBox>>() {
 
-					@Override
-					public ObservableValue<CheckBox> call(TableColumn.CellDataFeatures<Section, CheckBox> arg0) {
-						Section sec = arg0.getValue();
+            @Override
+            public ObservableValue<CheckBox> call(TableColumn.CellDataFeatures<Section, CheckBox> arg0) {
+                Section sec = arg0.getValue();
 
-						CheckBox checkBox = new CheckBox();
+                CheckBox checkBox = new CheckBox();
 
-						checkBox.selectedProperty().setValue(sec.getEnrolledStatus());
-						checkBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
-							@Override
-							public void changed(ObservableValue<? extends Boolean> ov, Boolean old_val,
-									Boolean new_val) {
-								sec.setEnrolledStatus((new_val));
-								if (sec.getEnrolledStatus() == true && !EnrolledSection.contains(sec)) {
-									EnrolledSection.add(sec);
-								}
-								if (sec.getEnrolledStatus() == false && EnrolledSection.contains(sec)) {
-									EnrolledSection.remove(sec);
-								}
-								textAreaConsole.clear();
-								String newline = "The following sections are enrolled:" + "\n";
-								for (Section s : EnrolledSection) {
-									newline += s.getCourseCode() + " " + s.getSection() + " " + s.getCourseName() + " "
-											+ s.getInstructor() + " \n";
-								}
-								if (textAreaConsole.getText() == null) {
-									textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
-								} else {
-									textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
-								}
-							}
-						});
-
-						return new SimpleObjectProperty<CheckBox>(checkBox);
-					}
-				});
-		if (FilteredCourse.isEmpty()) {
+                checkBox.selectedProperty().setValue(sec.getEnrolledStatus());
+                checkBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+                    public void changed(ObservableValue<? extends Boolean> ov,
+                            Boolean old_val, Boolean new_val) {
+	                        sec.setEnrolledStatus((new_val));
+	                        if(sec.getEnrolledStatus()==true &&  !EnrolledSection.contains(sec)){
+	                        	EnrolledSection.add(sec);
+	                        	displayToTimetable(sec);
+	                        }
+	                        if(sec.getEnrolledStatus()==false&& EnrolledSection.contains(sec)){
+	                        	EnrolledSection.remove(sec);
+	                        }
+	                        textAreaConsole.clear();
+	                        String newline = "The following sections are enrolled:" + "\n";
+	                        for(Section s:EnrolledSection){
+	                    		newline += s.getCourseCode()+" "+s.getSection()+" "+s.getCourseName()+" "+s.getInstructor()+" \n";
+	                    	}
+	                        if(textAreaConsole.getText()==null){
+	                    		textAreaConsole.setText('\n'+newline);//WTF? get Null WILL be "NULL"????
+	                    	}
+	                    	else{
+	                    		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+	                    	}
+                		}
+                    });
+                
+                return new SimpleObjectProperty<CheckBox>(checkBox);
+            }
+		});
+		if(FilteredCourse.isEmpty()){
+    		data.clear();
+    		for(Course c:scrapedCourse){
+    			data.addAll(c.sections);
+    		}
+    		ListTable.setItems(data);
+    	}
+		else{
 			data.clear();
-			for (Course c : scrapedCourse) {
+	    	for(Course c:FilteredCourse){
 				data.addAll(c.sections);
 			}
-			ListTable.setItems(data);
-		} else {
-			data.clear();
-			for (Course c : FilteredCourse) {
-				data.addAll(c.sections);
-			}
-			ListTable.setItems(data);
-		}
-	}
+	    	ListTable.setItems(data);
+		}	
+    }
+    
+   
 
 }

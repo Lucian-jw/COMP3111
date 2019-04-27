@@ -423,7 +423,7 @@ public class Controller {
 		    Integer numCourse = 0;
 		    ArrayList<String> instructors = new ArrayList<String>();
 		    ArrayList<String> instructorsWithAssignment = new ArrayList<String>();
-		    
+		    textAreaConsole.setText("");
 		    for (final Course c : v) {
 				String newline = c.getTitle() + "\n";
 				for (int i = 0; i < c.getNumSections(); i++) {
@@ -458,6 +458,7 @@ public class Controller {
 		     * edit the tablecolumn after the search @Brother Liang implement it also in
 		     * ALLSbujectSearch;
 		     */
+		    Controller.scrapedCourse = new ArrayList<Course>();
 		    Controller.scrapedCourse.addAll(v);
 		    List();
 		} 

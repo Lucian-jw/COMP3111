@@ -14,7 +14,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -43,6 +42,15 @@ public class Controller {
     private static List<Course> FilteredCourse = new ArrayList<>(); // remember to edit it after searching and
     // ALlsubjectSearching!
     private static List<Section> EnrolledSection = new ArrayList<>();
+
+    private static void checkValidURL(final String url) throws FileNotFoundException {
+
+	if (url.indexOf("w5.ab.ust.hk/wcq/cgi-bin") < 0)
+	    throw new FileNotFoundException(url);
+
+	if (!Controller.exists(url))
+	    throw new FileNotFoundException(url);
+    }
 
     private static boolean exists(final String URLName) {
 	try {
@@ -209,21 +217,12 @@ public class Controller {
     }
 
     @FXML
-    void AM_Selection(final ActionEvent event) {
+    void AM_Selection() {
 	select(); // once you click the checkbox, it will select
     }
 
-    private void checkValidURL(final String url) throws FileNotFoundException {
-
-	if (url.indexOf("w5.ab.ust.hk/wcq/cgi-bin") < 0)
-	    throw new FileNotFoundException(url);
-
-	if (!Controller.exists(url))
-	    throw new FileNotFoundException(url);
-    }
-
     @FXML
-    void CommonCore_Selection(final ActionEvent event) {
+    void CommonCore_Selection() {
 	select();// once you click the checkbox, it will select
     }
 
@@ -303,29 +302,36 @@ public class Controller {
     @FXML
     void findInstructorSfq() {
 	final List<InstSFQScoreStruct> out = scraper.scrapeInstSFQ(textfieldSfqUrl.getText());
-		for (int i = 0; i < out.size(); i++) {
-		    final List<String> curScore = out.get(i).score;
-		    float total = 0;
-		    for (int j = 0; j < curScore.size(); j++)
-			total += Float.parseFloat(curScore.get(j));
-		    total = total / curScore.size();
-		    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Instructor: " + out.get(i).name + "\n"
-			    + "SFQ Score: " + total + "\n" + "\n");
-		}
+	for (int i = 0; i < out.size(); i++) {
+	    final List<String> curScore = out.get(i).score;
+	    float total = 0;
+	    for (int j = 0; j < curScore.size(); j++)
+		total += Float.parseFloat(curScore.get(j));
+	    total = total / curScore.size();
+	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Instructor: " + out.get(i).name + "\n"
+		    + "SFQ Score: " + total + "\n");
+	}
+
     }
 
     @FXML
     void findSfqEnrollCourse() {
-	final List<CourseSFQStruct> out = scraper.scrapeCourseSFQ(textfieldSfqUrl.getText(),
-		Controller.EnrolledSection);
-	for (int i = 0; i < out.size(); i++)
-	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Section: " + out.get(i).section.getCourseCode()
-		    + ' ' + out.get(i).section.getSection() + "\n" + "SFQ Score: " + out.get(i).score + "\n" + "\n");
+	final List<CourseSFQStruct> out = scraper.scrapeCourseSFQ(textfieldSfqUrl.getText(), EnrolledSection);
+	for (int i = 0; i < out.size(); i++) {
+	    final List<String> curScore = out.get(i).score;
+	    float total = 0;
+	    for (int j = 0; j < curScore.size(); j++)
+		total += Float.parseFloat(curScore.get(j));
+	    total = total / curScore.size();
+	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Course: " + out.get(i).courseCode + "\n"
+		    + "SFQ Score: " + total + "\n");
+	}
     }
 
     @FXML
-    void Fri_Selection(final ActionEvent event) {
-	    select();// once you click the checkbox, it will select
+    void Fri_Selection() {
+	select();// once you click the checkbox, it will select
+
     }
 
     void List() {
@@ -376,22 +382,22 @@ public class Controller {
     }
 
     @FXML
-    void Mon_Action(final ActionEvent event) {
+    void Mon_Action() {
 	select();// once you click the checkbox, it will select
     }
 
     @FXML
-    void NoExlusion_Selection(final ActionEvent event) {
+    void NoExlusion_Selection() {
 	select();
     }// once you click the checkbox, it will select
 
     @FXML
-    void PM_Selection(final ActionEvent event) {
+    void PM_Selection() {
 	select();// once you click the checkbox, it will select
     }
 
     @FXML
-    void Sat_Selection(final ActionEvent event) {
+    void Sat_Selection() {
 	select();// once you click the checkbox, it will select
     }
     
@@ -577,7 +583,7 @@ public class Controller {
     }
 
     @FXML
-    void SelectAll_Action(final ActionEvent event) {
+    void SelectAll_Action() {
 
 	if (SelectAll.getText() != "De-select All") {// If it is "Select-All,change to"De" and change all the statuses
 						     // to selected,do the selection.
@@ -614,22 +620,22 @@ public class Controller {
     }
 
     @FXML
-    void Thur_Selection(final ActionEvent event) {
+    void Thur_Selection() {
 	select();// once you click the checkbox, it will select
     }
 
     @FXML
-    void Tue_Selection(final ActionEvent event) {
+    void Tue_Selection() {
 	select();// once you click the checkbox, it will select
     }
 
     @FXML
-    void Wed_Selection(final ActionEvent event) {
+    void Wed_Selection() {
 	select();// once you click the checkbox, it will select
     }
 
     @FXML
-    void WithLabsorTutorial_selection(final ActionEvent event) {
+    void WithLabsorTutorial_selection() {
 	select();// once you click the checkbox, it will select
     }
 

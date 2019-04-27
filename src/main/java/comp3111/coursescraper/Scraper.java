@@ -9,8 +9,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 public class Scraper {
     public class CourseSFQStruct {
-	public Section section;
-	public String score;
+	public String courseCode;
+	public List<String> score = new ArrayList<>();
     }
 
     public class InstSFQScoreStruct {
@@ -18,22 +18,7 @@ public class Scraper {
 	public List<String> score = new ArrayList<>();
     }
 
-    private static final boolean isNullScore(final String s) {
-	if (s.equals("-"))
-	    return true;
-	else
-	    return false;
-    }
-
-    private final WebClient client;
-
-    public Scraper() {
-	client = new WebClient();
-	client.getOptions().setCssEnabled(false);
-	client.getOptions().setJavaScriptEnabled(false);
-    }
-
-    private Section addSection(final Course c, final String ins, final String sec) {
+    private static Section addSection(final Course c, final String ins, final String sec) {
 	final String CourseCode = c.getTitle().substring(0, 10);
 	final String CourseName = c.getTitle().substring(12, c.getTitle().length());
 	final Section s = new Section();
@@ -47,7 +32,7 @@ public class Scraper {
 	return s;
     }
 
-    private void addSlot(final Section section, final HtmlElement e, final Course c, final boolean secondRow,
+    private static void addSlot(final Section section, final HtmlElement e, final Course c, final boolean secondRow,
 	    final String ins, final String sectionType) {
 	final String times[] = e.getChildNodes().get(secondRow ? 0 : 3).asText().split(" ");
 	final String venue = e.getChildNodes().get(secondRow ? 1 : 4).asText();
@@ -68,6 +53,20 @@ public class Scraper {
 		c.addSlot(s);
 	    section.addSlot(s);
 	}
+    }
+
+    private static final boolean isNullScore(final String s) {
+	if (s.equals("-"))
+	    return true;
+	return false;
+    }
+
+    private final WebClient client;
+
+    public Scraper() {
+	client = new WebClient();
+	client.getOptions().setCssEnabled(false);
+	client.getOptions().setJavaScriptEnabled(false);
     }
 
     public List<Course> scrape(final String baseurl, final String term, final String sub) {
@@ -130,6 +129,7 @@ public class Scraper {
 		final String courseCode = curSection.getCourseCode();
 		final String courseSub = courseCode.substring(0, 4);
 		final String courseNum = courseCode.substring(5, 9);
+		final String courseCodeProc = courseSub + courseNum;
 		final String XPathIn = ".//b[@id='" + courseSub + "']";
 		final HtmlElement header = page.getFirstByXPath(XPathIn);
 		final HtmlElement table = (HtmlElement) header.getNextSibling().getNextSibling();
@@ -145,10 +145,19 @@ public class Scraper {
 			final String scoreRaw = sectScore.asText();
 			final String scoreProc = scoreRaw.substring(0, scoreRaw.indexOf("("));
 			if (!Scraper.isNullScore(scoreProc)) {
-			    final CourseSFQStruct out = new CourseSFQStruct();
-			    out.section = curSection;
-			    out.score = scoreProc;
-			    courseScoreList.add(out);
+			    boolean isFound = false;
+			    for (final CourseSFQStruct cur : courseScoreList)
+				if (cur.courseCode.equals(courseCodeProc)) {
+				    cur.score.add(scoreProc);
+				    isFound = true;
+				    break;
+				}
+			    if (!isFound) {
+				final CourseSFQStruct out = new CourseSFQStruct();
+				out.courseCode = courseCodeProc;
+				out.score.add(scoreProc);
+				courseScoreList.add(out);
+			    }
 			}
 			break;
 		    }

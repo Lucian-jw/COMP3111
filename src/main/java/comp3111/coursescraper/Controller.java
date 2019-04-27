@@ -37,6 +37,7 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
+@SuppressWarnings("restriction")
 public class Controller {
     private static List<Course> scrapedCourse = new ArrayList<>();
     private static List<String> subjects = new ArrayList<>(); // List to store subjects searched by first-time All
@@ -292,7 +293,8 @@ public class Controller {
 
 	    final Label courseLabel = new Label(content);
 	    courseLabel.setOpacity(0.5);
-	    courseLabel.setFont(new Font("Ariel", 12));
+	    courseLabel.setFont(new Font("Ariel", 10.8));
+	    courseLabel.setTextFill(Color.web("#FFFFFF"));
 	    courseLabel.setContentDisplay(ContentDisplay.TOP);
 	    courseLabel.setBackground(new Background(new BackgroundFill(c, CornerRadii.EMPTY, Insets.EMPTY)));
 	    courseLabel.setLayoutX(section.getSlot(i).getDay() * 100 + 101);
@@ -342,48 +344,48 @@ public class Controller {
     }
 
     void List() {
-	CourseCode.setCellValueFactory(cellData -> cellData.getValue().CourseCodeProperty());
-	Section.setCellValueFactory(cellData -> cellData.getValue().SectionProperty());
-	CourseName.setCellValueFactory(cellData -> cellData.getValue().CourseNameProperty());
-	Instructor.setCellValueFactory(cellData -> cellData.getValue().InstructorProperty());
-	Enroll.setCellValueFactory(arg0 -> {
-	    final Section sec = arg0.getValue();
-	    final CheckBox checkBox = new CheckBox();
-	    checkBox.selectedProperty().setValue(sec.getEnrolledStatus());
-	    checkBox.selectedProperty().addListener((ChangeListener<Boolean>) (ov, old_val, new_val) -> {
-		sec.setEnrolledStatus(new_val);
-		if (sec.getEnrolledStatus() == true && !Controller.EnrolledSection.contains(sec)) {
-		    Controller.EnrolledSection.add(sec);
-		    displayToTimetable(sec);
+		CourseCode.setCellValueFactory(cellData -> cellData.getValue().CourseCodeProperty());
+		Section.setCellValueFactory(cellData -> cellData.getValue().SectionProperty());
+		CourseName.setCellValueFactory(cellData -> cellData.getValue().CourseNameProperty());
+		Instructor.setCellValueFactory(cellData -> cellData.getValue().InstructorProperty());
+		Enroll.setCellValueFactory(arg0 -> {
+		    final Section sec = arg0.getValue();
+		    final CheckBox checkBox = new CheckBox();
+		    checkBox.selectedProperty().setValue(sec.getEnrolledStatus());
+		    checkBox.selectedProperty().addListener((ChangeListener<Boolean>) (ov, old_val, new_val) -> {
+			sec.setEnrolledStatus(new_val);
+			if (sec.getEnrolledStatus() == true && !Controller.EnrolledSection.contains(sec)) {
+			    Controller.EnrolledSection.add(sec);
+			    displayToTimetable(sec);
+			}
+			if (sec.getEnrolledStatus() == false && Controller.EnrolledSection.contains(sec)) {
+			    Controller.EnrolledSection.remove(sec);
+			    removeFromTimetable(sec);
+			}
+			textAreaConsole.clear();
+			String newline = "The following sections are enrolled:" + "\n";
+			for (final Section s : Controller.EnrolledSection)
+			    newline += s.getCourseCode() + " " + s.getSection() + " " + s.getCourseName() + " "
+				    + s.getInstructor() + " \n";
+			if (textAreaConsole.getText() == null)
+			    textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
+			else
+			    textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+		    });
+	
+		    return new SimpleObjectProperty<>(checkBox);
+		});
+		if (Controller.FilteredCourse.isEmpty()) {
+		    data.clear();
+		    for (final Course c : Controller.scrapedCourse)
+			data.addAll(c.sections);
+		    ListTable.setItems(data);
+		} else {
+		    data.clear();
+		    for (final Course c : Controller.FilteredCourse)
+			data.addAll(c.sections);
+		    ListTable.setItems(data);
 		}
-		if (sec.getEnrolledStatus() == false && Controller.EnrolledSection.contains(sec)) {
-		    Controller.EnrolledSection.remove(sec);
-		    removeFromTimetable(sec);
-		}
-		textAreaConsole.clear();
-		String newline = "The following sections are enrolled:" + "\n";
-		for (final Section s : Controller.EnrolledSection)
-		    newline += s.getCourseCode() + " " + s.getSection() + " " + s.getCourseName() + " "
-			    + s.getInstructor() + " \n";
-		if (textAreaConsole.getText() == null)
-		    textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
-		else
-		    textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
-	    });
-
-	    return new SimpleObjectProperty<>(checkBox);
-	});
-	if (Controller.FilteredCourse.isEmpty()) {
-	    data.clear();
-	    for (final Course c : Controller.scrapedCourse)
-		data.addAll(c.sections);
-	    ListTable.setItems(data);
-	} else {
-	    data.clear();
-	    for (final Course c : Controller.FilteredCourse)
-		data.addAll(c.sections);
-	    ListTable.setItems(data);
-	}
     }
 
     @FXML
@@ -505,33 +507,13 @@ public class Controller {
 		    displayText2.setText("You need to provide a valid time period.");
 		    displayText3.setText("You need to provide a valid subject.");
 		}
-		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
-		numSection += c.getNumSections();
-		numCourse++;
-	    }
-	    String addLine = "Total number of section(s): " + numSection.toString() + "\n\n";
-	    addLine += "Total number of course(s): " + numCourse.toString() + "\n\n";
-	    addLine += "Instrctuors who has teaching assignment this term but does not need to teach at Tu 3:10pm:\n";
-	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + addLine);
-	    instructors.removeAll(instructorsWithAssignment);
-	    for (final String s : instructors)
-		textAreaConsole.setText(textAreaConsole.getText() + "\n" + s);
-	    Controller.scrapedCourse = new ArrayList<>();
-	    Controller.scrapedCourse.addAll(v);
+		
+	    
+		
+	    
 	    List();
 	    buttonSfqEnrollCourse.setDisable(false);
-	} catch (final FileNotFoundException e) {
-	    String consoleComponent = "Invalid URL for " + e.getMessage();
-	    consoleComponent += ". Please input a valid HKUST URL.";
-
-	    textAreaConsole.setText(consoleComponent);
-	    instructionText1.setText("* Cannot find the valid URL from HKUST class schedule and quota for");
-	    instructionText2.setText("* " + e.getMessage());
-	    instructionText3.setText("* Some instructions provided below.");
-	    displayText1.setText("You need to provide a valid URL from HKUST class schedule and quota.");
-	    displayText2.setText("You need to provide a valid time period.");
-	    displayText3.setText("You need to provide a valid subject.");
-	}
+	 
     }
 
     void select() {

@@ -229,12 +229,13 @@ public class Controller {
 
     private void displayToTimetable(final Section section) {
 		// Generate color from the list.
+
     	Color c;
     	final Random random = new Random();
-		c = Color.rgb(54 + random.nextInt(202), 54 + random.nextInt(202), 54 + random.nextInt(202));
-		while (!checkApplicableColor(c)) {
-			c = Color.rgb(54 + random.nextInt(202), 54 + random.nextInt(202), 54 + random.nextInt(202));
-		}
+		  c = Color.rgb(54 + random.nextInt(202), 54 + random.nextInt(202), 54 + random.nextInt(202));
+		  while (!checkApplicableColor(c)) {
+			  c = Color.rgb(54 + random.nextInt(202), 54 + random.nextInt(202), 54 + random.nextInt(202));
+		  }
 		section.addColor(c);
 		// Get the slot information of the section.
 		for (int i = 0; i < section.getSlotSize(); i++) {
@@ -255,7 +256,8 @@ public class Controller {
 		    final double duration = (timeEnd - timeStart) * 20;
 		    String content = section.getCourseCode() + "\n" + section.getSection();
 		    if (timeEnd - timeStart <= 1.2)
-			content = section.getCourseCode() + "(" + section.getSection() + ")";
+			  content = section.getCourseCode() + "(" + section.getSection() + ")";
+
 	
 		    Label courseLabel = new Label(content);
 		    courseLabel.setOpacity(0.5);
@@ -272,7 +274,7 @@ public class Controller {
 		    ap.getChildren().addAll(courseLabel);
 		}
     }
-    
+   
     private boolean checkApplicableColor(Color color) {
     	for (Section section: EnrolledSection) {
     		for (int i = 0; i < section.getNumColor(); i++) {
@@ -323,7 +325,7 @@ public class Controller {
 
     @FXML
     void Fri_Selection(final ActionEvent event) {
-	select();// once you click the checkbox, it will select
+	    select();// once you click the checkbox, it will select
     }
 
     void List() {

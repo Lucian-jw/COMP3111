@@ -9,6 +9,7 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 
+
 @SuppressWarnings("restriction")
 public class Section {
     private SimpleStringProperty CourseCode;

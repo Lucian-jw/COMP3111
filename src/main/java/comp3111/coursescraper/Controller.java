@@ -5,6 +5,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import comp3111.coursescraper.Scraper.CourseSFQStruct;
@@ -444,15 +446,33 @@ public class Controller {
 				numSection += c.getNumSections();
 				numCourse++;
 		    }
-		    String addLine = "Total number of section(s): " + numSection.toString() + "\n\n";
-		    addLine += ("Total number of course(s): " + numCourse.toString() + "\n\n");
+		    String addLine = "Total Number of difference sections in this search: " + numSection.toString() + "\n\n";
+		    addLine += ("Total Number of Course in this search: " + numCourse.toString() + "\n\n");
 		    addLine += ("Instrctuors who has teaching assignment this term but does not need to teach at Tu 3:10pm:\n");
 		    
 		    textAreaConsole.setText(textAreaConsole.getText() + "\n" + addLine);
 		    instructors.removeAll(instructorsWithAssignment);
-		    for(String s: instructors) {
-		    	textAreaConsole.setText(textAreaConsole.getText() + "\n" + s);
+		    instructors.remove("TBA");
+		    Collections.sort(instructors, new Comparator<String>() {
+		        @Override
+		        public int compare(String s1, String s2) {
+		            return s1.charAt(0) - s2.charAt(0);
+		        }
+		    });
+		    boolean isFirst = true;
+		    String instructorNames = "";
+		    for (String s: instructors) {
+		    	if (isFirst) {
+		    		System.out.println(s);
+		    		instructorNames += s;
+		    		isFirst = false;
+		    	}
+		    	else {
+		    		instructorNames += (",\n" + s);
+		    	}
 		    }
+		    
+		    textAreaConsole.setText(textAreaConsole.getText() + instructorNames);
 	
 		    /*
 		     * edit the tablecolumn after the search @Brother Liang implement it also in
@@ -465,8 +485,19 @@ public class Controller {
 		catch (final FileNotFoundException e) {
 		    String consoleComponent = "Invalid URL for " + e.getMessage();
 		    consoleComponent += ". Please input a valid HKUST URL.";
+		    String instructionNamesLineFeed = "";
+		    String line = "";
+		    for (int i = 0; i < consoleComponent.length(); i++) {
+		    	instructionNamesLineFeed += consoleComponent.charAt(i);
+		    	line += consoleComponent.charAt(i);
+		    	System.out.println(line);
+		    	if (line.length() >= 80) {
+		    		instructionNamesLineFeed += "\n";
+		    		line = "";
+		    	}
+		    }
 	
-		    textAreaConsole.setText(consoleComponent);
+		    textAreaConsole.setText(instructionNamesLineFeed);
 		    instructionText1.setText("* Cannot find the valid URL from HKUST class schedule and quota for");
 		    instructionText2.setText("* " + e.getMessage());
 		    instructionText3.setText("* Some instructions provided below.");

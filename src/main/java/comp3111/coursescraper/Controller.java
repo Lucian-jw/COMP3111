@@ -197,6 +197,7 @@ public class Controller {
 		Controller.scrapedCourse.addAll(v);
 		textAreaConsole.setText(textAreaConsole.getText() + "\n" + cur + " is done");
 	    }
+	    buttonSfqEnrollCourse.setDisable(false);
 	    return null;
 	}
     };
@@ -447,6 +448,7 @@ public class Controller {
 	    Controller.scrapedCourse = new ArrayList<>();
 	    Controller.scrapedCourse.addAll(v);
 	    List();
+	    buttonSfqEnrollCourse.setDisable(false);
 	} catch (final FileNotFoundException e) {
 	    String consoleComponent = "Invalid URL for " + e.getMessage();
 	    consoleComponent += ". Please input a valid HKUST URL.";

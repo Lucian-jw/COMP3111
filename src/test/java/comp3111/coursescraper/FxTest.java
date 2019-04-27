@@ -32,8 +32,7 @@ public class FxTest extends ApplicationTest {
     @Test
     public void testButton() {
 	clickOn("#tabSfq");
-	clickOn("#buttonInstructorSfq");
-	final Button b = (Button) s.lookup("#buttonInstructorSfq");
+	final Button b = (Button) s.lookup("#buttonSfqEnrollCourse");
 	sleep(1000);
 	assertTrue(b.isDisabled());
     }

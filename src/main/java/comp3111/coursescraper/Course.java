@@ -22,6 +22,10 @@ public class Course {
 	numSlots = 0;
 
     }
+    
+    public int getNumSections() {
+    	return sections.size();
+    }
 
     public void addSection(final Section s) {
 	sections.add(s);

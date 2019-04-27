@@ -7,7 +7,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
 import comp3111.coursescraper.Scraper.CourseSFQStruct;
 import comp3111.coursescraper.Scraper.InstSFQScoreStruct;
 import javafx.beans.property.SimpleObjectProperty;
@@ -36,6 +35,7 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
+@SuppressWarnings("restriction")
 public class Controller {
     private static List<Course> scrapedCourse = new ArrayList<>();
     private static List<String> subjects = new ArrayList<>(); // List to store subjects searched by first-time All
@@ -62,6 +62,24 @@ public class Controller {
 
     @FXML
     private TextField textfieldTerm;
+    
+    @FXML
+    private Label instructionText1;
+    
+    @FXML
+    private Label instructionText2;
+    
+    @FXML
+    private Label displayText1;
+    
+    @FXML
+    private Label displayText2;
+    
+    @FXML
+    private Label displayText3;
+    
+    @FXML
+    private Label instructionText3;
 
     @FXML
     private TextField textfieldSubject;
@@ -162,17 +180,17 @@ public class Controller {
     private final Scraper scraper = new Scraper();
 
     final Task<Void> allSSThread = new Task<Void>() {
-	@Override
-	protected Void call() throws Exception {
-	    for (int i = 0; i < Controller.subjects.size(); i++) {
-		updateProgress(i + 1, Controller.subjects.size());
-		final String cur = Controller.subjects.get(i);
-		final List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(), cur);
-		Controller.scrapedCourse.addAll(v);
-		textAreaConsole.setText(textAreaConsole.getText() + "\n" + cur + " is done");
-	    }
-	    return null;
-	}
+		@Override
+		protected Void call() throws Exception {
+		    for (int i = 0; i < Controller.subjects.size(); i++) {
+			updateProgress(i + 1, Controller.subjects.size());
+			final String cur = Controller.subjects.get(i);
+			final List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(), cur);
+			Controller.scrapedCourse.addAll(v);
+			textAreaConsole.setText(textAreaConsole.getText() + "\n" + cur + " is done");
+		    }
+		    return null;
+		}
     };
 
     @FXML
@@ -211,10 +229,14 @@ public class Controller {
 
     private void displayToTimetable(final Section section) {
 		// Generate color from the list.
-		Color c;
-		final Random random = new Random();
-		c = Color.rgb(54 + random.nextInt(202), 54 + random.nextInt(202), 54 + random.nextInt(202));
-	
+
+    	Color c;
+    	final Random random = new Random();
+		  c = Color.rgb(54 + random.nextInt(202), 54 + random.nextInt(202), 54 + random.nextInt(202));
+		  while (!checkApplicableColor(c)) {
+			  c = Color.rgb(54 + random.nextInt(202), 54 + random.nextInt(202), 54 + random.nextInt(202));
+		  }
+		section.addColor(c);
 		// Get the slot information of the section.
 		for (int i = 0; i < section.getSlotSize(); i++) {
 		    // Display the content to the timetable.
@@ -234,7 +256,8 @@ public class Controller {
 		    final double duration = (timeEnd - timeStart) * 20;
 		    String content = section.getCourseCode() + "\n" + section.getSection();
 		    if (timeEnd - timeStart <= 1.2)
-			content = section.getCourseCode() + " (" + section.getSection() + ")";
+			  content = section.getCourseCode() + "(" + section.getSection() + ")";
+
 	
 		    Label courseLabel = new Label(content);
 		    courseLabel.setOpacity(0.5);
@@ -250,6 +273,24 @@ public class Controller {
 		    section.addLabel(courseLabel);
 		    ap.getChildren().addAll(courseLabel);
 		}
+    }
+   
+    private boolean checkApplicableColor(Color color) {
+    	for (Section section: EnrolledSection) {
+    		for (int i = 0; i < section.getNumColor(); i++) {
+    			if (checkSimilarColor(color, section.getColor(i))) {
+    				return false;
+    			}
+    		}
+    	}
+    	return true;
+    }
+    
+    private boolean checkSimilarColor(Color c1, Color c2) {
+    	double redDiffSquare = (c1.getRed() - c2.getRed()) * (c1.getRed() - c2.getRed());
+    	double greenDiffSquare = (c1.getGreen() - c2.getGreen()) * (c1.getGreen() - c2.getGreen());
+    	double blueDiffSquare = (c1.getBlue() - c2.getBlue()) * (c1.getBlue() - c2.getBlue());
+    	return (java.lang.Math.sqrt(redDiffSquare + greenDiffSquare + blueDiffSquare) < 0.17);
     }
     
     private void removeFromTimetable(Section section) {
@@ -284,7 +325,7 @@ public class Controller {
 
     @FXML
     void Fri_Selection(final ActionEvent event) {
-	select();// once you click the checkbox, it will select
+	    select();// once you click the checkbox, it will select
     }
 
     void List() {
@@ -353,137 +394,186 @@ public class Controller {
     void Sat_Selection(final ActionEvent event) {
 	select();// once you click the checkbox, it will select
     }
+    
+    private boolean checkInRange(Section s) {
+    	for (int i = 0; i < s.getSlotSize(); i++) {
+    		LocalTime start = s.getSlot(i).getStart();
+    		LocalTime end = s.getSlot(i).getEnd();
+    		double startMinute = start.getMinute();
+    		double endMinute = end.getMinute();
+    		double startTime = start.getHour() + (startMinute / 60);
+    		double endTime = end.getHour() + (endMinute / 60);
+    		final double threePlusTen = 15.1666666666666666666666666667;
+    		if ((startTime < threePlusTen) && (endTime > threePlusTen) && s.getSlot(i).getDay() == 1) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
 
     @FXML
     void search() {
-	try {
-	    checkValidURL(
-		    textfieldURL.getText() + "/" + textfieldTerm.getText() + "/subject/" + textfieldSubject.getText());
-	    final List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(),
-		    textfieldSubject.getText());
-
-	    for (final Course c : v) {
-		String newline = c.getTitle() + "\n";
-		for (int i = 0; i < c.getNumSlots(); i++) {
-		    final Slot t = c.getSlot(i);
-		    newline += "Slot " + i + ":" + t + "\n";
+		try {
+		    checkValidURL(
+			    textfieldURL.getText() + "/" + textfieldTerm.getText() + "/subject/" + textfieldSubject.getText());
+		    final List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(),
+			    textfieldSubject.getText());
+		    
+		    Integer numSection = 0;
+		    Integer numCourse = 0;
+		    ArrayList<String> instructors = new ArrayList<String>();
+		    ArrayList<String> instructorsWithAssignment = new ArrayList<String>();
+		    
+		    for (final Course c : v) {
+				String newline = c.getTitle() + "\n";
+				for (int i = 0; i < c.getNumSections(); i++) {
+					if (!instructors.contains(c.getSection(i).getInstructor())) {
+						instructors.add(c.getSection(i).getInstructor());
+					}
+					if (checkInRange(c.getSection(i))) {
+						if (!instructorsWithAssignment.contains(c.getSection(i).getInstructor())) {
+							instructorsWithAssignment.add(c.getSection(i).getInstructor());
+						}
+					}
+					for (int j = 0; j < c.getSection(i).getSlotSize(); j++) {
+						final Slot t = c.getSection(i).getSlot(j);
+					    newline += c.getSection(i).getSection() + ": " + t + "\n";
+					}
+				}
+				textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+				numSection += c.getNumSections();
+				numCourse++;
+		    }
+		    String addLine = "Total number of section(s): " + numSection.toString() + "\n\n";
+		    addLine += ("Total number of course(s): " + numCourse.toString() + "\n\n");
+		    addLine += ("Instrctuors who has teaching assignment this term but does not need to teach at Tu 3:10pm:\n");
+		    
+		    textAreaConsole.setText(textAreaConsole.getText() + "\n" + addLine);
+		    instructors.removeAll(instructorsWithAssignment);
+		    for(String s: instructors) {
+		    	textAreaConsole.setText(textAreaConsole.getText() + "\n" + s);
+		    }
+	
+		    /*
+		     * edit the tablecolumn after the search @Brother Liang implement it also in
+		     * ALLSbujectSearch;
+		     */
+		    Controller.scrapedCourse.addAll(v);
+		    List();
+		} 
+		catch (final FileNotFoundException e) {
+		    String consoleComponent = "Invalid URL for " + e.getMessage();
+		    consoleComponent += ". Please input a valid HKUST URL.";
+	
+		    textAreaConsole.setText(consoleComponent);
+		    instructionText1.setText("* Cannot find the valid URL from HKUST class schedule and quota for");
+		    instructionText2.setText("* " + e.getMessage());
+		    instructionText3.setText("* Some instructions provided below.");
+		    displayText1.setText("You need to provide a valid URL from HKUST class schedule and quota.");
+		    displayText2.setText("You need to provide a valid time period.");
+		    displayText3.setText("You need to provide a valid subject.");
 		}
-		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
-	    }
-
-	    /*
-	     * edit the tablecolumn after the search @Brother Liang implement it also in
-	     * ALLSbujectSearch;
-	     */
-	    Controller.scrapedCourse.addAll(v);
-	    List();
-	} catch (final FileNotFoundException e) {
-	    String consoleComponent = "Invalid URL for " + e.getMessage();
-	    consoleComponent += ". Please input a valid HKUST URL.";
-
-	    textAreaConsole.setText(consoleComponent);
-	}
     }
 
     void select() {// the console will display the corresponding courses under the restriction,by
 		   // the way, Why do you read this,uh?
-	textAreaConsole.setText(null);
-	final List<Course> v = new ArrayList<>(); // edit it to be a AllSubjectSearch course or normal search list!
-	v.addAll(Controller.scrapedCourse);
-	final List<Course> found = new ArrayList<>();
-	for (final Course c : v) {
-	    if (AM.isSelected()) {
-
-		if (!c.containsAM())
-		    found.add(c);
-		if (found.contains(c))
-		    continue;
-	    }
-	    if (PM.isSelected()) {
-
-		if (!c.containsPM())
-		    found.add(c);
-		if (found.contains(c))
-		    continue;
-	    }
-	    if (Mon.isSelected()) {
-
-		if (!c.containsMon())
-		    found.add(c);
-		if (found.contains(c))
-		    continue;
-	    }
-	    if (Tue.isSelected()) {
-
-		if (!c.containsTue())
-		    found.add(c);
-		if (found.contains(c))
-		    continue;
-	    }
-	    if (Wed.isSelected()) {
-
-		if (!c.containsWed())
-		    found.add(c);
-		if (found.contains(c))
-		    continue;
-	    }
-	    if (Thur.isSelected()) {
-
-		if (!c.containsThurs())
-		    found.add(c);
-		if (found.contains(c))
-		    continue;
-	    }
-	    if (Fri.isSelected()) {
-
-		if (!c.containsFri())
-		    found.add(c);
-		if (found.contains(c))
-		    continue;
-	    }
-	    if (Sat.isSelected()) {// hope god bless these poor guys :D
-
-		if (!c.containsSat())
-		    found.add(c);
-		if (found.contains(c))
-		    continue;
-	    }
-	    if (CommonCore.isSelected())
-		if (c.getCommoncore() == "null") {// If it is not ccc,WHY DO I enroll it 2333?
-		    found.add(c);
-		    continue;
+		textAreaConsole.setText(null);
+		final List<Course> v = new ArrayList<>(); // edit it to be a AllSubjectSearch course or normal search list!
+		v.addAll(Controller.scrapedCourse);
+		final List<Course> found = new ArrayList<>();
+		for (final Course c : v) {
+		    if (AM.isSelected()) {
+	
+			if (!c.containsAM())
+			    found.add(c);
+			if (found.contains(c))
+			    continue;
+		    }
+		    if (PM.isSelected()) {
+	
+			if (!c.containsPM())
+			    found.add(c);
+			if (found.contains(c))
+			    continue;
+		    }
+		    if (Mon.isSelected()) {
+	
+			if (!c.containsMon())
+			    found.add(c);
+			if (found.contains(c))
+			    continue;
+		    }
+		    if (Tue.isSelected()) {
+	
+			if (!c.containsTue())
+			    found.add(c);
+			if (found.contains(c))
+			    continue;
+		    }
+		    if (Wed.isSelected()) {
+	
+			if (!c.containsWed())
+			    found.add(c);
+			if (found.contains(c))
+			    continue;
+		    }
+		    if (Thur.isSelected()) {
+	
+			if (!c.containsThurs())
+			    found.add(c);
+			if (found.contains(c))
+			    continue;
+		    }
+		    if (Fri.isSelected()) {
+	
+			if (!c.containsFri())
+			    found.add(c);
+			if (found.contains(c))
+			    continue;
+		    }
+		    if (Sat.isSelected()) {// hope god bless these poor guys :D
+	
+			if (!c.containsSat())
+			    found.add(c);
+			if (found.contains(c))
+			    continue;
+		    }
+		    if (CommonCore.isSelected())
+			if (c.getCommoncore() == "null") {// If it is not ccc,WHY DO I enroll it 2333?
+			    found.add(c);
+			    continue;
+			}
+		    if (NoExclusion.isSelected())
+			if (c.getExclusion() != "null") {// How come a course without any exclusion?
+			    found.add(c);
+			    continue;
+			}
+		    if (WithLabsorTutorial.isSelected()) {
+	
+			if (!c.containsLab())
+			    found.add(c);
+			if (found.contains(c))
+			    continue;
+		    }
 		}
-	    if (NoExclusion.isSelected())
-		if (c.getExclusion() != "null") {// How come a course without any exclusion?
-		    found.add(c);
-		    continue;
+		v.removeAll(found);// found is the union that doesn't satisfy any of requirement ,remove all of
+		// them,now V is what I want.
+		Controller.FilteredCourse.clear();
+		Controller.FilteredCourse.addAll(v);
+	
+		for (final Course c : v) {
+		    String newline = c.getTitle() + "\n";
+		    for (int i = 0; i < c.getNumSlots(); i++) {
+			final Slot t = c.getSlot(i);
+			newline += "Slot " + i + ":" + t + "\n";
+		    }
+		    if (textAreaConsole.getText() == null)
+			textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
+		    else
+			textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+	
 		}
-	    if (WithLabsorTutorial.isSelected()) {
-
-		if (!c.containsLab())
-		    found.add(c);
-		if (found.contains(c))
-		    continue;
-	    }
-	}
-	v.removeAll(found);// found is the union that doesn't satisfy any of requirement ,remove all of
-	// them,now V is what I want.
-	Controller.FilteredCourse.clear();
-	Controller.FilteredCourse.addAll(v);
-
-	for (final Course c : v) {
-	    String newline = c.getTitle() + "\n";
-	    for (int i = 0; i < c.getNumSlots(); i++) {
-		final Slot t = c.getSlot(i);
-		newline += "Slot " + i + ":" + t + "\n";
-	    }
-	    if (textAreaConsole.getText() == null)
-		textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
-	    else
-		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
-
-	}
-	List();
+		List();
     }
 
     @FXML

@@ -7,15 +7,38 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.*;
+import javafx.scene.paint.Color;
 
+
+@SuppressWarnings("restriction")
 public class Section {
     private SimpleStringProperty CourseCode;
+    
     private SimpleStringProperty Section;
+    
     private SimpleStringProperty Instructor;
+    
     private SimpleStringProperty CourseName;
+    
     private SimpleBooleanProperty EnrolledStatus;
+    
     private final ArrayList<Slot> belongedSlots = new ArrayList<>();
+    
     private ArrayList<Label> labels = new ArrayList<Label>();
+    
+    private ArrayList<Color> colors = new ArrayList<Color>();
+    
+    public void addColor(Color color) {
+    	colors.add(color);
+    }
+    
+    public int getNumColor() {
+    	return colors.size();
+    }
+    
+    public Color getColor(int i) {
+    	return colors.get(i);
+    }
 
     public void addSlot(final Slot s) {
     	belongedSlots.add(s);
@@ -36,13 +59,11 @@ public class Section {
     	return labels.size();
     }
     
-    @SuppressWarnings("restriction")
-	public void addLabel(Label label) {
+    public void addLabel(Label label) {
     	labels.add(label);
     }
     
-    @SuppressWarnings("restriction")
-	public Label getLabel(int i) {
+    public Label getLabel(int i) {
     	return labels.get(i);
     }
 

@@ -5,6 +5,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -413,29 +415,95 @@ public class Controller {
 
     @FXML
     void search() {
-	try {
-	    checkValidURL(
-		    textfieldURL.getText() + "/" + textfieldTerm.getText() + "/subject/" + textfieldSubject.getText());
-	    final List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(),
-		    textfieldSubject.getText());
-
-	    Integer numSection = 0;
-	    Integer numCourse = 0;
-	    final ArrayList<String> instructors = new ArrayList<>();
-	    final ArrayList<String> instructorsWithAssignment = new ArrayList<>();
-	    textAreaConsole.setText("");
-	    for (final Course c : v) {
-		String newline = c.getTitle() + "\n";
-		for (int i = 0; i < c.getNumSections(); i++) {
-		    if (!instructors.contains(c.getSection(i).getInstructor()))
-			instructors.add(c.getSection(i).getInstructor());
-		    if (checkInRange(c.getSection(i)))
-			if (!instructorsWithAssignment.contains(c.getSection(i).getInstructor()))
-			    instructorsWithAssignment.add(c.getSection(i).getInstructor());
-		    for (int j = 0; j < c.getSection(i).getSlotSize(); j++) {
-			final Slot t = c.getSection(i).getSlot(j);
-			newline += c.getSection(i).getSection() + ": " + t + "\n";
+		try {
+		    checkValidURL(
+			    textfieldURL.getText() + "/" + textfieldTerm.getText() + "/subject/" + textfieldSubject.getText());
+		    final List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(),
+			    textfieldSubject.getText());
+		    
+		    Integer numSection = 0;
+		    Integer numCourse = 0;
+		    ArrayList<String> instructors = new ArrayList<String>();
+		    ArrayList<String> instructorsWithAssignment = new ArrayList<String>();
+		    textAreaConsole.setText("");
+		    for (final Course c : v) {
+				String newline = c.getTitle() + "\n";
+				for (int i = 0; i < c.getNumSections(); i++) {
+					if (!instructors.contains(c.getSection(i).getInstructor())) {
+						instructors.add(c.getSection(i).getInstructor());
+					}
+					if (checkInRange(c.getSection(i))) {
+						if (!instructorsWithAssignment.contains(c.getSection(i).getInstructor())) {
+							instructorsWithAssignment.add(c.getSection(i).getInstructor());
+						}
+					}
+					for (int j = 0; j < c.getSection(i).getSlotSize(); j++) {
+						final Slot t = c.getSection(i).getSlot(j);
+					    newline += c.getSection(i).getSection() + ": " + t + "\n";
+					}
+				}
+				textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+				numSection += c.getNumSections();
+				numCourse++;
 		    }
+		    String addLine = "Total Number of difference sections in this search: " + numSection.toString() + "\n\n";
+		    addLine += ("Total Number of Course in this search: " + numCourse.toString() + "\n\n");
+		    addLine += ("Instrctuors who has teaching assignment this term but does not need to teach at Tu 3:10pm:\n");
+		    
+		    textAreaConsole.setText(textAreaConsole.getText() + "\n" + addLine);
+		    instructors.removeAll(instructorsWithAssignment);
+		    instructors.remove("TBA");
+		    Collections.sort(instructors, new Comparator<String>() {
+		        @Override
+		        public int compare(String s1, String s2) {
+		            return s1.charAt(0) - s2.charAt(0);
+		        }
+		    });
+		    boolean isFirst = true;
+		    String instructorNames = "";
+		    for (String s: instructors) {
+		    	if (isFirst) {
+		    		System.out.println(s);
+		    		instructorNames += s;
+		    		isFirst = false;
+		    	}
+		    	else {
+		    		instructorNames += (",\n" + s);
+		    	}
+		    }
+		    
+		    textAreaConsole.setText(textAreaConsole.getText() + instructorNames);
+	
+		    /*
+		     * edit the tablecolumn after the search @Brother Liang implement it also in
+		     * ALLSbujectSearch;
+		     */
+		    Controller.scrapedCourse = new ArrayList<Course>();
+		    Controller.scrapedCourse.addAll(v);
+		    List();
+		} 
+		catch (final FileNotFoundException e) {
+		    String consoleComponent = "Invalid URL for " + e.getMessage();
+		    consoleComponent += ". Please input a valid HKUST URL.";
+		    String instructionNamesLineFeed = "";
+		    String line = "";
+		    for (int i = 0; i < consoleComponent.length(); i++) {
+		    	instructionNamesLineFeed += consoleComponent.charAt(i);
+		    	line += consoleComponent.charAt(i);
+		    	System.out.println(line);
+		    	if (line.length() >= 80) {
+		    		instructionNamesLineFeed += "\n";
+		    		line = "";
+		    	}
+		    }
+	
+		    textAreaConsole.setText(instructionNamesLineFeed);
+		    instructionText1.setText("* Cannot find the valid URL from HKUST class schedule and quota for");
+		    instructionText2.setText("* " + e.getMessage());
+		    instructionText3.setText("* Some instructions provided below.");
+		    displayText1.setText("You need to provide a valid URL from HKUST class schedule and quota.");
+		    displayText2.setText("You need to provide a valid time period.");
+		    displayText3.setText("You need to provide a valid subject.");
 		}
 		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
 		numSection += c.getNumSections();

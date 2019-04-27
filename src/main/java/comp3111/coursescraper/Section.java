@@ -6,6 +6,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.control.*;
 
 public class Section {
     private SimpleStringProperty CourseCode;
@@ -14,6 +15,7 @@ public class Section {
     private SimpleStringProperty CourseName;
     private SimpleBooleanProperty EnrolledStatus;
     private final ArrayList<Slot> belongedSlots = new ArrayList<>();
+    private final ArrayList<Label> labels = new ArrayList<Label>();
 
     public void addSlot(final Slot s) {
 	belongedSlots.add(s);

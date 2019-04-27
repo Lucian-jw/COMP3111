@@ -253,7 +253,7 @@ public class Controller {
 	final double redDiffSquare = (c1.getRed() - c2.getRed()) * (c1.getRed() - c2.getRed());
 	final double greenDiffSquare = (c1.getGreen() - c2.getGreen()) * (c1.getGreen() - c2.getGreen());
 	final double blueDiffSquare = (c1.getBlue() - c2.getBlue()) * (c1.getBlue() - c2.getBlue());
-	return java.lang.Math.sqrt(redDiffSquare + greenDiffSquare + blueDiffSquare) < 0.17;
+	return java.lang.Math.sqrt(redDiffSquare + greenDiffSquare + blueDiffSquare) < 0.27;
     }
 
     @FXML
@@ -266,10 +266,11 @@ public class Controller {
 
 	Color c;
 	final Random random = new Random();
-	c = Color.rgb(54 + random.nextInt(202), 54 + random.nextInt(202), 54 + random.nextInt(202));
+	c = Color.rgb(35 + random.nextInt(150), 35 + random.nextInt(150), 35 + random.nextInt(150));
 	while (!checkApplicableColor(c))
-	    c = Color.rgb(54 + random.nextInt(202), 54 + random.nextInt(202), 54 + random.nextInt(202));
+	    c = Color.rgb(35 + random.nextInt(150), 35 + random.nextInt(150), 35 + random.nextInt(150));
 	section.addColor(c);
+	System.out.println(section.getSlotSize());
 	// Get the slot information of the section.
 	for (int i = 0; i < section.getSlotSize(); i++) {
 	    // Display the content to the timetable.
@@ -277,6 +278,7 @@ public class Controller {
 
 	    // Y on 9 AM: 49
 	    // Y for one hour: 20
+	    
 	    final LocalTime startTime = section.getSlot(i).getStart();
 	    final LocalTime endTime = section.getSlot(i).getEnd();
 	    final double startHour = startTime.getHour();
@@ -428,6 +430,7 @@ public class Controller {
 		    ArrayList<String> instructors = new ArrayList<String>();
 		    ArrayList<String> instructorsWithAssignment = new ArrayList<String>();
 		    textAreaConsole.setText("");
+		    
 		    for (final Course c : v) {
 				String newline = c.getTitle() + "\n";
 				for (int i = 0; i < c.getNumSections(); i++) {

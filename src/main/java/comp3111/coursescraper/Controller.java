@@ -251,6 +251,13 @@ public class Controller {
 		    ap.getChildren().addAll(courseLabel);
 		}
     }
+    
+    private void removeFromTimetable(Section section) {
+    	for(int i = 0; i < section.getNumLabels(); i++) {
+    		final AnchorPane ap = (AnchorPane) tabTimetable.getContent();
+    		ap.getChildren().remove(section.getLabel(i));
+    	}
+    }
 
     @FXML
     void findInstructorSfq() {
@@ -281,48 +288,50 @@ public class Controller {
     }
 
     void List() {
-	CourseCode.setCellValueFactory(cellData -> cellData.getValue().CourseCodeProperty());
-	Section.setCellValueFactory(cellData -> cellData.getValue().SectionProperty());
-	CourseName.setCellValueFactory(cellData -> cellData.getValue().CourseNameProperty());
-	Instructor.setCellValueFactory(cellData -> cellData.getValue().InstructorProperty());
-	Enroll.setCellValueFactory(arg0 -> {
-	    final Section sec = arg0.getValue();
-
-	    final CheckBox checkBox = new CheckBox();
-
-	    checkBox.selectedProperty().setValue(sec.getEnrolledStatus());
-	    checkBox.selectedProperty().addListener((ChangeListener<Boolean>) (ov, old_val, new_val) -> {
-		sec.setEnrolledStatus(new_val);
-		if (sec.getEnrolledStatus() == true && !Controller.EnrolledSection.contains(sec)) {
-		    Controller.EnrolledSection.add(sec);
-		    displayToTimetable(sec);
+		CourseCode.setCellValueFactory(cellData -> cellData.getValue().CourseCodeProperty());
+		Section.setCellValueFactory(cellData -> cellData.getValue().SectionProperty());
+		CourseName.setCellValueFactory(cellData -> cellData.getValue().CourseNameProperty());
+		Instructor.setCellValueFactory(cellData -> cellData.getValue().InstructorProperty());
+		Enroll.setCellValueFactory(arg0 -> {
+		    final Section sec = arg0.getValue();
+	
+		    final CheckBox checkBox = new CheckBox();
+	
+		    checkBox.selectedProperty().setValue(sec.getEnrolledStatus());
+		    checkBox.selectedProperty().addListener((ChangeListener<Boolean>) (ov, old_val, new_val) -> {
+			sec.setEnrolledStatus(new_val);
+			if (sec.getEnrolledStatus() == true && !Controller.EnrolledSection.contains(sec)) {
+			    Controller.EnrolledSection.add(sec);
+			    displayToTimetable(sec);
+			}
+			if (sec.getEnrolledStatus() == false && Controller.EnrolledSection.contains(sec)) {
+			    Controller.EnrolledSection.remove(sec);
+				removeFromTimetable(sec);
+			}
+			textAreaConsole.clear();
+			String newline = "The following sections are enrolled:" + "\n";
+			for (final Section s : Controller.EnrolledSection)
+			    newline += s.getCourseCode() + " " + s.getSection() + " " + s.getCourseName() + " "
+				    + s.getInstructor() + " \n";
+			if (textAreaConsole.getText() == null)
+			    textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
+			else
+			    textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+		    });
+	
+		    return new SimpleObjectProperty<>(checkBox);
+		});
+		if (Controller.FilteredCourse.isEmpty()) {
+		    data.clear();
+		    for (final Course c : Controller.scrapedCourse)
+			data.addAll(c.sections);
+		    ListTable.setItems(data);
+		} else {
+		    data.clear();
+		    for (final Course c : Controller.FilteredCourse)
+			data.addAll(c.sections);
+		    ListTable.setItems(data);
 		}
-		if (sec.getEnrolledStatus() == false && Controller.EnrolledSection.contains(sec))
-		    Controller.EnrolledSection.remove(sec);
-		textAreaConsole.clear();
-		String newline = "The following sections are enrolled:" + "\n";
-		for (final Section s : Controller.EnrolledSection)
-		    newline += s.getCourseCode() + " " + s.getSection() + " " + s.getCourseName() + " "
-			    + s.getInstructor() + " \n";
-		if (textAreaConsole.getText() == null)
-		    textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
-		else
-		    textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
-	    });
-
-	    return new SimpleObjectProperty<>(checkBox);
-	});
-	if (Controller.FilteredCourse.isEmpty()) {
-	    data.clear();
-	    for (final Course c : Controller.scrapedCourse)
-		data.addAll(c.sections);
-	    ListTable.setItems(data);
-	} else {
-	    data.clear();
-	    for (final Course c : Controller.FilteredCourse)
-		data.addAll(c.sections);
-	    ListTable.setItems(data);
-	}
     }
 
     @FXML

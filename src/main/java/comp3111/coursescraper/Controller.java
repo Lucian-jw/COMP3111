@@ -210,60 +210,60 @@ public class Controller {
     }
 
     private void displayToTimetable(final Section section) {
-	// Generate color from the list.
-	Color c;
-	final Random random = new Random();
-	c = Color.rgb(54 + random.nextInt(202), 54 + random.nextInt(202), 54 + random.nextInt(202));
-
-	// Get the slot information of the section.
-	for (int i = 0; i < section.getSlotSize(); i++) {
-	    // Display the content to the timetable.
-	    final AnchorPane ap = (AnchorPane) tabTimetable.getContent();
-
-	    // Y on 9 AM: 48
-	    // Y on 20: 270
-	    final LocalTime startTime = section.getSlot(i).getStart();
-	    final LocalTime endTime = section.getSlot(i).getEnd();
-	    final double startHour = startTime.getHour();
-	    final double startMinute = startTime.getMinute();
-	    final double endHour = endTime.getHour();
-	    final double endMinute = endTime.getMinute();
-	    final double timeStart = startHour + startMinute / 60;
-	    final double timeEnd = endHour + endMinute / 60;
-	    final double start = 49 + (timeStart - 9) * 20;
-	    final double duration = (timeEnd - timeStart) * 20;
-	    String content = section.getCourseCode() + "\n" + section.getSection();
-	    if (timeEnd - timeStart <= 1.2)
-		content = section.getCourseCode() + " (" + section.getSection() + ")";
-
-	    final Label courseLabel = new Label(content);
-	    courseLabel.setOpacity(0.5);
-	    courseLabel.setFont(new Font("Ariel", 12));
-	    courseLabel.setContentDisplay(ContentDisplay.TOP);
-	    courseLabel.setBackground(new Background(new BackgroundFill(c, CornerRadii.EMPTY, Insets.EMPTY)));
-	    courseLabel.setLayoutX(section.getSlot(i).getDay() * 100 + 101);
-	    courseLabel.setLayoutY(start);
-	    courseLabel.setMinWidth(100.0);
-	    courseLabel.setMaxWidth(100.0);
-	    courseLabel.setMinHeight(duration);
-	    courseLabel.setMaxHeight(duration);
-
-	    ap.getChildren().addAll(courseLabel);
-	}
+		// Generate color from the list.
+		Color c;
+		final Random random = new Random();
+		c = Color.rgb(54 + random.nextInt(202), 54 + random.nextInt(202), 54 + random.nextInt(202));
+	
+		// Get the slot information of the section.
+		for (int i = 0; i < section.getSlotSize(); i++) {
+		    // Display the content to the timetable.
+		    final AnchorPane ap = (AnchorPane) tabTimetable.getContent();
+	
+		    // Y on 9 AM: 49
+		    // Y for one hour: 20
+		    final LocalTime startTime = section.getSlot(i).getStart();
+		    final LocalTime endTime = section.getSlot(i).getEnd();
+		    final double startHour = startTime.getHour();
+		    final double startMinute = startTime.getMinute();
+		    final double endHour = endTime.getHour();
+		    final double endMinute = endTime.getMinute();
+		    final double timeStart = startHour + startMinute / 60;
+		    final double timeEnd = endHour + endMinute / 60;
+		    final double start = 49 + (timeStart - 9) * 20;
+		    final double duration = (timeEnd - timeStart) * 20;
+		    String content = section.getCourseCode() + "\n" + section.getSection();
+		    if (timeEnd - timeStart <= 1.2)
+			content = section.getCourseCode() + " (" + section.getSection() + ")";
+	
+		    Label courseLabel = new Label(content);
+		    courseLabel.setOpacity(0.5);
+		    courseLabel.setFont(new Font("Ariel", 12));
+		    courseLabel.setContentDisplay(ContentDisplay.TOP);
+		    courseLabel.setBackground(new Background(new BackgroundFill(c, CornerRadii.EMPTY, Insets.EMPTY)));
+		    courseLabel.setLayoutX(section.getSlot(i).getDay() * 100 + 101);
+		    courseLabel.setLayoutY(start);
+		    courseLabel.setMinWidth(100.0);
+		    courseLabel.setMaxWidth(100.0);
+		    courseLabel.setMinHeight(duration);
+		    courseLabel.setMaxHeight(duration);
+		    section.addLabel(courseLabel);
+		    ap.getChildren().addAll(courseLabel);
+		}
     }
 
     @FXML
     void findInstructorSfq() {
 	final List<InstSFQScoreStruct> out = scraper.scrapeInstSFQ(textfieldSfqUrl.getText());
-	for (int i = 0; i < out.size(); i++) {
-	    final List<String> curScore = out.get(i).score;
-	    float total = 0;
-	    for (int j = 0; j < curScore.size(); j++)
-		total += Float.parseFloat(curScore.get(j));
-	    total = total / curScore.size();
-	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Instructor: " + out.get(i).name + "\n"
-		    + "SFQ Score: " + total + "\n" + "\n");
-	}
+		for (int i = 0; i < out.size(); i++) {
+		    final List<String> curScore = out.get(i).score;
+		    float total = 0;
+		    for (int j = 0; j < curScore.size(); j++)
+			total += Float.parseFloat(curScore.get(j));
+		    total = total / curScore.size();
+		    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Instructor: " + out.get(i).name + "\n"
+			    + "SFQ Score: " + total + "\n" + "\n");
+		}
     }
 
     @FXML

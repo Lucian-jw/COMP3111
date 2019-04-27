@@ -32,18 +32,18 @@ public class Section {
 		return s;
     }
     
-    @SuppressWarnings("restriction")
-	public void removeAllLabels() {
-    	for (int i = 0; i < labels.size(); i++) {
-			labels.get(i).setStyle("-fx-background-color: rgba(255, 255, 255, 1);");
-			labels.get(i).setText("");
-		}
-    	labels = new ArrayList<Label>();
+    public int getNumLabels() {
+    	return labels.size();
     }
     
     @SuppressWarnings("restriction")
 	public void addLabel(Label label) {
     	labels.add(label);
+    }
+    
+    @SuppressWarnings("restriction")
+	public Label getLabel(int i) {
+    	return labels.get(i);
     }
 
     public StringProperty CourseCodeProperty() {

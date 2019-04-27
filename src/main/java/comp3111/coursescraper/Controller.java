@@ -204,6 +204,7 @@ public class Controller {
 
     @FXML
     void allSubjectSearch() {
+	textAreaConsole.clear();
 	if (Controller.subjects.isEmpty()) {
 	    Controller.subjects.addAll(scraper.scrapeSubjects(textfieldURL.getText(), textfieldTerm.getText()));
 	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Total Number of Categories/Code Prefix: "
@@ -306,6 +307,7 @@ public class Controller {
     @FXML
     void findInstructorSfq() {
 	final List<InstSFQScoreStruct> out = scraper.scrapeInstSFQ(textfieldSfqUrl.getText());
+	textAreaConsole.clear();
 	for (int i = 0; i < out.size(); i++) {
 	    final List<String> curScore = out.get(i).score;
 	    float total = 0;
@@ -320,6 +322,7 @@ public class Controller {
     @FXML
     void findSfqEnrollCourse() {
 	final List<CourseSFQStruct> out = scraper.scrapeCourseSFQ(textfieldSfqUrl.getText(), EnrolledSection);
+	textAreaConsole.clear();
 	for (int i = 0; i < out.size(); i++) {
 	    final List<String> curScore = out.get(i).score;
 	    float total = 0;
@@ -566,9 +569,7 @@ public class Controller {
     @FXML
     void SelectAll_Action() {
 
-	if (SelectAll.getText() != "De-select All") {// If it is "Select-All,change to"De" and change all the statuses
-						     // to selected,do the selection.
-	    System.out.println("hi");
+	if (SelectAll.getText() != "De-select All") {
 	    SelectAll.setText("De-select All");
 	    AM.setSelected(true);
 	    PM.setSelected(true);
@@ -583,8 +584,7 @@ public class Controller {
 	    WithLabsorTutorial.setSelected(true);
 
 	} else {
-	    SelectAll.setText("Select All");// If it is "DeSelect-All,change to"Se" and change all the statuses to
-					    // selected,do the selection.
+	    SelectAll.setText("Select All");
 	    AM.setSelected(false);
 	    PM.setSelected(false);
 	    Mon.setSelected(false);

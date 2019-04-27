@@ -102,8 +102,7 @@ public class Slot {
     public boolean isAM() {
 	if (start != null)
 	    return start.isBefore(LocalTime.NOON);
-	else
-	    return false;
+	return false;
 
     }
 
@@ -113,8 +112,7 @@ public class Slot {
     public boolean isPM() {
 	if (end != null)
 	    return end.isAfter(LocalTime.NOON) || end.equals(LocalTime.NOON);
-	else
-	    return false;
+	return false;
 
     }
 

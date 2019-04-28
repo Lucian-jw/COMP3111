@@ -5,8 +5,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+
 import comp3111.coursescraper.Scraper.CourseSFQStruct;
 import comp3111.coursescraper.Scraper.InstSFQScoreStruct;
 import javafx.beans.property.SimpleObjectProperty;
@@ -70,22 +73,22 @@ public class Controller {
 
     @FXML
     private TextField textfieldTerm;
-    
+
     @FXML
     private Label instructionText1;
-    
+
     @FXML
     private Label instructionText2;
-    
+
     @FXML
     private Label displayText1;
-    
+
     @FXML
     private Label displayText2;
-    
+
     @FXML
     private Label displayText3;
-    
+
     @FXML
     private Label instructionText3;
 
@@ -188,21 +191,23 @@ public class Controller {
     private final Scraper scraper = new Scraper();
 
     final Task<Void> allSSThread = new Task<Void>() {
-		@Override
-		protected Void call() throws Exception {
-		    for (int i = 0; i < Controller.subjects.size(); i++) {
-			updateProgress(i + 1, Controller.subjects.size());
-			final String cur = Controller.subjects.get(i);
-			final List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(), cur);
-			Controller.scrapedCourse.addAll(v);
-			textAreaConsole.setText(textAreaConsole.getText() + "\n" + cur + " is done");
-		    }
-		    return null;
-		}
+	@Override
+	protected Void call() throws Exception {
+	    for (int i = 0; i < Controller.subjects.size(); i++) {
+		updateProgress(i + 1, Controller.subjects.size());
+		final String cur = Controller.subjects.get(i);
+		final List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(), cur);
+		Controller.scrapedCourse.addAll(v);
+		textAreaConsole.setText(textAreaConsole.getText() + "\n" + cur + " is done");
+	    }
+	    buttonSfqEnrollCourse.setDisable(false);
+	    return null;
+	}
     };
 
     @FXML
     void allSubjectSearch() {
+	textAreaConsole.clear();
 	if (Controller.subjects.isEmpty()) {
 	    Controller.subjects.addAll(scraper.scrapeSubjects(textfieldURL.getText(), textfieldTerm.getText()));
 	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Total Number of Categories/Code Prefix: "
@@ -228,6 +233,37 @@ public class Controller {
 	select(); 
     }
 
+    private boolean checkApplicableColor(final Color color) {
+	for (final Section section : EnrolledSection)
+	    for (int i = 0; i < section.getNumColor(); i++)
+		if (checkSimilarColor(color, section.getColor(i)))
+		    return false;
+	return true;
+    }
+
+    private boolean checkInRange(final Section s) {
+	for (int i = 0; i < s.getSlotSize(); i++) {
+	    final LocalTime start = s.getSlot(i).getStart();
+	    final LocalTime end = s.getSlot(i).getEnd();
+	    final double startMinute = start.getMinute();
+	    final double endMinute = end.getMinute();
+	    final double startTime = start.getHour() + startMinute / 60;
+	    final double endTime = end.getHour() + endMinute / 60;
+	    final double threePlusTen = 15.1666666666666666666666666667;
+	    if (startTime < threePlusTen && endTime > threePlusTen && s.getSlot(i).getDay() == 1)
+		return true;
+	}
+	return false;
+    }
+
+    private boolean checkSimilarColor(final Color c1, final Color c2) {
+	final double redDiffSquare = (c1.getRed() - c2.getRed()) * (c1.getRed() - c2.getRed());
+	final double greenDiffSquare = (c1.getGreen() - c2.getGreen()) * (c1.getGreen() - c2.getGreen());
+	final double blueDiffSquare = (c1.getBlue() - c2.getBlue()) * (c1.getBlue() - c2.getBlue());
+	return java.lang.Math.sqrt(redDiffSquare + greenDiffSquare + blueDiffSquare) < 0.27;
+
+    }
+
     @FXML
     /**
      * This function is will call the filter function once the CommonCore checkbox is clicked
@@ -241,81 +277,58 @@ public class Controller {
     }
 
     private void displayToTimetable(final Section section) {
-		// Generate color from the list.
+	// Generate color from the list.
 
-    	Color c;
-    	final Random random = new Random();
-		  c = Color.rgb(54 + random.nextInt(202), 54 + random.nextInt(202), 54 + random.nextInt(202));
-		  while (!checkApplicableColor(c)) {
-			  c = Color.rgb(54 + random.nextInt(202), 54 + random.nextInt(202), 54 + random.nextInt(202));
-		  }
-		section.addColor(c);
-		// Get the slot information of the section.
-		for (int i = 0; i < section.getSlotSize(); i++) {
-		    // Display the content to the timetable.
-		    final AnchorPane ap = (AnchorPane) tabTimetable.getContent();
-	
-		    // Y on 9 AM: 49
-		    // Y for one hour: 20
-		    final LocalTime startTime = section.getSlot(i).getStart();
-		    final LocalTime endTime = section.getSlot(i).getEnd();
-		    final double startHour = startTime.getHour();
-		    final double startMinute = startTime.getMinute();
-		    final double endHour = endTime.getHour();
-		    final double endMinute = endTime.getMinute();
-		    final double timeStart = startHour + startMinute / 60;
-		    final double timeEnd = endHour + endMinute / 60;
-		    final double start = 49 + (timeStart - 9) * 20;
-		    final double duration = (timeEnd - timeStart) * 20;
-		    String content = section.getCourseCode() + "\n" + section.getSection();
-		    if (timeEnd - timeStart <= 1.2)
-			  content = section.getCourseCode() + "(" + section.getSection() + ")";
+	Color c;
+	final Random random = new Random();
+	c = Color.rgb(35 + random.nextInt(150), 35 + random.nextInt(150), 35 + random.nextInt(150));
+	while (!checkApplicableColor(c))
+	    c = Color.rgb(35 + random.nextInt(150), 35 + random.nextInt(150), 35 + random.nextInt(150));
+	section.addColor(c);
+	System.out.println(section.getSlotSize());
+	// Get the slot information of the section.
+	for (int i = 0; i < section.getSlotSize(); i++) {
+	    // Display the content to the timetable.
+	    final AnchorPane ap = (AnchorPane) tabTimetable.getContent();
 
-	
-		    Label courseLabel = new Label(content);
-		    courseLabel.setOpacity(0.5);
-		    courseLabel.setFont(new Font("Ariel", 12));
-		    courseLabel.setContentDisplay(ContentDisplay.TOP);
-		    courseLabel.setBackground(new Background(new BackgroundFill(c, CornerRadii.EMPTY, Insets.EMPTY)));
-		    courseLabel.setLayoutX(section.getSlot(i).getDay() * 100 + 101);
-		    courseLabel.setLayoutY(start);
-		    courseLabel.setMinWidth(100.0);
-		    courseLabel.setMaxWidth(100.0);
-		    courseLabel.setMinHeight(duration);
-		    courseLabel.setMaxHeight(duration);
-		    section.addLabel(courseLabel);
-		    ap.getChildren().addAll(courseLabel);
-		}
-    }
-   
-    private boolean checkApplicableColor(Color color) {
-    	for (Section section: EnrolledSection) {
-    		for (int i = 0; i < section.getNumColor(); i++) {
-    			if (checkSimilarColor(color, section.getColor(i))) {
-    				return false;
-    			}
-    		}
-    	}
-    	return true;
-    }
-    
-    private boolean checkSimilarColor(Color c1, Color c2) {
-    	double redDiffSquare = (c1.getRed() - c2.getRed()) * (c1.getRed() - c2.getRed());
-    	double greenDiffSquare = (c1.getGreen() - c2.getGreen()) * (c1.getGreen() - c2.getGreen());
-    	double blueDiffSquare = (c1.getBlue() - c2.getBlue()) * (c1.getBlue() - c2.getBlue());
-    	return (java.lang.Math.sqrt(redDiffSquare + greenDiffSquare + blueDiffSquare) < 0.17);
-    }
-    
-    private void removeFromTimetable(Section section) {
-    	for(int i = 0; i < section.getNumLabels(); i++) {
-    		final AnchorPane ap = (AnchorPane) tabTimetable.getContent();
-    		ap.getChildren().remove(section.getLabel(i));
-    	}
+	    // Y on 9 AM: 49
+	    // Y for one hour: 20
+	    
+	    final LocalTime startTime = section.getSlot(i).getStart();
+	    final LocalTime endTime = section.getSlot(i).getEnd();
+	    final double startHour = startTime.getHour();
+	    final double startMinute = startTime.getMinute();
+	    final double endHour = endTime.getHour();
+	    final double endMinute = endTime.getMinute();
+	    final double timeStart = startHour + startMinute / 60;
+	    final double timeEnd = endHour + endMinute / 60;
+	    final double start = 49 + (timeStart - 9) * 20;
+	    final double duration = (timeEnd - timeStart) * 20;
+	    String content = section.getCourseCode() + "\n" + section.getSection();
+	    if (timeEnd - timeStart <= 1.2)
+		content = section.getCourseCode() + "(" + section.getSection() + ")";
+
+	    final Label courseLabel = new Label(content);
+	    courseLabel.setOpacity(0.5);
+	    courseLabel.setFont(new Font("Ariel", 10.8));
+	    courseLabel.setTextFill(Color.web("#FFFFFF"));
+	    courseLabel.setContentDisplay(ContentDisplay.TOP);
+	    courseLabel.setBackground(new Background(new BackgroundFill(c, CornerRadii.EMPTY, Insets.EMPTY)));
+	    courseLabel.setLayoutX(section.getSlot(i).getDay() * 100 + 101);
+	    courseLabel.setLayoutY(start);
+	    courseLabel.setMinWidth(100.0);
+	    courseLabel.setMaxWidth(100.0);
+	    courseLabel.setMinHeight(duration);
+	    courseLabel.setMaxHeight(duration);
+	    section.addLabel(courseLabel);
+	    ap.getChildren().addAll(courseLabel);
+	}
     }
 
     @FXML
     void findInstructorSfq() {
 	final List<InstSFQScoreStruct> out = scraper.scrapeInstSFQ(textfieldSfqUrl.getText());
+	textAreaConsole.clear();
 	for (int i = 0; i < out.size(); i++) {
 	    final List<String> curScore = out.get(i).score;
 	    float total = 0;
@@ -325,12 +338,12 @@ public class Controller {
 	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Instructor: " + out.get(i).name + "\n"
 		    + "SFQ Score: " + total + "\n");
 	}
-
     }
 
     @FXML
     void findSfqEnrollCourse() {
 	final List<CourseSFQStruct> out = scraper.scrapeCourseSFQ(textfieldSfqUrl.getText(), EnrolledSection);
+	textAreaConsole.clear();
 	for (int i = 0; i < out.size(); i++) {
 	    final List<String> curScore = out.get(i).score;
 	    float total = 0;
@@ -352,7 +365,6 @@ public class Controller {
      */
     void Fri_Selection() {
 	select();
-
     }
     /**
      * This function implements the table column
@@ -369,9 +381,7 @@ public class Controller {
 		Instructor.setCellValueFactory(cellData -> cellData.getValue().InstructorProperty());
 		Enroll.setCellValueFactory(arg0 -> {
 		    final Section sec = arg0.getValue();
-	
 		    final CheckBox checkBox = new CheckBox();
-	
 		    checkBox.selectedProperty().setValue(sec.getEnrolledStatus());
 		    checkBox.selectedProperty().addListener((ChangeListener<Boolean>) (ov, old_val, new_val) -> {
 			sec.setEnrolledStatus(new_val);
@@ -381,7 +391,7 @@ public class Controller {
 			}
 			if (sec.getEnrolledStatus() == false && Controller.EnrolledSection.contains(sec)) {
 			    Controller.EnrolledSection.remove(sec);
-				removeFromTimetable(sec);
+			    removeFromTimetable(sec);
 			}
 			textAreaConsole.clear();
 			String newline = "The following sections are enrolled:" + "\n";
@@ -442,7 +452,14 @@ public class Controller {
      * @author JIANG WEI
      */
     void PM_Selection() {
-	select();// once you click the checkbox, it will select
+	select();
+    }
+
+    private void removeFromTimetable(final Section section) {
+	for (int i = 0; i < section.getNumLabels(); i++) {
+	    final AnchorPane ap = (AnchorPane) tabTimetable.getContent();
+	    ap.getChildren().remove(section.getLabel(i));
+	}
     }
 
     @FXML
@@ -454,23 +471,7 @@ public class Controller {
      * @author JIANG WEI
      */
     void Sat_Selection() {
-	select();// once you click the checkbox, it will select
-    }
-    
-    private boolean checkInRange(Section s) {
-    	for (int i = 0; i < s.getSlotSize(); i++) {
-    		LocalTime start = s.getSlot(i).getStart();
-    		LocalTime end = s.getSlot(i).getEnd();
-    		double startMinute = start.getMinute();
-    		double endMinute = end.getMinute();
-    		double startTime = start.getHour() + (startMinute / 60);
-    		double endTime = end.getHour() + (endMinute / 60);
-    		final double threePlusTen = 15.1666666666666666666666666667;
-    		if ((startTime < threePlusTen) && (endTime > threePlusTen) && s.getSlot(i).getDay() == 1) {
-    			return true;
-    		}
-    	}
-    	return false;
+	select();
     }
 
     @FXML
@@ -486,6 +487,7 @@ public class Controller {
 		    ArrayList<String> instructors = new ArrayList<String>();
 		    ArrayList<String> instructorsWithAssignment = new ArrayList<String>();
 		    textAreaConsole.setText("");
+		    
 		    for (final Course c : v) {
 				String newline = c.getTitle() + "\n";
 				for (int i = 0; i < c.getNumSections(); i++) {
@@ -506,15 +508,33 @@ public class Controller {
 				numSection += c.getNumSections();
 				numCourse++;
 		    }
-		    String addLine = "Total number of section(s): " + numSection.toString() + "\n\n";
-		    addLine += ("Total number of course(s): " + numCourse.toString() + "\n\n");
+		    String addLine = "Total Number of difference sections in this search: " + numSection.toString() + "\n\n";
+		    addLine += ("Total Number of Course in this search: " + numCourse.toString() + "\n\n");
 		    addLine += ("Instrctuors who has teaching assignment this term but does not need to teach at Tu 3:10pm:\n");
 		    
 		    textAreaConsole.setText(textAreaConsole.getText() + "\n" + addLine);
 		    instructors.removeAll(instructorsWithAssignment);
-		    for(String s: instructors) {
-		    	textAreaConsole.setText(textAreaConsole.getText() + "\n" + s);
+		    instructors.remove("TBA");
+		    Collections.sort(instructors, new Comparator<String>() {
+		        @Override
+		        public int compare(String s1, String s2) {
+		            return s1.charAt(0) - s2.charAt(0);
+		        }
+		    });
+		    boolean isFirst = true;
+		    String instructorNames = "";
+		    for (String s: instructors) {
+		    	if (isFirst) {
+		    		System.out.println(s);
+		    		instructorNames += s;
+		    		isFirst = false;
+		    	}
+		    	else {
+		    		instructorNames += (",\n" + s);
+		    	}
 		    }
+		    
+		    textAreaConsole.setText(textAreaConsole.getText() + instructorNames);
 	
 		    /*
 		     * edit the tablecolumn after the search @Brother Liang implement it also in
@@ -527,8 +547,19 @@ public class Controller {
 		catch (final FileNotFoundException e) {
 		    String consoleComponent = "Invalid URL for " + e.getMessage();
 		    consoleComponent += ". Please input a valid HKUST URL.";
+		    String instructionNamesLineFeed = "";
+		    String line = "";
+		    for (int i = 0; i < consoleComponent.length(); i++) {
+		    	instructionNamesLineFeed += consoleComponent.charAt(i);
+		    	line += consoleComponent.charAt(i);
+		    	System.out.println(line);
+		    	if (line.length() >= 80) {
+		    		instructionNamesLineFeed += "\n";
+		    		line = "";
+		    	}
+		    }
 	
-		    textAreaConsole.setText(consoleComponent);
+		    textAreaConsole.setText(instructionNamesLineFeed);
 		    instructionText1.setText("* Cannot find the valid URL from HKUST class schedule and quota for");
 		    instructionText2.setText("* " + e.getMessage());
 		    instructionText3.setText("* Some instructions provided below.");
@@ -536,7 +567,15 @@ public class Controller {
 		    displayText2.setText("You need to provide a valid time period.");
 		    displayText3.setText("You need to provide a valid subject.");
 		}
+		
+	    
+		
+	    
+	    List();
+	    buttonSfqEnrollCourse.setDisable(false);
+	 
     }
+
     /**
      * This function will be called when either checkbox status is changed
      * This function will filter all the satisfied courses based on the requirements 
@@ -551,7 +590,7 @@ public class Controller {
 		final List<Course> v = new ArrayList<>(); 
 		v.addAll(Controller.scrapedCourse);
 		final List<Course> found = new ArrayList<>();
-		for (final Course c : v) {
+		for (Course c : v) {
 		    if (AM.isSelected()) {
 	
 			if (!c.containsAM())
@@ -630,10 +669,10 @@ public class Controller {
 		Controller.FilteredCourse.clear();
 		Controller.FilteredCourse.addAll(v);
 	
-		for (final Course c : v) {
-		    String newline = c.getTitle() + "\n";
-		    for (int i = 0; i < c.getNumSlots(); i++) {
-			final Slot t = c.getSlot(i);
+		for (Course d : v) {
+		    String newline = d.getTitle() + "\n";
+		    for (int i = 0; i < d.getNumSlots(); i++) {
+			Slot t = d.getSlot(i);
 			newline += "Slot " + i + ":" + t + "\n";
 		    }
 		    if (textAreaConsole.getText() == null)
@@ -642,7 +681,7 @@ public class Controller {
 			textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
 	
 		}
-		List();
+	List();
     }
     
     @FXML
@@ -734,8 +773,6 @@ public class Controller {
      * @author JIANG WEI
      */
     void WithLabsorTutorial_selection() {
-    	
 	select();
     }
-
 }

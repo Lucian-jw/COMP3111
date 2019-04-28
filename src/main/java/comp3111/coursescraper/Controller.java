@@ -224,9 +224,6 @@ public class Controller {
     @FXML
     /**
      * This function is will call the filter function once the Am checkbox is clicked
-     * @param no parameters needed
-     * @return no returned
-     * @see no output
      * @author JIANG WEI
      */
     void AM_Selection() {
@@ -267,9 +264,6 @@ public class Controller {
     @FXML
     /**
      * This function is will call the filter function once the CommonCore checkbox is clicked
-     * @param no parameters needed
-     * @return no returned
-     * @see no output
      * @author JIANG WEI
      */
     void CommonCore_Selection() {
@@ -358,9 +352,6 @@ public class Controller {
     @FXML
     /**
      * This function is will call the filter function once the Fri checkbox is clicked
-     * @param no parameters needed
-     * @return no returned
-     * @see no output
      * @author JIANG WEI
      */
     void Fri_Selection() {
@@ -369,9 +360,6 @@ public class Controller {
     /**
      * This function implements the table column
      * It will use the scraped course information to fill up different columns with different information
-     * @param no param needed
-     * @return no value returned
-     * @see the tablecolumn will be filled and checkbox will be generated
      * @author JIANG WEI
      */
     void List() {
@@ -394,7 +382,20 @@ public class Controller {
 			    removeFromTimetable(sec);
 			}
 			textAreaConsole.clear();
-			String newline = "The following sections are enrolled:" + "\n";
+			if(!FilteredCourse.isEmpty()){
+				for (Course d : FilteredCourse) {
+				    String newline = d.getTitle() + "\n";
+				    for (int i = 0; i < d.getNumSlots(); i++) {
+					Slot t = d.getSlot(i);
+					newline += t.getSectionType()+" "+t+"\n";
+				    }
+				    if (textAreaConsole.getText() == null)
+					textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
+				    else
+					textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+				}
+			}
+			String newline = textAreaConsole.getText()+"\n\n\n"+"The following sections are enrolled:" + "\n";
 			for (final Section s : Controller.EnrolledSection)
 			    newline += s.getCourseCode() + " " + s.getSection() + " " + s.getCourseName() + " "
 				    + s.getInstructor() + " \n";
@@ -422,9 +423,6 @@ public class Controller {
     @FXML
     /**
      * This function is will call the filter function once the Monday checkbox is clicked
-     * @param no parameters needed
-     * @return no returned
-     * @see no output
      * @author JIANG WEI
      */
     void Mon_Action() {
@@ -465,9 +463,6 @@ public class Controller {
     @FXML
     /**
      * This function is will call the filter function once the Sat checkbox is clicked
-     * @param no parameters needed
-     * @return no returned
-     * @see no output
      * @author JIANG WEI
      */
     void Sat_Selection() {
@@ -580,9 +575,6 @@ public class Controller {
      * This function will be called when either checkbox status is changed
      * This function will filter all the satisfied courses based on the requirements 
      * This function eventually will print the satisfied courses information in the console
-     * @param no parameters needed
-     * @return no returned
-     * @see The console will show the filtered information
      * @author JIANG WEI
      */
     void select() {
@@ -673,13 +665,12 @@ public class Controller {
 		    String newline = d.getTitle() + "\n";
 		    for (int i = 0; i < d.getNumSlots(); i++) {
 			Slot t = d.getSlot(i);
-			newline += "Slot " + i + ":" + t + "\n";
+			newline += t.getSectionType()+" "+t+"\n";
 		    }
 		    if (textAreaConsole.getText() == null)
 			textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
 		    else
 			textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
-	
 		}
 	List();
     }
@@ -690,9 +681,6 @@ public class Controller {
      * The button text will be changed to "De-select all" from "Select All" or vice versa
      * All checkbox will be checked or not checked
      * the filter function will be called
-     * @param no parameters needed
-     * @return no returned
-     * @see All checkbox status will be changed and the button text changes
      * @author JIANG WEI
      **/
     void SelectAll_Action() {
@@ -731,9 +719,6 @@ public class Controller {
     @FXML
     /**
      * This function is will call the filter function once the Thursday checkbox is clicked
-     * @param no parameters needed
-     * @return no returned
-     * @see no output
      * @author JIANG WEI
      */
     void Thur_Selection() {
@@ -755,9 +740,6 @@ public class Controller {
     @FXML
     /**
      * This function is will call the filter function once the Wednesday checkbox is clicked
-     * @param no parameters needed
-     * @return no returned
-     * @see no output
      * @author JIANG WEI
      */
     void Wed_Selection() {
@@ -767,9 +749,6 @@ public class Controller {
     @FXML
     /**
      * This function is will call the filter function once the WithLabsorTutorials checkbox is clicked
-     * @param no parameters needed
-     * @return no returned
-     * @see no output
      * @author JIANG WEI
      */
     void WithLabsorTutorial_selection() {

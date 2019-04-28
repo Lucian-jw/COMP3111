@@ -193,13 +193,17 @@ public class Controller {
     final Task<Void> allSSThread = new Task<Void>() {
 	@Override
 	protected Void call() throws Exception {
+	    int totalCourseNum = 0;
 	    for (int i = 0; i < Controller.subjects.size(); i++) {
 		updateProgress(i + 1, Controller.subjects.size());
 		final String cur = Controller.subjects.get(i);
 		final List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(), cur);
 		Controller.scrapedCourse.addAll(v);
+		totalCourseNum += v.size();
 		textAreaConsole.setText(textAreaConsole.getText() + "\n" + cur + " is done");
 	    }
+	    textAreaConsole
+		    .setText(textAreaConsole.getText() + "\n" + "Total Number of Courses fetched: " + totalCourseNum);
 	    buttonSfqEnrollCourse.setDisable(false);
 	    return null;
 	}
@@ -329,8 +333,8 @@ public class Controller {
 	    for (int j = 0; j < curScore.size(); j++)
 		total += Float.parseFloat(curScore.get(j));
 	    total = total / curScore.size();
-	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Instructor: " + out.get(i).name + "\n"
-		    + "SFQ Score: " + total + "\n");
+	    textAreaConsole.setText(
+		    textAreaConsole.getText() + "\n" + "Instructor: " + out.get(i).name + "\n" + "SFQ Score: " + total);
 	}
     }
 
@@ -345,7 +349,7 @@ public class Controller {
 		total += Float.parseFloat(curScore.get(j));
 	    total = total / curScore.size();
 	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Course: " + out.get(i).courseCode + "\n"
-		    + "SFQ Score: " + total + "\n");
+		    + "SFQ Score: " + total);
 	}
     }
 

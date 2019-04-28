@@ -222,8 +222,12 @@ public class Controller {
     }
 
     @FXML
+    /**
+     * This function is will call the filter function once the Am checkbox is clicked
+     * @author JIANG WEI
+     */
     void AM_Selection() {
-	select();
+	select(); 
     }
 
     private boolean checkApplicableColor(final Color color) {
@@ -254,9 +258,14 @@ public class Controller {
 	final double greenDiffSquare = (c1.getGreen() - c2.getGreen()) * (c1.getGreen() - c2.getGreen());
 	final double blueDiffSquare = (c1.getBlue() - c2.getBlue()) * (c1.getBlue() - c2.getBlue());
 	return java.lang.Math.sqrt(redDiffSquare + greenDiffSquare + blueDiffSquare) < 0.27;
+
     }
 
     @FXML
+    /**
+     * This function is will call the filter function once the CommonCore checkbox is clicked
+     * @author JIANG WEI
+     */
     void CommonCore_Selection() {
 	select();
     }
@@ -341,10 +350,18 @@ public class Controller {
     }
 
     @FXML
+    /**
+     * This function is will call the filter function once the Fri checkbox is clicked
+     * @author JIANG WEI
+     */
     void Fri_Selection() {
 	select();
     }
-
+    /**
+     * This function implements the table column
+     * It will use the scraped course information to fill up different columns with different information
+     * @author JIANG WEI
+     */
     void List() {
 		CourseCode.setCellValueFactory(cellData -> cellData.getValue().CourseCodeProperty());
 		Section.setCellValueFactory(cellData -> cellData.getValue().SectionProperty());
@@ -365,7 +382,20 @@ public class Controller {
 			    removeFromTimetable(sec);
 			}
 			textAreaConsole.clear();
-			String newline = "The following sections are enrolled:" + "\n";
+			if(!FilteredCourse.isEmpty()){
+				for (Course d : FilteredCourse) {
+				    String newline = d.getTitle() + "\n";
+				    for (int i = 0; i < d.getNumSlots(); i++) {
+					Slot t = d.getSlot(i);
+					newline += t.getSectionType()+" "+t+"\n";
+				    }
+				    if (textAreaConsole.getText() == null)
+					textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
+				    else
+					textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+				}
+			}
+			String newline = textAreaConsole.getText()+"\n\n\n"+"The following sections are enrolled:" + "\n";
 			for (final Section s : Controller.EnrolledSection)
 			    newline += s.getCourseCode() + " " + s.getSection() + " " + s.getCourseName() + " "
 				    + s.getInstructor() + " \n";
@@ -391,16 +421,34 @@ public class Controller {
     }
 
     @FXML
+    /**
+     * This function is will call the filter function once the Monday checkbox is clicked
+     * @author JIANG WEI
+     */
     void Mon_Action() {
 	select();
     }
 
     @FXML
+    /**
+     * This function is will call the filter function once the NoExclusion parameters is clicked
+     * @param no parameters needed
+     * @return no returned
+     * @see no output
+     * @author JIANG WEI
+     */
     void NoExlusion_Selection() {
 	select();
     }
 
     @FXML
+    /**
+     * This function is will call the filter function once the PM checkbox is clicked
+     * @param no parameters needed
+     * @return no returned
+     * @see no output
+     * @author JIANG WEI
+     */
     void PM_Selection() {
 	select();
     }
@@ -413,6 +461,10 @@ public class Controller {
     }
 
     @FXML
+    /**
+     * This function is will call the filter function once the Sat checkbox is clicked
+     * @author JIANG WEI
+     */
     void Sat_Selection() {
 	select();
     }
@@ -519,107 +571,118 @@ public class Controller {
 	 
     }
 
+    /**
+     * This function will be called when either checkbox status is changed
+     * This function will filter all the satisfied courses based on the requirements 
+     * This function eventually will print the satisfied courses information in the console
+     * @author JIANG WEI
+     */
     void select() {
-	textAreaConsole.setText(null);
-	final List<Course> v = new ArrayList<>(); // edit it to be a AllSubjectSearch course or normal search list!
-	v.addAll(Controller.scrapedCourse);
-	final List<Course> found = new ArrayList<>();
-	for (final Course c : v) {
-	    if (AM.isSelected()) {
-		if (!c.containsAM())
-		    found.add(c);
-		if (found.contains(c))
-		    continue;
-	    }
-
-	    if (PM.isSelected()) {
-		if (!c.containsPM())
-		    found.add(c);
-		if (found.contains(c))
-		    continue;
-	    }
-
-	    if (Mon.isSelected()) {
-		if (!c.containsMon())
-		    found.add(c);
-		if (found.contains(c))
-		    continue;
-	    }
-
-	    if (Tue.isSelected()) {
-		if (!c.containsTue())
-		    found.add(c);
-		if (found.contains(c))
-		    continue;
-	    }
-
-	    if (Wed.isSelected()) {
-		if (!c.containsWed())
-		    found.add(c);
-		if (found.contains(c))
-		    continue;
-	    }
-
-	    if (Thur.isSelected()) {
-		if (!c.containsThurs())
-		    found.add(c);
-		if (found.contains(c))
-		    continue;
-	    }
-
-	    if (Fri.isSelected()) {
-		if (!c.containsFri())
-		    found.add(c);
-		if (found.contains(c))
-		    continue;
-	    }
-
-	    if (Sat.isSelected()) {
-		if (!c.containsSat())
-		    found.add(c);
-		if (found.contains(c))
-		    continue;
-	    }
-
-	    if (CommonCore.isSelected())
-		if (c.getCommoncore() == "null") {
-		    found.add(c);
-		    continue;
+		textAreaConsole.setText(null);
+		final List<Course> v = new ArrayList<>(); 
+		v.addAll(Controller.scrapedCourse);
+		final List<Course> found = new ArrayList<>();
+		for (Course c : v) {
+		    if (AM.isSelected()) {
+	
+			if (!c.containsAM())
+			    found.add(c);
+			if (found.contains(c))
+			    continue;
+		    }
+		    if (PM.isSelected()) {
+	
+			if (!c.containsPM())
+			    found.add(c);
+			if (found.contains(c))
+			    continue;
+		    }
+		    if (Mon.isSelected()) {
+	
+			if (!c.containsMon())
+			    found.add(c);
+			if (found.contains(c))
+			    continue;
+		    }
+		    if (Tue.isSelected()) {
+	
+			if (!c.containsTue())
+			    found.add(c);
+			if (found.contains(c))
+			    continue;
+		    }
+		    if (Wed.isSelected()) {
+	
+			if (!c.containsWed())
+			    found.add(c);
+			if (found.contains(c))
+			    continue;
+		    }
+		    if (Thur.isSelected()) {
+	
+			if (!c.containsThurs())
+			    found.add(c);
+			if (found.contains(c))
+			    continue;
+		    }
+		    if (Fri.isSelected()) {
+	
+			if (!c.containsFri())
+			    found.add(c);
+			if (found.contains(c))
+			    continue;
+		    }
+		    if (Sat.isSelected()) {// hope god bless these poor guys :D
+	
+			if (!c.containsSat())
+			    found.add(c);
+			if (found.contains(c))
+			    continue;
+		    }
+		    if (CommonCore.isSelected())
+			if (c.getCommoncore() == "null") {// If it is not ccc,WHY DO I enroll it 2333?
+			    found.add(c);
+			    continue;
+			}
+		    if (NoExclusion.isSelected())
+			if (c.getExclusion() != "null") {// How come a course without any exclusion?
+			    found.add(c);
+			    continue;
+			}
+		    if (WithLabsorTutorial.isSelected()) {
+	
+			if (!c.containsLab())
+			    found.add(c);
+			if (found.contains(c))
+			    continue;
+		    }
 		}
-
-	    if (NoExclusion.isSelected())
-		if (c.getExclusion() != "null") {// How come a course without any exclusion?
-		    found.add(c);
-		    continue;
+		v.removeAll(found);
+		Controller.FilteredCourse.clear();
+		Controller.FilteredCourse.addAll(v);
+	
+		for (Course d : v) {
+		    String newline = d.getTitle() + "\n";
+		    for (int i = 0; i < d.getNumSlots(); i++) {
+			Slot t = d.getSlot(i);
+			newline += t.getSectionType()+" "+t+"\n";
+		    }
+		    if (textAreaConsole.getText() == null)
+			textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
+		    else
+			textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
 		}
-
-	    if (WithLabsorTutorial.isSelected()) {
-		if (!c.containsLab())
-		    found.add(c);
-		if (found.contains(c))
-		    continue;
-	    }
-	}
-	v.removeAll(found);// found is the union that doesn't satisfy any of requirement ,remove all of
-	// them,now V is what I want.
-	Controller.FilteredCourse.clear();
-	Controller.FilteredCourse.addAll(v);
-
-	for (final Course c : v) {
-	    String newline = c.getTitle() + "\n";
-	    for (int i = 0; i < c.getNumSlots(); i++) {
-		final Slot t = c.getSlot(i);
-		newline += "Slot " + i + ":" + t + "\n";
-	    }
-	    if (textAreaConsole.getText() == null)
-		textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
-	    else
-		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
-	}
 	List();
     }
-
+    
     @FXML
+    /**
+     * This function call the filter function once the Select-All or De-select is clicked
+     * The button text will be changed to "De-select all" from "Select All" or vice versa
+     * All checkbox will be checked or not checked
+     * the filter function will be called
+     * @author JIANG WEI
+     **/
     void SelectAll_Action() {
 
 	if (SelectAll.getText() != "De-select All") {
@@ -654,21 +717,40 @@ public class Controller {
     }
 
     @FXML
+    /**
+     * This function is will call the filter function once the Thursday checkbox is clicked
+     * @author JIANG WEI
+     */
     void Thur_Selection() {
 	select();
     }
 
     @FXML
+    /**
+     * This function is will call the filter function once the Tuesday checkbox is clicked
+     * @param no parameters needed
+     * @return no returned
+     * @see no output
+     * @author JIANG WEI
+     */
     void Tue_Selection() {
 	select();
     }
 
     @FXML
+    /**
+     * This function is will call the filter function once the Wednesday checkbox is clicked
+     * @author JIANG WEI
+     */
     void Wed_Selection() {
 	select();
     }
 
     @FXML
+    /**
+     * This function is will call the filter function once the WithLabsorTutorials checkbox is clicked
+     * @author JIANG WEI
+     */
     void WithLabsorTutorial_selection() {
 	select();
     }

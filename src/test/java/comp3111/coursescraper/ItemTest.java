@@ -1,6 +1,6 @@
 package comp3111.coursescraper;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -138,6 +138,16 @@ public class ItemTest {
 	assertEquals(b.containsThurs(), true);
 	assertEquals(b.containsFri(), true);
 	assertEquals(b.containsSat(), true);
+	Course c=new Course();
+    assertTrue(!c.containsAM());
+    assertTrue(!c.containsFri());
+    assertTrue(!c.containsLab());
+    assertTrue(!c.containsMon());
+    assertTrue(!c.containsPM());
+    assertTrue(!c.containsSat());
+    assertTrue(!c.containsThurs());
+    assertTrue(!c.containsTue());
+    assertTrue(!c.containsWed());
     }
 
 }

@@ -209,6 +209,19 @@ public class Controller {
 	}
     };
 
+    /**
+     * Perform all subject search.
+     * 
+     * When the subject list is empty (i.e. No search was performed before), it will
+     * retreive all subjects codes from the URL. Upon finish, it will print the
+     * total number of subjects found.
+     * 
+     * Later calls it will call Scrape() recursively to retrieve courses from all
+     * subjects. When the scraper has finished scraping a subject, it will print
+     * "____ is done" and update the progressbar.
+     * 
+     * @author asto18089
+     */
     @FXML
     void allSubjectSearch() {
 	textAreaConsole.clear();
@@ -227,11 +240,13 @@ public class Controller {
 
     @FXML
     /**
-     * This function is will call the filter function once the Am checkbox is clicked
+     * This function is will call the filter function once the Am checkbox is
+     * clicked
+     * 
      * @author JIANG WEI
      */
     void AM_Selection() {
-	select(); 
+	select();
     }
 
     private boolean checkApplicableColor(final Color color) {
@@ -267,7 +282,9 @@ public class Controller {
 
     @FXML
     /**
-     * This function is will call the filter function once the CommonCore checkbox is clicked
+     * This function is will call the filter function once the CommonCore checkbox
+     * is clicked
+     * 
      * @author JIANG WEI
      */
     void CommonCore_Selection() {
@@ -291,7 +308,7 @@ public class Controller {
 
 	    // Y on 9 AM: 49
 	    // Y for one hour: 20
-	    
+
 	    final LocalTime startTime = section.getSlot(i).getStart();
 	    final LocalTime endTime = section.getSlot(i).getEnd();
 	    final double startHour = startTime.getHour();
@@ -323,6 +340,13 @@ public class Controller {
 	}
     }
 
+    /**
+     * Find all instructors' SFQ scores.
+     * 
+     * It will print all instructor and their taught courses' average SFQ score.
+     * 
+     * @author asto18089
+     */
     @FXML
     void findInstructorSfq() {
 	final List<InstSFQScoreStruct> out = scraper.scrapeInstSFQ(textfieldSfqUrl.getText());
@@ -338,6 +362,14 @@ public class Controller {
 	}
     }
 
+    /**
+     * Find enrolled courses' SFQ scores.
+     * 
+     * It will print user's enrolled courses and their SFQ score (averaging all
+     * sections of this course).
+     * 
+     * @author asto18089
+     */
     @FXML
     void findSfqEnrollCourse() {
 	final List<CourseSFQStruct> out = scraper.scrapeCourseSFQ(textfieldSfqUrl.getText(), EnrolledSection);
@@ -355,78 +387,84 @@ public class Controller {
 
     @FXML
     /**
-     * This function is will call the filter function once the Fri checkbox is clicked
+     * This function is will call the filter function once the Fri checkbox is
+     * clicked
+     * 
      * @author JIANG WEI
      */
     void Fri_Selection() {
 	select();
     }
+
     /**
-     * This function implements the table column
-     * It will use the scraped course information to fill up different columns with different information
+     * This function implements the table column It will use the scraped course
+     * information to fill up different columns with different information
+     * 
      * @author JIANG WEI
      */
     void List() {
-		CourseCode.setCellValueFactory(cellData -> cellData.getValue().CourseCodeProperty());
-		Section.setCellValueFactory(cellData -> cellData.getValue().SectionProperty());
-		CourseName.setCellValueFactory(cellData -> cellData.getValue().CourseNameProperty());
-		Instructor.setCellValueFactory(cellData -> cellData.getValue().InstructorProperty());
-		Enroll.setCellValueFactory(arg0 -> {
-		    final Section sec = arg0.getValue();
-		    final CheckBox checkBox = new CheckBox();
-		    checkBox.selectedProperty().setValue(sec.getEnrolledStatus());
-		    checkBox.selectedProperty().addListener((ChangeListener<Boolean>) (ov, old_val, new_val) -> {
-			sec.setEnrolledStatus(new_val);
-			if (sec.getEnrolledStatus() == true && !Controller.EnrolledSection.contains(sec)) {
-			    Controller.EnrolledSection.add(sec);
-			    displayToTimetable(sec);
+	CourseCode.setCellValueFactory(cellData -> cellData.getValue().CourseCodeProperty());
+	Section.setCellValueFactory(cellData -> cellData.getValue().SectionProperty());
+	CourseName.setCellValueFactory(cellData -> cellData.getValue().CourseNameProperty());
+	Instructor.setCellValueFactory(cellData -> cellData.getValue().InstructorProperty());
+	Enroll.setCellValueFactory(arg0 -> {
+	    final Section sec = arg0.getValue();
+	    final CheckBox checkBox = new CheckBox();
+	    checkBox.selectedProperty().setValue(sec.getEnrolledStatus());
+	    checkBox.selectedProperty().addListener((ChangeListener<Boolean>) (ov, old_val, new_val) -> {
+		sec.setEnrolledStatus(new_val);
+		if (sec.getEnrolledStatus() == true && !Controller.EnrolledSection.contains(sec)) {
+		    Controller.EnrolledSection.add(sec);
+		    displayToTimetable(sec);
+		}
+		if (sec.getEnrolledStatus() == false && Controller.EnrolledSection.contains(sec)) {
+		    Controller.EnrolledSection.remove(sec);
+		    removeFromTimetable(sec);
+		}
+		textAreaConsole.clear();
+		if (!FilteredCourse.isEmpty()) {
+		    for (Course d : FilteredCourse) {
+			String newline = d.getTitle() + "\n";
+			for (int i = 0; i < d.getNumSlots(); i++) {
+			    Slot t = d.getSlot(i);
+			    newline += t.getSectionType() + " " + t + "\n";
 			}
-			if (sec.getEnrolledStatus() == false && Controller.EnrolledSection.contains(sec)) {
-			    Controller.EnrolledSection.remove(sec);
-			    removeFromTimetable(sec);
-			}
-			textAreaConsole.clear();
-			if(!FilteredCourse.isEmpty()){
-				for (Course d : FilteredCourse) {
-				    String newline = d.getTitle() + "\n";
-				    for (int i = 0; i < d.getNumSlots(); i++) {
-					Slot t = d.getSlot(i);
-					newline += t.getSectionType()+" "+t+"\n";
-				    }
-				    if (textAreaConsole.getText() == null)
-					textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
-				    else
-					textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
-				}
-			}
-			String newline = textAreaConsole.getText()+"\n\n\n"+"The following sections are enrolled:" + "\n";
-			for (final Section s : Controller.EnrolledSection)
-			    newline += s.getCourseCode() + " " + s.getSection() + " " + s.getCourseName() + " "
-				    + s.getInstructor() + " \n";
 			if (textAreaConsole.getText() == null)
 			    textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
 			else
 			    textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
-		    });
-	
-		    return new SimpleObjectProperty<>(checkBox);
-		});
-		if (Controller.FilteredCourse.isEmpty()) {
-		    data.clear();
-		    for (final Course c : Controller.scrapedCourse)
-			data.addAll(c.sections);
-		    ListTable.setItems(data);
-		} else {
-		    data.clear();
-		    for (final Course c : Controller.FilteredCourse)
-			data.addAll(c.sections);
-		    ListTable.setItems(data);
+		    }
 		}
+		String newline = textAreaConsole.getText() + "\n\n\n" + "The following sections are enrolled:" + "\n";
+		for (final Section s : Controller.EnrolledSection)
+		    newline += s.getCourseCode() + " " + s.getSection() + " " + s.getCourseName() + " "
+			    + s.getInstructor() + " \n";
+		if (textAreaConsole.getText() == null)
+		    textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
+		else
+		    textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+	    });
+
+	    return new SimpleObjectProperty<>(checkBox);
+	});
+	if (Controller.FilteredCourse.isEmpty()) {
+	    data.clear();
+	    for (final Course c : Controller.scrapedCourse)
+		data.addAll(c.sections);
+	    ListTable.setItems(data);
+	} else {
+	    data.clear();
+	    for (final Course c : Controller.FilteredCourse)
+		data.addAll(c.sections);
+	    ListTable.setItems(data);
+	}
     }
 
     @FXML
     /**
-     * This function is will call the filter function once the Monday checkbox is clicked
+     * This function is will call the filter function once the Monday checkbox is
+     * clicked
+     * 
      * @author JIANG WEI
      */
     void Mon_Action() {
@@ -435,7 +473,9 @@ public class Controller {
 
     @FXML
     /**
-     * This function is will call the filter function once the NoExclusion parameters is clicked
+     * This function is will call the filter function once the NoExclusion
+     * parameters is clicked
+     * 
      * @param no parameters needed
      * @return no returned
      * @see no output
@@ -447,7 +487,9 @@ public class Controller {
 
     @FXML
     /**
-     * This function is will call the filter function once the PM checkbox is clicked
+     * This function is will call the filter function once the PM checkbox is
+     * clicked
+     * 
      * @param no parameters needed
      * @return no returned
      * @see no output
@@ -466,7 +508,9 @@ public class Controller {
 
     @FXML
     /**
-     * This function is will call the filter function once the Sat checkbox is clicked
+     * This function is will call the filter function once the Sat checkbox is
+     * clicked
+     * 
      * @author JIANG WEI
      */
     void Sat_Selection() {
@@ -475,216 +519,214 @@ public class Controller {
 
     @FXML
     void search() {
-		try {
-		    checkValidURL(
-			    textfieldURL.getText() + "/" + textfieldTerm.getText() + "/subject/" + textfieldSubject.getText());
-		    final List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(),
-			    textfieldSubject.getText());
-		    
-		    Integer numSection = 0;
-		    Integer numCourse = 0;
-		    ArrayList<String> instructors = new ArrayList<String>();
-		    ArrayList<String> instructorsWithAssignment = new ArrayList<String>();
-		    textAreaConsole.setText("");
-		    
-		    for (final Course c : v) {
-				String newline = c.getTitle() + "\n";
-				for (int i = 0; i < c.getNumSections(); i++) {
-					if (!instructors.contains(c.getSection(i).getInstructor())) {
-						instructors.add(c.getSection(i).getInstructor());
-					}
-					if (checkInRange(c.getSection(i))) {
-						if (!instructorsWithAssignment.contains(c.getSection(i).getInstructor())) {
-							instructorsWithAssignment.add(c.getSection(i).getInstructor());
-						}
-					}
-					for (int j = 0; j < c.getSection(i).getSlotSize(); j++) {
-						final Slot t = c.getSection(i).getSlot(j);
-					    newline += c.getSection(i).getSection() + ": " + t + "\n";
-					}
-				}
-				textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
-				numSection += c.getNumSections();
-				numCourse++;
+	try {
+	    checkValidURL(
+		    textfieldURL.getText() + "/" + textfieldTerm.getText() + "/subject/" + textfieldSubject.getText());
+	    final List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(),
+		    textfieldSubject.getText());
+
+	    Integer numSection = 0;
+	    Integer numCourse = 0;
+	    ArrayList<String> instructors = new ArrayList<String>();
+	    ArrayList<String> instructorsWithAssignment = new ArrayList<String>();
+	    textAreaConsole.setText("");
+
+	    for (final Course c : v) {
+		String newline = c.getTitle() + "\n";
+		for (int i = 0; i < c.getNumSections(); i++) {
+		    if (!instructors.contains(c.getSection(i).getInstructor())) {
+			instructors.add(c.getSection(i).getInstructor());
 		    }
-		    String addLine = "Total Number of difference sections in this search: " + numSection.toString() + "\n\n";
-		    addLine += ("Total Number of Course in this search: " + numCourse.toString() + "\n\n");
-		    addLine += ("Instrctuors who has teaching assignment this term but does not need to teach at Tu 3:10pm:\n");
-		    
-		    textAreaConsole.setText(textAreaConsole.getText() + "\n" + addLine);
-		    instructors.removeAll(instructorsWithAssignment);
-		    instructors.remove("TBA");
-		    Collections.sort(instructors, new Comparator<String>() {
-		        @Override
-		        public int compare(String s1, String s2) {
-		            return s1.charAt(0) - s2.charAt(0);
-		        }
-		    });
-		    boolean isFirst = true;
-		    String instructorNames = "";
-		    for (String s: instructors) {
-		    	if (isFirst) {
-		    		System.out.println(s);
-		    		instructorNames += s;
-		    		isFirst = false;
-		    	}
-		    	else {
-		    		instructorNames += (",\n" + s);
-		    	}
+		    if (checkInRange(c.getSection(i))) {
+			if (!instructorsWithAssignment.contains(c.getSection(i).getInstructor())) {
+			    instructorsWithAssignment.add(c.getSection(i).getInstructor());
+			}
 		    }
-		    
-		    textAreaConsole.setText(textAreaConsole.getText() + instructorNames);
-	
-		    /*
-		     * edit the tablecolumn after the search @Brother Liang implement it also in
-		     * ALLSbujectSearch;
-		     */
-		    Controller.scrapedCourse = new ArrayList<Course>();
-		    Controller.scrapedCourse.addAll(v);
-		    List();
-		} 
-		catch (final FileNotFoundException e) {
-		    String consoleComponent = "Invalid URL for " + e.getMessage();
-		    consoleComponent += ". Please input a valid HKUST URL.";
-		    String instructionNamesLineFeed = "";
-		    String line = "";
-		    for (int i = 0; i < consoleComponent.length(); i++) {
-		    	instructionNamesLineFeed += consoleComponent.charAt(i);
-		    	line += consoleComponent.charAt(i);
-		    	System.out.println(line);
-		    	if (line.length() >= 80) {
-		    		instructionNamesLineFeed += "\n";
-		    		line = "";
-		    	}
+		    for (int j = 0; j < c.getSection(i).getSlotSize(); j++) {
+			final Slot t = c.getSection(i).getSlot(j);
+			newline += c.getSection(i).getSection() + ": " + t + "\n";
 		    }
-	
-		    textAreaConsole.setText(instructionNamesLineFeed);
-		    instructionText1.setText("* Cannot find the valid URL from HKUST class schedule and quota for");
-		    instructionText2.setText("* " + e.getMessage());
-		    instructionText3.setText("* Some instructions provided below.");
-		    displayText1.setText("You need to provide a valid URL from HKUST class schedule and quota.");
-		    displayText2.setText("You need to provide a valid time period.");
-		    displayText3.setText("You need to provide a valid subject.");
 		}
-		
-	    
-		
-	    
+		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+		numSection += c.getNumSections();
+		numCourse++;
+	    }
+	    String addLine = "Total Number of difference sections in this search: " + numSection.toString() + "\n\n";
+	    addLine += ("Total Number of Course in this search: " + numCourse.toString() + "\n\n");
+	    addLine += ("Instrctuors who has teaching assignment this term but does not need to teach at Tu 3:10pm:\n");
+
+	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + addLine);
+	    instructors.removeAll(instructorsWithAssignment);
+	    instructors.remove("TBA");
+	    Collections.sort(instructors, new Comparator<String>() {
+		@Override
+		public int compare(String s1, String s2) {
+		    return s1.charAt(0) - s2.charAt(0);
+		}
+	    });
+	    boolean isFirst = true;
+	    String instructorNames = "";
+	    for (String s : instructors) {
+		if (isFirst) {
+		    System.out.println(s);
+		    instructorNames += s;
+		    isFirst = false;
+		} else {
+		    instructorNames += (",\n" + s);
+		}
+	    }
+
+	    textAreaConsole.setText(textAreaConsole.getText() + instructorNames);
+
+	    /*
+	     * edit the tablecolumn after the search @Brother Liang implement it also in
+	     * ALLSbujectSearch;
+	     */
+	    Controller.scrapedCourse = new ArrayList<Course>();
+	    Controller.scrapedCourse.addAll(v);
 	    List();
-	    buttonSfqEnrollCourse.setDisable(false);
-	 
+	} catch (final FileNotFoundException e) {
+	    String consoleComponent = "Invalid URL for " + e.getMessage();
+	    consoleComponent += ". Please input a valid HKUST URL.";
+	    String instructionNamesLineFeed = "";
+	    String line = "";
+	    for (int i = 0; i < consoleComponent.length(); i++) {
+		instructionNamesLineFeed += consoleComponent.charAt(i);
+		line += consoleComponent.charAt(i);
+		System.out.println(line);
+		if (line.length() >= 80) {
+		    instructionNamesLineFeed += "\n";
+		    line = "";
+		}
+	    }
+
+	    textAreaConsole.setText(instructionNamesLineFeed);
+	    instructionText1.setText("* Cannot find the valid URL from HKUST class schedule and quota for");
+	    instructionText2.setText("* " + e.getMessage());
+	    instructionText3.setText("* Some instructions provided below.");
+	    displayText1.setText("You need to provide a valid URL from HKUST class schedule and quota.");
+	    displayText2.setText("You need to provide a valid time period.");
+	    displayText3.setText("You need to provide a valid subject.");
+	}
+
+	List();
+	buttonSfqEnrollCourse.setDisable(false);
+
     }
 
     /**
-     * This function will be called when either checkbox status is changed
-     * This function will filter all the satisfied courses based on the requirements 
-     * This function eventually will print the satisfied courses information in the console
+     * This function will be called when either checkbox status is changed This
+     * function will filter all the satisfied courses based on the requirements This
+     * function eventually will print the satisfied courses information in the
+     * console
+     * 
      * @author JIANG WEI
      */
     void select() {
-		textAreaConsole.setText(null);
-		final List<Course> v = new ArrayList<>(); 
-		v.addAll(Controller.scrapedCourse);
-		final List<Course> found = new ArrayList<>();
-		for (Course c : v) {
-		    if (AM.isSelected()) {
-	
-			if (!c.containsAM())
-			    found.add(c);
-			if (found.contains(c))
-			    continue;
-		    }
-		    if (PM.isSelected()) {
-	
-			if (!c.containsPM())
-			    found.add(c);
-			if (found.contains(c))
-			    continue;
-		    }
-		    if (Mon.isSelected()) {
-	
-			if (!c.containsMon())
-			    found.add(c);
-			if (found.contains(c))
-			    continue;
-		    }
-		    if (Tue.isSelected()) {
-	
-			if (!c.containsTue())
-			    found.add(c);
-			if (found.contains(c))
-			    continue;
-		    }
-		    if (Wed.isSelected()) {
-	
-			if (!c.containsWed())
-			    found.add(c);
-			if (found.contains(c))
-			    continue;
-		    }
-		    if (Thur.isSelected()) {
-	
-			if (!c.containsThurs())
-			    found.add(c);
-			if (found.contains(c))
-			    continue;
-		    }
-		    if (Fri.isSelected()) {
-	
-			if (!c.containsFri())
-			    found.add(c);
-			if (found.contains(c))
-			    continue;
-		    }
-		    if (Sat.isSelected()) {// hope god bless these poor guys :D
-	
-			if (!c.containsSat())
-			    found.add(c);
-			if (found.contains(c))
-			    continue;
-		    }
-		    if (CommonCore.isSelected())
-			if (c.getCommoncore() == "null") {// If it is not ccc,WHY DO I enroll it 2333?
-			    found.add(c);
-			    continue;
-			}
-		    if (NoExclusion.isSelected())
-			if (c.getExclusion() != "null") {// How come a course without any exclusion?
-			    found.add(c);
-			    continue;
-			}
-		    if (WithLabsorTutorial.isSelected()) {
-	
-			if (!c.containsLab())
-			    found.add(c);
-			if (found.contains(c))
-			    continue;
-		    }
+	textAreaConsole.setText(null);
+	final List<Course> v = new ArrayList<>();
+	v.addAll(Controller.scrapedCourse);
+	final List<Course> found = new ArrayList<>();
+	for (Course c : v) {
+	    if (AM.isSelected()) {
+
+		if (!c.containsAM())
+		    found.add(c);
+		if (found.contains(c))
+		    continue;
+	    }
+	    if (PM.isSelected()) {
+
+		if (!c.containsPM())
+		    found.add(c);
+		if (found.contains(c))
+		    continue;
+	    }
+	    if (Mon.isSelected()) {
+
+		if (!c.containsMon())
+		    found.add(c);
+		if (found.contains(c))
+		    continue;
+	    }
+	    if (Tue.isSelected()) {
+
+		if (!c.containsTue())
+		    found.add(c);
+		if (found.contains(c))
+		    continue;
+	    }
+	    if (Wed.isSelected()) {
+
+		if (!c.containsWed())
+		    found.add(c);
+		if (found.contains(c))
+		    continue;
+	    }
+	    if (Thur.isSelected()) {
+
+		if (!c.containsThurs())
+		    found.add(c);
+		if (found.contains(c))
+		    continue;
+	    }
+	    if (Fri.isSelected()) {
+
+		if (!c.containsFri())
+		    found.add(c);
+		if (found.contains(c))
+		    continue;
+	    }
+	    if (Sat.isSelected()) {// hope god bless these poor guys :D
+
+		if (!c.containsSat())
+		    found.add(c);
+		if (found.contains(c))
+		    continue;
+	    }
+	    if (CommonCore.isSelected())
+		if (c.getCommoncore() == "null") {// If it is not ccc,WHY DO I enroll it 2333?
+		    found.add(c);
+		    continue;
 		}
-		v.removeAll(found);
-		Controller.FilteredCourse.clear();
-		Controller.FilteredCourse.addAll(v);
-	
-		for (Course d : v) {
-		    String newline = d.getTitle() + "\n";
-		    for (int i = 0; i < d.getNumSlots(); i++) {
-			Slot t = d.getSlot(i);
-			newline += t.getSectionType()+" "+t+"\n";
-		    }
-		    if (textAreaConsole.getText() == null)
-			textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
-		    else
-			textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+	    if (NoExclusion.isSelected())
+		if (c.getExclusion() != "null") {// How come a course without any exclusion?
+		    found.add(c);
+		    continue;
 		}
+	    if (WithLabsorTutorial.isSelected()) {
+
+		if (!c.containsLab())
+		    found.add(c);
+		if (found.contains(c))
+		    continue;
+	    }
+	}
+	v.removeAll(found);
+	Controller.FilteredCourse.clear();
+	Controller.FilteredCourse.addAll(v);
+
+	for (Course d : v) {
+	    String newline = d.getTitle() + "\n";
+	    for (int i = 0; i < d.getNumSlots(); i++) {
+		Slot t = d.getSlot(i);
+		newline += t.getSectionType() + " " + t + "\n";
+	    }
+	    if (textAreaConsole.getText() == null)
+		textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
+	    else
+		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+	}
 	List();
     }
-    
+
     @FXML
     /**
-     * This function call the filter function once the Select-All or De-select is clicked
-     * The button text will be changed to "De-select all" from "Select All" or vice versa
-     * All checkbox will be checked or not checked
-     * the filter function will be called
+     * This function call the filter function once the Select-All or De-select is
+     * clicked The button text will be changed to "De-select all" from "Select All"
+     * or vice versa All checkbox will be checked or not checked the filter function
+     * will be called
+     * 
      * @author JIANG WEI
      **/
     void SelectAll_Action() {
@@ -722,7 +764,9 @@ public class Controller {
 
     @FXML
     /**
-     * This function is will call the filter function once the Thursday checkbox is clicked
+     * This function is will call the filter function once the Thursday checkbox is
+     * clicked
+     * 
      * @author JIANG WEI
      */
     void Thur_Selection() {
@@ -731,7 +775,9 @@ public class Controller {
 
     @FXML
     /**
-     * This function is will call the filter function once the Tuesday checkbox is clicked
+     * This function is will call the filter function once the Tuesday checkbox is
+     * clicked
+     * 
      * @param no parameters needed
      * @return no returned
      * @see no output
@@ -743,7 +789,9 @@ public class Controller {
 
     @FXML
     /**
-     * This function is will call the filter function once the Wednesday checkbox is clicked
+     * This function is will call the filter function once the Wednesday checkbox is
+     * clicked
+     * 
      * @author JIANG WEI
      */
     void Wed_Selection() {
@@ -752,7 +800,9 @@ public class Controller {
 
     @FXML
     /**
-     * This function is will call the filter function once the WithLabsorTutorials checkbox is clicked
+     * This function is will call the filter function once the WithLabsorTutorials
+     * checkbox is clicked
+     * 
      * @author JIANG WEI
      */
     void WithLabsorTutorial_selection() {

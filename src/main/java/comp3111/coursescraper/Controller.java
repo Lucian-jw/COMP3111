@@ -217,13 +217,27 @@ public class Controller {
     }
 
     @FXML
+    /**
+     * This function is will call the filter function once the Am checkbox is clicked
+     * @param no parameters needed
+     * @return no returned
+     * @see no output
+     * @author JIANG WEI
+     */
     void AM_Selection() {
-	select(); // once you click the checkbox, it will select
+	select(); 
     }
 
     @FXML
+    /**
+     * This function is will call the filter function once the CommonCore checkbox is clicked
+     * @param no parameters needed
+     * @return no returned
+     * @see no output
+     * @author JIANG WEI
+     */
     void CommonCore_Selection() {
-	select();// once you click the checkbox, it will select
+	select();
     }
 
     private void displayToTimetable(final Section section) {
@@ -329,11 +343,25 @@ public class Controller {
     }
 
     @FXML
+    /**
+     * This function is will call the filter function once the Fri checkbox is clicked
+     * @param no parameters needed
+     * @return no returned
+     * @see no output
+     * @author JIANG WEI
+     */
     void Fri_Selection() {
-	select();// once you click the checkbox, it will select
+	select();
 
     }
-
+    /**
+     * This function implements the table column
+     * It will use the scraped course information to fill up different columns with different information
+     * @param no param needed
+     * @return no value returned
+     * @see the tablecolumn will be filled and checkbox will be generated
+     * @author JIANG WEI
+     */
     void List() {
 		CourseCode.setCellValueFactory(cellData -> cellData.getValue().CourseCodeProperty());
 		Section.setCellValueFactory(cellData -> cellData.getValue().SectionProperty());
@@ -382,21 +410,49 @@ public class Controller {
     }
 
     @FXML
+    /**
+     * This function is will call the filter function once the Monday checkbox is clicked
+     * @param no parameters needed
+     * @return no returned
+     * @see no output
+     * @author JIANG WEI
+     */
     void Mon_Action() {
-	select();// once you click the checkbox, it will select
+	select();
     }
 
     @FXML
+    /**
+     * This function is will call the filter function once the NoExclusion parameters is clicked
+     * @param no parameters needed
+     * @return no returned
+     * @see no output
+     * @author JIANG WEI
+     */
     void NoExlusion_Selection() {
 	select();
-    }// once you click the checkbox, it will select
+    }
 
     @FXML
+    /**
+     * This function is will call the filter function once the PM checkbox is clicked
+     * @param no parameters needed
+     * @return no returned
+     * @see no output
+     * @author JIANG WEI
+     */
     void PM_Selection() {
 	select();// once you click the checkbox, it will select
     }
 
     @FXML
+    /**
+     * This function is will call the filter function once the Sat checkbox is clicked
+     * @param no parameters needed
+     * @return no returned
+     * @see no output
+     * @author JIANG WEI
+     */
     void Sat_Selection() {
 	select();// once you click the checkbox, it will select
     }
@@ -481,11 +537,18 @@ public class Controller {
 		    displayText3.setText("You need to provide a valid subject.");
 		}
     }
-
-    void select() {// the console will display the corresponding courses under the restriction,by
-		   // the way, Why do you read this,uh?
+    /**
+     * This function will be called when either checkbox status is changed
+     * This function will filter all the satisfied courses based on the requirements 
+     * This function eventually will print the satisfied courses information in the console
+     * @param no parameters needed
+     * @return no returned
+     * @see The console will show the filtered information
+     * @author JIANG WEI
+     */
+    void select() {
 		textAreaConsole.setText(null);
-		final List<Course> v = new ArrayList<>(); // edit it to be a AllSubjectSearch course or normal search list!
+		final List<Course> v = new ArrayList<>(); 
 		v.addAll(Controller.scrapedCourse);
 		final List<Course> found = new ArrayList<>();
 		for (final Course c : v) {
@@ -563,8 +626,7 @@ public class Controller {
 			    continue;
 		    }
 		}
-		v.removeAll(found);// found is the union that doesn't satisfy any of requirement ,remove all of
-		// them,now V is what I want.
+		v.removeAll(found);
 		Controller.FilteredCourse.clear();
 		Controller.FilteredCourse.addAll(v);
 	
@@ -582,13 +644,21 @@ public class Controller {
 		}
 		List();
     }
-
+    
     @FXML
+    /**
+     * This function call the filter function once the Select-All or De-select is clicked
+     * The button text will be changed to "De-select all" from "Select All" or vice versa
+     * All checkbox will be checked or not checked
+     * the filter function will be called
+     * @param no parameters needed
+     * @return no returned
+     * @see All checkbox status will be changed and the button text changes
+     * @author JIANG WEI
+     **/
     void SelectAll_Action() {
 
-	if (SelectAll.getText() != "De-select All") {// If it is "Select-All,change to"De" and change all the statuses
-						     // to selected,do the selection.
-	    System.out.println("hi");
+	if (SelectAll.getText() != "De-select All") {
 	    SelectAll.setText("De-select All");
 	    AM.setSelected(true);
 	    PM.setSelected(true);
@@ -603,8 +673,7 @@ public class Controller {
 	    WithLabsorTutorial.setSelected(true);
 
 	} else {
-	    SelectAll.setText("Select All");// If it is "DeSelect-All,change to"Se" and change all the statuses to
-					    // selected,do the selection.
+	    SelectAll.setText("Select All");
 	    AM.setSelected(false);
 	    PM.setSelected(false);
 	    Mon.setSelected(false);
@@ -621,23 +690,52 @@ public class Controller {
     }
 
     @FXML
+    /**
+     * This function is will call the filter function once the Thursday checkbox is clicked
+     * @param no parameters needed
+     * @return no returned
+     * @see no output
+     * @author JIANG WEI
+     */
     void Thur_Selection() {
-	select();// once you click the checkbox, it will select
+	select();
     }
 
     @FXML
+    /**
+     * This function is will call the filter function once the Tuesday checkbox is clicked
+     * @param no parameters needed
+     * @return no returned
+     * @see no output
+     * @author JIANG WEI
+     */
     void Tue_Selection() {
-	select();// once you click the checkbox, it will select
+	select();
     }
 
     @FXML
+    /**
+     * This function is will call the filter function once the Wednesday checkbox is clicked
+     * @param no parameters needed
+     * @return no returned
+     * @see no output
+     * @author JIANG WEI
+     */
     void Wed_Selection() {
-	select();// once you click the checkbox, it will select
+	select();
     }
 
     @FXML
+    /**
+     * This function is will call the filter function once the WithLabsorTutorials checkbox is clicked
+     * @param no parameters needed
+     * @return no returned
+     * @see no output
+     * @author JIANG WEI
+     */
     void WithLabsorTutorial_selection() {
-	select();// once you click the checkbox, it will select
+    	
+	select();
     }
 
 }

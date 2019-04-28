@@ -8,11 +8,25 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 public class Scraper {
+    /**
+     * This class serves as a C++ struct-like data structure to store Courses and
+     * their corresponding SFQ scores in a proper way.
+     * 
+     * @author asto1
+     *
+     */
     public class CourseSFQStruct {
 	public String courseCode;
 	public List<String> score = new ArrayList<>();
     }
 
+    /**
+     * This class serves as a C++ struct-like data structure to store Instructors
+     * and their corresponding SFQ scores in a proper way.
+     * 
+     * @author asto1
+     *
+     */
     public class InstSFQScoreStruct {
 	public String name;
 	public List<String> score = new ArrayList<>();
@@ -55,6 +69,14 @@ public class Scraper {
 	}
     }
 
+    /**
+     * Returns whether the input is a invaild score
+     * 
+     * @param s Input score string to be checked
+     * @return whether the score is invaild (='-') or not. Return true if invaild
+     *         and false otherwise.
+     * @author asto18089
+     */
     private static final boolean isNullScore(final String s) {
 	if (s.equals("-"))
 	    return true;
@@ -121,6 +143,15 @@ public class Scraper {
 	return null;
     }
 
+    /**
+     * Scraper to scrape SFQs of enrolled sections.
+     * 
+     * @param baseurl  SFQ URL
+     * @param sections Enrolled sections of the user
+     * @return A list of CourseSFQStruct, contains a course and a list of its
+     *         corresponding SFQ scores per element.
+     * @author asto18089
+     */
     public List<CourseSFQStruct> scrapeCourseSFQ(final String baseurl, final List<Section> sections) {
 	try {
 	    final HtmlPage page = client.getPage(baseurl);
@@ -173,6 +204,14 @@ public class Scraper {
 	return null;
     }
 
+    /**
+     * Scraper to scrape all Instructors' SFQ
+     * 
+     * @param baseurl SFQ URL
+     * @return List of InstSFQScoreStruct, contains instructor's name and a list of
+     *         SFQ scores per element.
+     * @author asto18089
+     */
     public List<InstSFQScoreStruct> scrapeInstSFQ(final String baseurl) {
 	try {
 	    final HtmlPage page = client.getPage(baseurl);
@@ -221,6 +260,13 @@ public class Scraper {
 	return null;
     }
 
+    /**
+     * Scraper to scrape all subjects offered in the specified term.
+     * 
+     * @param baseurl Course schedule URL
+     * @param term    Term
+     * @return A list of String containing subject code per element.
+     */
     public List<String> scrapeSubjects(final String baseurl, final String term) {
 	try {
 	    final HtmlPage page = client.getPage(baseurl + term + "/");

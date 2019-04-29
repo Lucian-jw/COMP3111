@@ -66,7 +66,7 @@ public class Controller {
 	}
     }
 
-    public ObservableList<Section> data = FXCollections.observableArrayList();
+    private static ObservableList<Section> data = FXCollections.observableArrayList();
 
     @FXML
     private Tab tabMain;
@@ -278,7 +278,7 @@ public class Controller {
 
 	    // Y on 9 AM: 49
 	    // Y for one hour: 20
-	    
+
 	    final LocalTime startTime = section.getSlot(i).getStart();
 	    final LocalTime endTime = section.getSlot(i).getEnd();
 	    final double startHour = startTime.getHour();
@@ -346,48 +346,48 @@ public class Controller {
     }
 
     void List() {
-		CourseCode.setCellValueFactory(cellData -> cellData.getValue().CourseCodeProperty());
-		Section.setCellValueFactory(cellData -> cellData.getValue().SectionProperty());
-		CourseName.setCellValueFactory(cellData -> cellData.getValue().CourseNameProperty());
-		Instructor.setCellValueFactory(cellData -> cellData.getValue().InstructorProperty());
-		Enroll.setCellValueFactory(arg0 -> {
-		    final Section sec = arg0.getValue();
-		    final CheckBox checkBox = new CheckBox();
-		    checkBox.selectedProperty().setValue(sec.getEnrolledStatus());
-		    checkBox.selectedProperty().addListener((ChangeListener<Boolean>) (ov, old_val, new_val) -> {
-			sec.setEnrolledStatus(new_val);
-			if (sec.getEnrolledStatus() == true && !Controller.EnrolledSection.contains(sec)) {
-			    Controller.EnrolledSection.add(sec);
-			    displayToTimetable(sec);
-			}
-			if (sec.getEnrolledStatus() == false && Controller.EnrolledSection.contains(sec)) {
-			    Controller.EnrolledSection.remove(sec);
-			    removeFromTimetable(sec);
-			}
-			textAreaConsole.clear();
-			String newline = "The following sections are enrolled:" + "\n";
-			for (final Section s : Controller.EnrolledSection)
-			    newline += s.getCourseCode() + " " + s.getSection() + " " + s.getCourseName() + " "
-				    + s.getInstructor() + " \n";
-			if (textAreaConsole.getText() == null)
-			    textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
-			else
-			    textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
-		    });
-	
-		    return new SimpleObjectProperty<>(checkBox);
-		});
-		if (Controller.FilteredCourse.isEmpty()) {
-		    data.clear();
-		    for (final Course c : Controller.scrapedCourse)
-			data.addAll(c.sections);
-		    ListTable.setItems(data);
-		} else {
-		    data.clear();
-		    for (final Course c : Controller.FilteredCourse)
-			data.addAll(c.sections);
-		    ListTable.setItems(data);
+	CourseCode.setCellValueFactory(cellData -> cellData.getValue().CourseCodeProperty());
+	Section.setCellValueFactory(cellData -> cellData.getValue().SectionProperty());
+	CourseName.setCellValueFactory(cellData -> cellData.getValue().CourseNameProperty());
+	Instructor.setCellValueFactory(cellData -> cellData.getValue().InstructorProperty());
+	Enroll.setCellValueFactory(arg0 -> {
+	    final Section sec = arg0.getValue();
+	    final CheckBox checkBox = new CheckBox();
+	    checkBox.selectedProperty().setValue(sec.getEnrolledStatus());
+	    checkBox.selectedProperty().addListener((ChangeListener<Boolean>) (ov, old_val, new_val) -> {
+		sec.setEnrolledStatus(new_val);
+		if (sec.getEnrolledStatus() == true && !Controller.EnrolledSection.contains(sec)) {
+		    Controller.EnrolledSection.add(sec);
+		    displayToTimetable(sec);
 		}
+		if (sec.getEnrolledStatus() == false && Controller.EnrolledSection.contains(sec)) {
+		    Controller.EnrolledSection.remove(sec);
+		    removeFromTimetable(sec);
+		}
+		textAreaConsole.clear();
+		String newline = "The following sections are enrolled:" + "\n";
+		for (final Section s : Controller.EnrolledSection)
+		    newline += s.getCourseCode() + " " + s.getSection() + " " + s.getCourseName() + " "
+			    + s.getInstructor() + " \n";
+		if (textAreaConsole.getText() == null)
+		    textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
+		else
+		    textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+	    });
+
+	    return new SimpleObjectProperty<>(checkBox);
+	});
+	if (Controller.FilteredCourse.isEmpty()) {
+	    data.clear();
+	    for (final Course c : Controller.scrapedCourse)
+		data.addAll(c.sections);
+	    ListTable.setItems(data);
+	} else {
+	    data.clear();
+	    for (final Course c : Controller.FilteredCourse)
+		data.addAll(c.sections);
+	    ListTable.setItems(data);
+	}
     }
 
     @FXML
@@ -419,107 +419,102 @@ public class Controller {
 
     @FXML
     void search() {
-		try {
-		    checkValidURL(
-			    textfieldURL.getText() + "/" + textfieldTerm.getText() + "/subject/" + textfieldSubject.getText());
-		    final List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(),
-			    textfieldSubject.getText());
-		    
-		    Integer numSection = 0;
-		    Integer numCourse = 0;
-		    ArrayList<String> instructors = new ArrayList<String>();
-		    ArrayList<String> instructorsWithAssignment = new ArrayList<String>();
-		    textAreaConsole.setText("");
-		    
-		    for (final Course c : v) {
-				String newline = c.getTitle() + "\n";
-				for (int i = 0; i < c.getNumSections(); i++) {
-					if (!instructors.contains(c.getSection(i).getInstructor())) {
-						instructors.add(c.getSection(i).getInstructor());
-					}
-					if (checkInRange(c.getSection(i))) {
-						if (!instructorsWithAssignment.contains(c.getSection(i).getInstructor())) {
-							instructorsWithAssignment.add(c.getSection(i).getInstructor());
-						}
-					}
-					newline += c.getSection(i).getSection() + ":\n";
-					for (int j = 0; j < c.getSection(i).getSlotSize(); j++) {
-						final Slot t = c.getSection(i).getSlot(j);
-					    newline += " " + t + "\n";
-					}
-				}
-				textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
-				numSection += c.getNumSections();
-				if (c.getNumSections() != 0) {
-					numCourse++;
-				}
+	try {
+	    checkValidURL(
+		    textfieldURL.getText() + "/" + textfieldTerm.getText() + "/subject/" + textfieldSubject.getText());
+	    final List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(),
+		    textfieldSubject.getText());
+
+	    Integer numSection = 0;
+	    Integer numCourse = 0;
+	    ArrayList<String> instructors = new ArrayList<String>();
+	    ArrayList<String> instructorsWithAssignment = new ArrayList<String>();
+	    textAreaConsole.setText("");
+
+	    for (final Course c : v) {
+		String newline = c.getTitle() + "\n";
+		for (int i = 0; i < c.getNumSections(); i++) {
+		    if (!instructors.contains(c.getSection(i).getInstructor())) {
+			instructors.add(c.getSection(i).getInstructor());
 		    }
-		    String addLine = "Total Number of difference sections in this search: " + numSection.toString() + "\n\n";
-		    addLine += ("Total Number of Course in this search: " + numCourse.toString() + "\n\n");
-		    addLine += ("Instrctuors who has teaching assignment this term but does not need to teach at Tu 3:10pm:\n");
-		    
-		    textAreaConsole.setText(textAreaConsole.getText() + "\n" + addLine);
-		    instructors.removeAll(instructorsWithAssignment);
-		    instructors.remove("TBA");
-		    Collections.sort(instructors, new Comparator<String>() {
-		        @Override
-		        public int compare(String s1, String s2) {
-		            return s1.charAt(0) - s2.charAt(0);
-		        }
-		    });
-		    boolean isFirst = true;
-		    String instructorNames = "";
-		    for (String s: instructors) {
-		    	if (isFirst) {
-		    		System.out.println(s);
-		    		instructorNames += s;
-		    		isFirst = false;
-		    	}
-		    	else {
-		    		instructorNames += (",\n" + s);
-		    	}
+		    if (checkInRange(c.getSection(i))) {
+			if (!instructorsWithAssignment.contains(c.getSection(i).getInstructor())) {
+			    instructorsWithAssignment.add(c.getSection(i).getInstructor());
+			}
 		    }
-		    
-		    textAreaConsole.setText(textAreaConsole.getText() + instructorNames);
-	
-		    /*
-		     * edit the tablecolumn after the search @Brother Liang implement it also in
-		     * ALLSbujectSearch;
-		     */
-		    Controller.scrapedCourse = new ArrayList<Course>();
-		    Controller.scrapedCourse.addAll(v);
-		    List();
-		} 
-		catch (final FileNotFoundException e) {
-		    String consoleComponent = "Invalid URL for " + e.getMessage();
-		    consoleComponent += ". Please input a valid HKUST URL.";
-		    String instructionNamesLineFeed = "";
-		    String line = "";
-		    for (int i = 0; i < consoleComponent.length(); i++) {
-		    	instructionNamesLineFeed += consoleComponent.charAt(i);
-		    	line += consoleComponent.charAt(i);
-		    	System.out.println(line);
-		    	if (line.length() >= 80) {
-		    		instructionNamesLineFeed += "\n";
-		    		line = "";
-		    	}
+		    newline += c.getSection(i).getSection() + ":\n";
+		    for (int j = 0; j < c.getSection(i).getSlotSize(); j++) {
+			final Slot t = c.getSection(i).getSlot(j);
+			newline += " " + t + "\n";
 		    }
-	
-		    textAreaConsole.setText(instructionNamesLineFeed);
-		    instructionText1.setText("* Cannot find the valid URL from HKUST class schedule and quota for");
-		    instructionText2.setText("* " + e.getMessage());
-		    instructionText3.setText("* Some instructions provided below.");
-		    displayText1.setText("You need to provide a valid URL from HKUST class schedule and quota.");
-		    displayText2.setText("You need to provide a valid time period.");
-		    displayText3.setText("You need to provide a valid subject.");
 		}
-		
-	    
-		
-	    
+		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+		numSection += c.getNumSections();
+		if (c.getNumSections() != 0) {
+		    numCourse++;
+		}
+	    }
+	    String addLine = "Total Number of difference sections in this search: " + numSection.toString() + "\n\n";
+	    addLine += ("Total Number of Course in this search: " + numCourse.toString() + "\n\n");
+	    addLine += ("Instrctuors who has teaching assignment this term but does not need to teach at Tu 3:10pm:\n");
+
+	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + addLine);
+	    instructors.removeAll(instructorsWithAssignment);
+	    instructors.remove("TBA");
+	    Collections.sort(instructors, new Comparator<String>() {
+		@Override
+		public int compare(String s1, String s2) {
+		    return s1.charAt(0) - s2.charAt(0);
+		}
+	    });
+	    boolean isFirst = true;
+	    String instructorNames = "";
+	    for (String s : instructors) {
+		if (isFirst) {
+		    System.out.println(s);
+		    instructorNames += s;
+		    isFirst = false;
+		} else {
+		    instructorNames += (",\n" + s);
+		}
+	    }
+
+	    textAreaConsole.setText(textAreaConsole.getText() + instructorNames);
+
+	    /*
+	     * edit the tablecolumn after the search @Brother Liang implement it also in
+	     * ALLSbujectSearch;
+	     */
+	    Controller.scrapedCourse = new ArrayList<Course>();
+	    Controller.scrapedCourse.addAll(v);
 	    List();
-	    buttonSfqEnrollCourse.setDisable(false);
-	 
+	} catch (final FileNotFoundException e) {
+	    String consoleComponent = "Invalid URL for " + e.getMessage();
+	    consoleComponent += ". Please input a valid HKUST URL.";
+	    String instructionNamesLineFeed = "";
+	    String line = "";
+	    for (int i = 0; i < consoleComponent.length(); i++) {
+		instructionNamesLineFeed += consoleComponent.charAt(i);
+		line += consoleComponent.charAt(i);
+		System.out.println(line);
+		if (line.length() >= 80) {
+		    instructionNamesLineFeed += "\n";
+		    line = "";
+		}
+	    }
+
+	    textAreaConsole.setText(instructionNamesLineFeed);
+	    instructionText1.setText("* Cannot find the valid URL from HKUST class schedule and quota for");
+	    instructionText2.setText("* " + e.getMessage());
+	    instructionText3.setText("* Some instructions provided below.");
+	    displayText1.setText("You need to provide a valid URL from HKUST class schedule and quota.");
+	    displayText2.setText("You need to provide a valid time period.");
+	    displayText3.setText("You need to provide a valid subject.");
+	}
+
+	List();
+	buttonSfqEnrollCourse.setDisable(false);
+
     }
 
     void select() {

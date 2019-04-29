@@ -2,8 +2,10 @@ package comp3111.coursescraper;
 
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * This class implements Course
+ * 
  * @author JIANG WEI
  *
  */
@@ -15,7 +17,11 @@ public class Course {
     private String exclusion;
     private String commoncore;
     private final Slot[] slots;
-    private List<Section> sections;
+
+    /**
+     * List to store sections
+     */
+    public List<Section> sections;
     private int numSlots;
 
     /**

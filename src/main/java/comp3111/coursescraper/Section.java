@@ -203,11 +203,21 @@ public class Section {
 	return Section.get();
 
     }
-
+    
+    /**
+     * This class method will get the slot object according to the index.
+     * @param i the given index that is needed to retrieve the object
+     * @return the retrieved slot according to the index
+     */
     public Slot getSlot(final int i) {
 	return belongedSlots.get(i);
     }
 
+    /**
+     * This function returns the number of slots in the section object
+     * 
+     * @return the number of slots in the section object
+     */
     public int getSlotSize() {
 	return belongedSlots.size();
     }

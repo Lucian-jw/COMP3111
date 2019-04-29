@@ -96,8 +96,10 @@ public class Slot {
 	return venue;
     }
 
-    /*
-     * determine whether this slot starts in A.M
+    /**
+     * This function determines if this slot has AM quantum
+     * @return a boolean value indicates whether the time is AM
+     * @author JIANG WEI
      */
     public boolean isAM() {
 	if (start != null)
@@ -106,8 +108,10 @@ public class Slot {
 
     }
 
-    /*
-     * determine whether this slot ends at P.M
+    /**
+     * This function determines if this slot has PM quantum
+     * @return a boolean value indicates whether the time is PM
+     * @author JIANG WEI
      */
     public boolean isPM() {
 	if (end != null)

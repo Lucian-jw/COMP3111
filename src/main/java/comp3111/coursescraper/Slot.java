@@ -1,95 +1,174 @@
 package comp3111.coursescraper;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.time.LocalTime;
-import java.util.Locale;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 public class Slot {
-	private int day;
-	private LocalTime start;
-	private LocalTime end;
-	private String venue;
-	public static final String DAYS[] = {"Mo", "Tu", "We", "Th", "Fr", "Sa"};
-	public static final Map<String, Integer> DAYS_MAP = new HashMap<String, Integer>();
-	static {
-		for (int i = 0; i < DAYS.length; i++)
-			DAYS_MAP.put(DAYS[i], i);
-	}
+    public static final String DAYS[] = { "Mo", "Tu", "We", "Th", "Fr", "Sa" };
+    public static final Map<String, Integer> DAYS_MAP = new HashMap<>();
+    static {
+	for (int i = 0; i < Slot.DAYS.length; i++)
+	    Slot.DAYS_MAP.put(Slot.DAYS[i], i);
+    }
+    private int day;
+    private LocalTime start;
+    private LocalTime end;
+    private String venue;
+    private String instructor;
+    private String sectionType;
 
-	@Override
-	public Slot clone() {
-		Slot s = new Slot();
-		s.day = this.day;
-		s.start = this.start;
-		s.end = this.end;
-		s.venue = this.venue;
-		return s;
-	}
-	public String toString() {
-		return DAYS[day] + start.toString() + "-" + end.toString() + ":" + venue;
-	}
-	public int getStartHour() {
-		return start.getHour();
-	}
-	public int getStartMinute() {
-		return start.getMinute();
-	}
-	public int getEndHour() {
-		return end.getHour();
-	}
-	public int getEndMinute() {
-		return end.getMinute();
-	}
-	/**
-	 * @return the start
-	 */
-	public LocalTime getStart() {
-		return start;
-	}
-	/**
-	 * @param start the start to set
-	 */
-	public void setStart(String start) {
-		this.start = LocalTime.parse(start, DateTimeFormatter.ofPattern("hh:mma", Locale.US));
-	}
-	/**
-	 * @return the end
-	 */
-	public LocalTime getEnd() {
-		return end;
-	}
-	/**
-	 * @param end the end to set
-	 */
-	public void setEnd(String end) {
-		this.end = LocalTime.parse(end, DateTimeFormatter.ofPattern("hh:mma", Locale.US));
-	}
-	/**
-	 * @return the venue
-	 */
-	public String getVenue() {
-		return venue;
-	}
-	/**
-	 * @param venue the venue to set
-	 */
-	public void setVenue(String venue) {
-		this.venue = venue;
-	}
+    private Section belongedSection;
 
-	/**
-	 * @return the day
-	 */
-	public int getDay() {
-		return day;
-	}
-	/**
-	 * @param day the day to set
-	 */
-	public void setDay(int day) {
-		this.day = day;
-	}
+    @Override
+    public Slot clone() {
+	final Slot s = new Slot();
+	s.day = day;
+	s.start = start;
+	s.end = end;
+	s.venue = venue;
+	s.instructor = instructor;
+	s.sectionType = sectionType;
+	return s;
+    }
+
+    /**
+     * @return the day
+     */
+    public int getDay() {
+	return day;
+    }
+
+    /**
+     * @return the end
+     */
+    public LocalTime getEnd() {
+	return end;
+    }
+
+    public int getEndHour() {
+	return end.getHour();// s
+    }
+
+    public int getEndMinute() {
+	return end.getMinute();
+    }
+
+    /*
+     * return the ins
+     */
+    public String getinstructor() {
+	return instructor;
+    }
+
+    public Section getSection() {
+	return belongedSection.clone();
+    }
+
+    /*
+     * return the type:L , LA,LT
+     */
+    public String getSectionType() {
+	return sectionType;
+    }
+
+    /**
+     * @return the start
+     */
+    public LocalTime getStart() {
+	return start;
+    }
+
+    public int getStartHour() {
+	return start.getHour();
+    }
+
+    public int getStartMinute() {
+	return start.getMinute();
+    }
+
+    /**
+     * @return the venue
+     */
+    public String getVenue() {
+	return venue;
+    }
+
+    /**
+     * This function determines if this slot has AM quantum
+     * @return a boolean value indicates whether the time is AM
+     * @author JIANG WEI
+     */
+    public boolean isAM() {
+	if (start != null)
+	    return start.isBefore(LocalTime.NOON);
+	return false;
+
+    }
+
+    /**
+     * This function determines if this slot has PM quantum
+     * @return a boolean value indicates whether the time is PM
+     * @author JIANG WEI
+     */
+    public boolean isPM() {
+	if (end != null)
+	    return end.isAfter(LocalTime.NOON) || end.equals(LocalTime.NOON);
+	return false;
+
+    }
+
+    /**
+     * @param day the day to set
+     */
+    public void setDay(final int day) {
+	this.day = day;
+    }
+
+    /**
+     * @param end the end to set
+     */
+    public void setEnd(final String end) {
+	this.end = LocalTime.parse(end, DateTimeFormatter.ofPattern("hh:mma", Locale.US));
+    }
+
+    /*
+     * set the ins
+     */
+    public void setinstructor(final String ins) {
+	instructor = ins;
+    }
+
+    public void setSection(final Section s) {
+	belongedSection = s.clone();
+    }
+
+    /*
+     * set the type:LA,L,LT
+     */
+    public void setSectionType(final String sectionType) {
+	this.sectionType = sectionType;
+    }
+
+    /**
+     * @param start the start to set
+     */
+    public void setStart(final String start) {
+	this.start = LocalTime.parse(start, DateTimeFormatter.ofPattern("hh:mma", Locale.US));
+    }
+
+    /**
+     * @param venue the venue to set
+     */
+    public void setVenue(final String venue) {
+	this.venue = venue;
+    }
+
+    @Override
+    public String toString() {
+	return Slot.DAYS[day] + start.toString() + "-" + end.toString() + ":" + venue;
+    }
 
 }

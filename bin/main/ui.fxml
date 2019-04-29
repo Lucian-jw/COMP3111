@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="679.0" prefWidth="719.0" xmlns="http://javafx.com/javafx/10.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="comp3111.coursescraper.Controller">
+<VBox prefHeight="679.0" prefWidth="719.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="comp3111.coursescraper.Controller">
   <children>
     <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="437.0" prefWidth="719.0">
       <children>
@@ -32,7 +32,7 @@
                               <Button fx:id="buttonSearch" layoutX="458.0" layoutY="94.0" mnemonicParsing="false" onAction="#search" text="Search" />
                               <Label layoutX="98.0" layoutY="35.0" text="Base URL" />
                               <TextField fx:id="textfieldURL" layoutX="164.0" layoutY="31.0" prefHeight="25.0" prefWidth="343.0" text="https://w5.ab.ust.hk/wcq/cgi-bin/" />
-                              <Label layoutX="39.0" layoutY="185.0" text="Please note that during grading we will save the Base URL into another site and manually edit some data. Don't hardcode" />
+                              <Label layoutX="39.0" layoutY="185.0" />
                            </children>
                         </AnchorPane>
                   </content>
@@ -41,12 +41,12 @@
                     <content>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
-                              <Label layoutX="79.0" layoutY="44.0" text="* Handle 404 not found" />
-                              <Label layoutX="78.0" layoutY="61.0" text="* Re-structure the code to incorporate &quot;sections&quot;; Adding section code (L1, LA1, etc..) in the console output below" />
-                              <Label layoutX="96.0" layoutY="108.0" text="Total Number of difference sections in this search" />
-                              <Label layoutX="96.0" layoutY="133.0" text="Total Number of Courses in this search" />
-                              <Label layoutX="78.0" layoutY="78.0" text="* Add the following info to the console output" />
-                              <Label layoutX="96.0" layoutY="159.0" text="Instrctuors who has teaching assignment this term but does not need to teach at Tu 3:10pm" />
+                              <Label fx:id="instructionText1" layoutX="79.0" layoutY="44.0" text="* Welcome to use our course scrapper system." />
+                              <Label fx:id="instructionText2" layoutX="78.0" layoutY="61.0" text="* This system provides you a convinient use of planning courses within HKUST." />
+                              <Label fx:id="displayText1" layoutX="96.0" layoutY="108.0" text="You can use filter to get the course you want and list out the courses in List." />
+                              <Label fx:id="displayText2" layoutX="96.0" layoutY="133.0" text="You can check your preferred timetable at Timetable." />
+                              <Label fx:id="instructionText3" layoutX="78.0" layoutY="78.0" text="* The instructions are displayed as below. Click on the search icon at Main to begin." />
+                              <Label fx:id="displayText3" layoutX="96.0" layoutY="159.0" text="You can also perform all subject search and get some SFQ information." />
                            </children>
                         </AnchorPane>
                     </content>
@@ -55,18 +55,18 @@
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="450.0" prefWidth="722.0">
                            <children>
-                              <CheckBox layoutX="162.0" layoutY="48.0" mnemonicParsing="false" text="AM" />
-                              <CheckBox layoutX="162.0" layoutY="65.0" mnemonicParsing="false" text="PM" />
-                              <CheckBox layoutX="243.0" layoutY="48.0" mnemonicParsing="false" text="Monday" />
-                              <CheckBox layoutX="243.0" layoutY="65.0" mnemonicParsing="false" text="Tuesday" />
-                              <CheckBox layoutX="243.0" layoutY="81.0" mnemonicParsing="false" text="Wednesday" />
-                              <CheckBox layoutX="243.0" layoutY="98.0" mnemonicParsing="false" text="Thursday" />
-                              <CheckBox layoutX="243.0" layoutY="115.0" mnemonicParsing="false" text="Friday" />
-                              <CheckBox layoutX="243.0" layoutY="132.0" mnemonicParsing="false" text="Saturday" />
-                              <Button layoutX="162.0" layoutY="14.0" mnemonicParsing="false" text="Select All" />
-                              <CheckBox layoutX="360.0" layoutY="48.0" mnemonicParsing="false" text="Common Core" />
-                              <CheckBox layoutX="360.0" layoutY="65.0" mnemonicParsing="false" text="No Exclusion" />
-                              <CheckBox layoutX="500.0" layoutY="48.0" mnemonicParsing="false" text="With Labs or Tutorial" />
+                              <CheckBox fx:id="AM" layoutX="162.0" layoutY="48.0" mnemonicParsing="false" onAction="#AM_Selection" text="AM" />
+                              <CheckBox fx:id="PM" layoutX="162.0" layoutY="65.0" mnemonicParsing="false" onAction="#PM_Selection" text="PM" />
+                              <CheckBox fx:id="Mon" layoutX="243.0" layoutY="48.0" mnemonicParsing="false" onAction="#Mon_Action" text="Monday" />
+                              <CheckBox fx:id="Tue" layoutX="243.0" layoutY="65.0" mnemonicParsing="false" onAction="#Tue_Selection" text="Tuesday" />
+                              <CheckBox fx:id="Wed" layoutX="243.0" layoutY="81.0" mnemonicParsing="false" onAction="#Wed_Selection" text="Wednesday" />
+                              <CheckBox fx:id="Thur" layoutX="243.0" layoutY="98.0" mnemonicParsing="false" onAction="#Thur_Selection" text="Thursday" />
+                              <CheckBox fx:id="Fri" layoutX="243.0" layoutY="115.0" mnemonicParsing="false" onAction="#Fri_Selection" text="Friday" />
+                              <CheckBox fx:id="Sat" layoutX="243.0" layoutY="132.0" mnemonicParsing="false" onAction="#Sat_Selection" text="Saturday" />
+                              <Button fx:id="SelectAll" layoutX="162.0" layoutY="14.0" mnemonicParsing="false" onAction="#SelectAll_Action" text="Select All" />
+                              <CheckBox fx:id="CommonCore" layoutX="360.0" layoutY="48.0" mnemonicParsing="false" onAction="#CommonCore_Selection" text="Common Core" />
+                              <CheckBox fx:id="NoExclusion" layoutX="360.0" layoutY="65.0" mnemonicParsing="false" onAction="#NoExlusion_Selection" text="No Exclusion" />
+                              <CheckBox fx:id="WithLabsorTutorial" layoutX="500.0" layoutY="48.0" mnemonicParsing="false" onAction="#WithLabsorTutorial_selection" text="With Labs or Tutorial" />
                               <Label layoutX="32.0" layoutY="278.0" prefHeight="41.0" prefWidth="642.0" text="* When the filter is applied, display all sections that fulfill all of these conditions; Print them to the console below on any change of checkbox" wrapText="true" />
                               <Label layoutX="21.0" layoutY="88.0" prefHeight="175.0" prefWidth="199.0" text="A course has a section at that time/on that day. A section can be lecture/tutorial/lab. Click AM + Monday does not imply a course has a section on Monday morning. It means there is a section in the morning, but that section may not be on Monday. However, that course must have another Monday section." wrapText="true" />
                               <Label layoutX="338.0" layoutY="107.0" prefHeight="162.0" prefWidth="144.0" text="Common Core refers to 4Y CC; No Exclusion refers to a course does not has any exclusion. Information can be founded on the pop-up text of the &quot;COURSE INFO&quot;" wrapText="true" />
@@ -79,13 +79,13 @@
                     <content>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="318.0" prefWidth="719.0">
                            <children>
-                              <TableView prefHeight="281.0" prefWidth="719.0">
+                              <TableView fx:id="ListTable" editable="true" prefHeight="281.0" prefWidth="719.0">
                                 <columns>
-                                  <TableColumn prefWidth="91.0" text="Course Code" />
-                                    <TableColumn prefWidth="108.0" text="Lecture Section" />
-                                  <TableColumn prefWidth="271.0" text="Course Name" />
-                                    <TableColumn prefWidth="152.0" text="Instructor" />
-                                    <TableColumn prefWidth="96.0" text="Enroll" />
+                                  <TableColumn fx:id="CourseCode" prefWidth="91.0" text="Course Code" />
+                                    <TableColumn fx:id="Section" prefWidth="108.0" text="Section" />
+                                  <TableColumn fx:id="CourseName" prefWidth="271.0" text="Course Name" />
+                                    <TableColumn fx:id="Instructor" prefWidth="152.0" text="Instructor" />
+                                    <TableColumn fx:id="Enroll" prefWidth="96.0" text="Enroll" />
                                 </columns>
                               </TableView>
                               <Label layoutX="22.0" layoutY="281.0" text="*Fill the table according to the result of the Filter. If the Filter cannot be correctly implemented, show all result scrapped." />
@@ -153,7 +153,7 @@
                            <children>
                               <Label layoutX="82.0" layoutY="31.0" text="SFQ URL" />
                               <TextField fx:id="textfieldSfqUrl" layoutX="147.0" layoutY="27.0" prefHeight="25.0" prefWidth="403.0" text="http://sfq.ust.hk/results/eng-f18.html" />
-                              <Button fx:id="buttonSfqEnrollCourse" layoutX="147.0" layoutY="64.0" mnemonicParsing="false" onAction="#findSfqEnrollCourse" text="Find SFQ with my enrolled courses" />
+                              <Button fx:id="buttonSfqEnrollCourse" disable="true" layoutX="147.0" layoutY="64.0" mnemonicParsing="false" onAction="#findSfqEnrollCourse" text="Find SFQ with my enrolled courses" />
                               <Button fx:id="buttonInstructorSfq" layoutX="384.0" layoutY="64.0" mnemonicParsing="false" onAction="#findInstructorSfq" text="List instructors' average SFQ" />
                               <Label layoutX="42.0" layoutY="132.0" text="You may assume no login is required when you scrape the SFQ page" />
                               <Label layoutX="42.0" layoutY="176.0" prefHeight="44.0" prefWidth="601.0" text="When Find SFQ button is clicked, unadjusted SFQ data will be printed (not the data inside [] ). If a course has multiple section, only the course average is needed." wrapText="true" />

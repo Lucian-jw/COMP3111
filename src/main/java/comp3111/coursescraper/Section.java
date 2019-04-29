@@ -65,6 +65,14 @@ public class Section {
 		return s;
     }
     
+    public ArrayList<String> getInstructorNames(){
+    	ArrayList<String> instructorNames = new ArrayList<String>();
+    	if (getInstructor().contains("\n")) {
+    		
+    	}
+    	return instructorNames;
+    }
+    
     public int getNumLabels() {
     	return labels.size();
     }

@@ -207,18 +207,18 @@ public class Controller {
 
     @FXML
     void allSubjectSearch() {
-	textAreaConsole.clear();
-	if (Controller.subjects.isEmpty()) {
-	    Controller.subjects.addAll(scraper.scrapeSubjects(textfieldURL.getText(), textfieldTerm.getText()));
-	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Total Number of Categories/Code Prefix: "
-		    + Controller.subjects.size());
-	} else {
-	    Controller.scrapedCourse.clear();
-	    progressbar.progressProperty().bind(allSSThread.progressProperty());
-	    final Thread thread = new Thread(allSSThread, "AllSS-thread");
-	    thread.setDaemon(true);
-	    thread.start();
-	}
+		textAreaConsole.clear();
+		if (Controller.subjects.isEmpty()) {
+		    Controller.subjects.addAll(scraper.scrapeSubjects(textfieldURL.getText(), textfieldTerm.getText()));
+		    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Total Number of Categories/Code Prefix: "
+			    + Controller.subjects.size());
+		} else {
+		    Controller.scrapedCourse.clear();
+		    progressbar.progressProperty().bind(allSSThread.progressProperty());
+		    final Thread thread = new Thread(allSSThread, "AllSS-thread");
+		    thread.setDaemon(true);
+		    thread.start();
+		}
     }
 
     @FXML
@@ -227,11 +227,11 @@ public class Controller {
     }
 
     private boolean checkApplicableColor(final Color color) {
-	for (final Section section : EnrolledSection)
-	    for (int i = 0; i < section.getNumColor(); i++)
-		if (checkSimilarColor(color, section.getColor(i)))
-		    return false;
-	return true;
+		for (final Section section : EnrolledSection)
+		    for (int i = 0; i < section.getNumColor(); i++)
+			if (checkSimilarColor(color, section.getColor(i)))
+			    return false;
+		return true;
     }
 
     private boolean checkInRange(final Section s) {
@@ -433,15 +433,19 @@ public class Controller {
 
 	    for (final Course c : v) {
 		String newline = c.getTitle() + "\n";
+		
 		for (int i = 0; i < c.getNumSections(); i++) {
-		    if (!instructors.contains(c.getSection(i).getInstructor())) {
-			instructors.add(c.getSection(i).getInstructor());
-		    }
-		    if (checkInRange(c.getSection(i))) {
-			if (!instructorsWithAssignment.contains(c.getSection(i).getInstructor())) {
-			    instructorsWithAssignment.add(c.getSection(i).getInstructor());
+			ArrayList<String> instructorNamesList = c.getSection(i).getInstructorNames();
+			for (String instructorName:instructorNamesList) {
+				if (!instructors.contains(instructorName)) {
+					instructors.add(c.getSection(i).getInstructor());
+				}
+				if (checkInRange(c.getSection(i))) {
+					if (!instructorsWithAssignment.contains(c.getSection(i).getInstructor())) {
+						instructorsWithAssignment.add(instructorName);
+					}
+				}
 			}
-		    }
 		    newline += c.getSection(i).getSection() + ":\n";
 		    for (int j = 0; j < c.getSection(i).getSlotSize(); j++) {
 			final Slot t = c.getSection(i).getSlot(j);
@@ -456,17 +460,12 @@ public class Controller {
 	    }
 	    String addLine = "Total Number of difference sections in this search: " + numSection.toString() + "\n\n";
 	    addLine += ("Total Number of Course in this search: " + numCourse.toString() + "\n\n");
-	    addLine += ("Instrctuors who has teaching assignment this term but does not need to teach at Tu 3:10pm:\n");
+	    addLine += ("Instrctuors who has teaching assignment this term but does not need to teach at Tu 3:10pm: ");
 
 	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + addLine);
 	    instructors.removeAll(instructorsWithAssignment);
 	    instructors.remove("TBA");
-	    Collections.sort(instructors, new Comparator<String>() {
-		@Override
-		public int compare(String s1, String s2) {
-		    return s1.charAt(0) - s2.charAt(0);
-		}
-	    });
+	    Collections.sort(instructors);
 	    boolean isFirst = true;
 	    String instructorNames = "";
 	    for (String s : instructors) {
@@ -475,7 +474,7 @@ public class Controller {
 		    instructorNames += s;
 		    isFirst = false;
 		} else {
-		    instructorNames += (",\n" + s);
+		    instructorNames += (", " + s);
 		}
 	    }
 

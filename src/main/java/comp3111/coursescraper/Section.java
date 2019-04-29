@@ -68,7 +68,13 @@ public class Section {
     public ArrayList<String> getInstructorNames(){
     	ArrayList<String> instructorNames = new ArrayList<String>();
     	if (getInstructor().contains("\n")) {
-    		
+    		String[] instructorNamesMultiple = getInstructor().split("\n");
+    		for (int i = 0; i < instructorNamesMultiple.length; i++) {
+    			instructorNames.add(instructorNamesMultiple[i]);
+    		}
+    	}
+    	else {
+    		instructorNames.add(getInstructor());
     	}
     	return instructorNames;
     }

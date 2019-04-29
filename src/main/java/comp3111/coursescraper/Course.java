@@ -2,7 +2,11 @@ package comp3111.coursescraper;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * This class implements Course
+ * @author JIANG WEI
+ *
+ */
 public class Course {
     private static final int DEFAULT_MAX_SLOT = 20;
 

@@ -19,17 +19,17 @@ public class Scraper {
     }
 
     private static Section addSection(final Course c, final String ins, final String sec) {
-	final String CourseCode = c.getTitle().substring(0, 10);
-	final String CourseName = c.getTitle().substring(12, c.getTitle().length());
-	final Section s = new Section();
-	s.setCourseCode(CourseCode);
-	s.setSection(sec);
-	s.setCourseName(CourseName);
-	s.setInstructor(ins);
-	s.setEnrolledStatus(false);
-	if (s.getSection() != null && (s.getSection().startsWith("L") || s.getSection().startsWith("T")))
-	    c.addSection(s);
-	return s;
+		final String CourseCode = c.getTitle().substring(0, 10);
+		final String CourseName = c.getTitle().substring(12, c.getTitle().length());
+		final Section s = new Section();
+		s.setCourseCode(CourseCode);
+		s.setSection(sec);
+		s.setCourseName(CourseName);
+		s.setInstructor(ins);
+		s.setEnrolledStatus(false);
+		if (s.getSection() != null && (s.getSection().startsWith("L") || s.getSection().startsWith("T")))
+		    c.addSection(s);
+		return s;
     }
 
     private static void addSlot(final Section section, final HtmlElement e, final Course c, final boolean secondRow,
@@ -100,11 +100,11 @@ public class Scraper {
 		    final String sectiontype = section == null ? "null" : section.asText();
 		    String sec = null;
 		    if (sectiontype.startsWith("LA"))
-			sec = sectiontype.substring(0, 3);
+		    	sec = sectiontype.substring(0, 3);
 		    else if (sectiontype.startsWith("L"))
-			sec = sectiontype.substring(0, 3);
+		    	sec = sectiontype.substring(0, 3);
 		    else if (sectiontype.startsWith("T"))
-			sec = sectiontype.substring(0, 3);
+		    	sec = sectiontype.substring(0, 3);
 		    final Section addedSection = addSection(c, ins, sec);
 		    addSlot(addedSection, e, c, false, ins, sectiontype);
 		    e = (HtmlElement) e.getNextSibling();

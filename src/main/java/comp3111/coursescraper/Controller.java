@@ -442,14 +442,17 @@ public class Controller {
 							instructorsWithAssignment.add(c.getSection(i).getInstructor());
 						}
 					}
+					newline += c.getSection(i).getSection() + ":\n";
 					for (int j = 0; j < c.getSection(i).getSlotSize(); j++) {
 						final Slot t = c.getSection(i).getSlot(j);
-					    newline += c.getSection(i).getSection() + ": " + t + "\n";
+					    newline += " " + t + "\n";
 					}
 				}
 				textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
 				numSection += c.getNumSections();
-				numCourse++;
+				if (c.getNumSections() != 0) {
+					numCourse++;
+				}
 		    }
 		    String addLine = "Total Number of difference sections in this search: " + numSection.toString() + "\n\n";
 		    addLine += ("Total Number of Course in this search: " + numCourse.toString() + "\n\n");

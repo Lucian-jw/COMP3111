@@ -6,7 +6,6 @@ import java.net.URL;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -193,32 +192,49 @@ public class Controller {
     final Task<Void> allSSThread = new Task<Void>() {
 	@Override
 	protected Void call() throws Exception {
+	    int totalCourseNum = 0;
 	    for (int i = 0; i < Controller.subjects.size(); i++) {
 		updateProgress(i + 1, Controller.subjects.size());
 		final String cur = Controller.subjects.get(i);
 		final List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(), cur);
 		Controller.scrapedCourse.addAll(v);
+		totalCourseNum += v.size();
 		textAreaConsole.setText(textAreaConsole.getText() + "\n" + cur + " is done");
 	    }
+	    textAreaConsole
+		    .setText(textAreaConsole.getText() + "\n" + "Total Number of Courses fetched: " + totalCourseNum);
 	    buttonSfqEnrollCourse.setDisable(false);
 	    return null;
 	}
     };
 
+    /**
+     * Perform all subject search.
+     * 
+     * When the subject list is empty (i.e. No search was performed before), it will
+     * retreive all subjects codes from the URL. Upon finish, it will print the
+     * total number of subjects found.
+     * 
+     * Later calls it will call Scrape() recursively to retrieve courses from all
+     * subjects. When the scraper has finished scraping a subject, it will print
+     * "____ is done" and update the progressbar.
+     * 
+     * @author asto18089
+     */
     @FXML
     void allSubjectSearch() {
-		textAreaConsole.clear();
-		if (Controller.subjects.isEmpty()) {
-		    Controller.subjects.addAll(scraper.scrapeSubjects(textfieldURL.getText(), textfieldTerm.getText()));
-		    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Total Number of Categories/Code Prefix: "
-			    + Controller.subjects.size());
-		} else {
-		    Controller.scrapedCourse.clear();
-		    progressbar.progressProperty().bind(allSSThread.progressProperty());
-		    final Thread thread = new Thread(allSSThread, "AllSS-thread");
-		    thread.setDaemon(true);
-		    thread.start();
-		}
+	textAreaConsole.clear();
+	if (Controller.subjects.isEmpty()) {
+	    Controller.subjects.addAll(scraper.scrapeSubjects(textfieldURL.getText(), textfieldTerm.getText()));
+	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Total Number of Categories/Code Prefix: "
+		    + Controller.subjects.size());
+	} else {
+	    Controller.scrapedCourse.clear();
+	    progressbar.progressProperty().bind(allSSThread.progressProperty());
+	    final Thread thread = new Thread(allSSThread, "AllSS-thread");
+	    thread.setDaemon(true);
+	    thread.start();
+	}
     }
 
     @FXML
@@ -227,11 +243,11 @@ public class Controller {
     }
 
     private boolean checkApplicableColor(final Color color) {
-		for (final Section section : EnrolledSection)
-		    for (int i = 0; i < section.getNumColor(); i++)
-			if (checkSimilarColor(color, section.getColor(i)))
-			    return false;
-		return true;
+	for (final Section section : EnrolledSection)
+	    for (int i = 0; i < section.getNumColor(); i++)
+		if (checkSimilarColor(color, section.getColor(i)))
+		    return false;
+	return true;
     }
 
     private boolean checkInRange(final Section s) {
@@ -310,6 +326,13 @@ public class Controller {
 	}
     }
 
+    /**
+     * Find all instructors' SFQ scores.
+     * 
+     * It will print all instructor and their taught courses' average SFQ score.
+     * 
+     * @author asto18089
+     */
     @FXML
     void findInstructorSfq() {
 	final List<InstSFQScoreStruct> out = scraper.scrapeInstSFQ(textfieldSfqUrl.getText());
@@ -320,11 +343,19 @@ public class Controller {
 	    for (int j = 0; j < curScore.size(); j++)
 		total += Float.parseFloat(curScore.get(j));
 	    total = total / curScore.size();
-	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Instructor: " + out.get(i).name + "\n"
-		    + "SFQ Score: " + total + "\n");
+	    textAreaConsole.setText(
+		    textAreaConsole.getText() + "\n" + "Instructor: " + out.get(i).name + "\n" + "SFQ Score: " + total);
 	}
     }
 
+    /**
+     * Find enrolled courses' SFQ scores.
+     * 
+     * It will print user's enrolled courses and their SFQ score (averaging all
+     * sections of this course).
+     * 
+     * @author asto18089
+     */
     @FXML
     void findSfqEnrollCourse() {
 	final List<CourseSFQStruct> out = scraper.scrapeCourseSFQ(textfieldSfqUrl.getText(), EnrolledSection);
@@ -336,7 +367,7 @@ public class Controller {
 		total += Float.parseFloat(curScore.get(j));
 	    total = total / curScore.size();
 	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Course: " + out.get(i).courseCode + "\n"
-		    + "SFQ Score: " + total + "\n");
+		    + "SFQ Score: " + total);
 	}
     }
 
@@ -433,19 +464,19 @@ public class Controller {
 
 	    for (final Course c : v) {
 		String newline = c.getTitle() + "\n";
-		
+
 		for (int i = 0; i < c.getNumSections(); i++) {
-			ArrayList<String> instructorNamesList = c.getSection(i).getInstructorNames();
-			for (String instructorName:instructorNamesList) {
-				if (!instructors.contains(instructorName)) {
-					instructors.add(c.getSection(i).getInstructor());
-				}
-				if (checkInRange(c.getSection(i))) {
-					if (!instructorsWithAssignment.contains(c.getSection(i).getInstructor())) {
-						instructorsWithAssignment.add(instructorName);
-					}
-				}
+		    ArrayList<String> instructorNamesList = c.getSection(i).getInstructorNames();
+		    for (String instructorName : instructorNamesList) {
+			if (!instructors.contains(instructorName)) {
+			    instructors.add(c.getSection(i).getInstructor());
 			}
+			if (checkInRange(c.getSection(i))) {
+			    if (!instructorsWithAssignment.contains(c.getSection(i).getInstructor())) {
+				instructorsWithAssignment.add(instructorName);
+			    }
+			}
+		    }
 		    newline += c.getSection(i).getSection() + ":\n";
 		    for (int j = 0; j < c.getSection(i).getSlotSize(); j++) {
 			final Slot t = c.getSection(i).getSlot(j);

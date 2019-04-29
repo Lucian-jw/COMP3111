@@ -13,7 +13,7 @@ import javafx.scene.paint.Color;
 @SuppressWarnings("restriction")
 /**
  * This class implements the "section" which consists of Course
- * * @author JIANG WEI & Zhang LuoShu
+ * * @author JIANG WEI and Zhang LuoShu
  *
  */
 public class Section {
@@ -50,7 +50,6 @@ public class Section {
     }
 
     @Override
-    
     /**
      * This is a Section constructor
      * @return it will construct a new section contains all the original information
@@ -65,6 +64,10 @@ public class Section {
 		return s;
     }
     
+    /**
+     * This is a class method to get a list of instructors in case there are multiple instructors for one section.
+     * @return a list of instructor names for one section.
+     */
     public ArrayList<String> getInstructorNames(){
     	ArrayList<String> instructorNames = new ArrayList<String>();
     	if (getInstructor().contains("\n")) {
@@ -83,10 +86,19 @@ public class Section {
     	return labels.size();
     }
     
+    /**
+     * This function will add a label to the label list stored in the object.
+     * @param label the label that needs to be added to the label list stored in the object
+     */
     public void addLabel(Label label) {
     	labels.add(label);
     }
     
+    /**
+     * This function will set the Section with CourseCode
+     * @param i a number of index in a list of labels
+     * @return the desired label according to the index
+     */
     public Label getLabel(int i) {
     	return labels.get(i);
     }

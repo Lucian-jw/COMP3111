@@ -620,7 +620,7 @@ public class Controller {
 	    String newline = c.getTitle() + "\n";
 	    for (int i = 0; i < c.getNumSlots(); i++) {
 		final Slot t = c.getSlot(i);
-		newline += t.getSectionType()+"Slot " + i + ":" + t + "\n";
+		newline += t.getSectionType()+" Slot " + i + ":" + t + "\n";
 	    }
 	    if (textAreaConsole.getText() == null)
 		textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????

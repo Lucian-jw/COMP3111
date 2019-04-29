@@ -12,7 +12,7 @@ public class Scraper {
      * This class serves as a C++ struct-like data structure to store Courses and
      * their corresponding SFQ scores in a proper way.
      * 
-     * @author asto1
+     * @author asto18089
      *
      */
     public class CourseSFQStruct {
@@ -24,7 +24,7 @@ public class Scraper {
      * This class serves as a C++ struct-like data structure to store Instructors
      * and their corresponding SFQ scores in a proper way.
      * 
-     * @author asto1
+     * @author asto18089
      *
      */
     public class InstSFQScoreStruct {
@@ -266,6 +266,7 @@ public class Scraper {
      * @param baseurl Course schedule URL
      * @param term    Term
      * @return A list of String containing subject code per element.
+     * @author asto18089
      */
     public List<String> scrapeSubjects(final String baseurl, final String term) {
 	try {

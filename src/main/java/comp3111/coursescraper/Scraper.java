@@ -118,7 +118,10 @@ public class Scraper {
 		for (HtmlElement e : (List<HtmlElement>) sections) {
 		    final HtmlElement instructor = (HtmlElement) e.getFirstByXPath(".//a");
 		    final HtmlElement section = (HtmlElement) e.getFirstByXPath(".//td");
-		    final String ins = instructor == null ? "TBA" : instructor.asText();
+		    // final String ins = instructor == null ? "TBA" : instructor.asText();
+		    String ins = e.getChildNodes().get(5).asText();
+		    System.out.println("Here");
+		    System.out.println(ins);
 		    final String sectiontype = section == null ? "null" : section.asText();
 		    String sec = null;
 		    if (sectiontype.startsWith("LA"))

@@ -365,7 +365,20 @@ public class Controller {
 		    removeFromTimetable(sec);
 		}
 		textAreaConsole.clear();
-		String newline = "The following sections are enrolled:" + "\n";
+		if(!FilteredCourse.isEmpty()){
+			for (Course d : FilteredCourse) {
+			    String newline = d.getTitle() + "\n";
+			    for (int i = 0; i < d.getNumSlots(); i++) {
+				Slot t = d.getSlot(i);
+				newline += t.getSectionType()+" "+t+"\n";
+			    }
+			    if (textAreaConsole.getText() == null)
+				textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
+			    else
+				textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+			}
+		}
+		String newline = textAreaConsole.getText()+"\n\n"+"The following sections are enrolled:" + "\n";
 		for (final Section s : Controller.EnrolledSection)
 		    newline += s.getCourseCode() + " " + s.getSection() + " " + s.getCourseName() + " "
 			    + s.getInstructor() + " \n";
@@ -607,7 +620,7 @@ public class Controller {
 	    String newline = c.getTitle() + "\n";
 	    for (int i = 0; i < c.getNumSlots(); i++) {
 		final Slot t = c.getSlot(i);
-		newline += "Slot " + i + ":" + t + "\n";
+		newline += t.getSectionType()+"Slot " + i + ":" + t + "\n";
 	    }
 	    if (textAreaConsole.getText() == null)
 		textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????

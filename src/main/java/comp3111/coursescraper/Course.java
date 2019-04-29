@@ -26,8 +26,6 @@ public class Course {
 
     /**
      * Default constructor, initialize object variables.
-     * 
-     * @return N/A
      */
     public Course() {
 	slots = new Slot[Course.DEFAULT_MAX_SLOT];

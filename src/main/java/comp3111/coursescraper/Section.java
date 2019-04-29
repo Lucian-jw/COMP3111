@@ -15,6 +15,7 @@ import javafx.scene.paint.Color;
  * @author JIANG WEI and Zhang LuoShu
  *
  */
+@SuppressWarnings("restriction")
 public class Section {
     private SimpleStringProperty CourseCode;
 

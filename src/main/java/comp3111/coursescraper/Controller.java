@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.HashSet;
 
 import comp3111.coursescraper.Scraper.CourseSFQStruct;
 import comp3111.coursescraper.Scraper.InstSFQScoreStruct;
@@ -246,10 +245,11 @@ public class Controller {
     }
 
     private boolean checkApplicableColor(final Color color) {
-	for (final Section section : EnrolledSection)
+	for (final Section section : EnrolledSection) {
 	    for (int i = 0; i < section.getNumColor(); i++)
 		if (checkSimilarColor(color, section.getColor(i)))
 		    return false;
+	}
 	return true;
     }
 
@@ -286,8 +286,9 @@ public class Controller {
 	Color c;
 	final Random random = new Random();
 	c = Color.rgb(35 + random.nextInt(150), 35 + random.nextInt(150), 35 + random.nextInt(150));
-	while (!checkApplicableColor(c))
+	while (!checkApplicableColor(c)) {
 	    c = Color.rgb(35 + random.nextInt(150), 35 + random.nextInt(150), 35 + random.nextInt(150));
+	}
 	section.addColor(c);
 	System.out.println(section.getSlotSize());
 	// Get the slot information of the section.
@@ -309,8 +310,9 @@ public class Controller {
 	    final double start = 49 + (timeStart - 9) * 20;
 	    final double duration = (timeEnd - timeStart) * 20;
 	    String content = section.getCourseCode() + "\n" + section.getSection();
-	    if (timeEnd - timeStart <= 1.2)
+	    if (timeEnd - timeStart <= 1.2) {
 		content = section.getCourseCode() + "(" + section.getSection() + ")";
+	    }
 
 	    final Label courseLabel = new Label(content);
 	    courseLabel.setOpacity(0.5);
@@ -343,8 +345,9 @@ public class Controller {
 	for (int i = 0; i < out.size(); i++) {
 	    final List<String> curScore = out.get(i).score;
 	    float total = 0;
-	    for (int j = 0; j < curScore.size(); j++)
+	    for (int j = 0; j < curScore.size(); j++) {
 		total += Float.parseFloat(curScore.get(j));
+	    }
 	    total = total / curScore.size();
 	    textAreaConsole.setText(
 		    textAreaConsole.getText() + "\n" + "Instructor: " + out.get(i).name + "\n" + "SFQ Score: " + total);
@@ -366,8 +369,9 @@ public class Controller {
 	for (int i = 0; i < out.size(); i++) {
 	    final List<String> curScore = out.get(i).score;
 	    float total = 0;
-	    for (int j = 0; j < curScore.size(); j++)
+	    for (int j = 0; j < curScore.size(); j++) {
 		total += Float.parseFloat(curScore.get(j));
+	    }
 	    total = total / curScore.size();
 	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Course: " + out.get(i).courseCode + "\n"
 		    + "SFQ Score: " + total);
@@ -399,44 +403,51 @@ public class Controller {
 		    removeFromTimetable(sec);
 		}
 		textAreaConsole.clear();
-		if (!FilteredCourse.isEmpty())
+		if (!FilteredCourse.isEmpty()) {
 		    for (Course d : FilteredCourse) {
 			String newline = d.getTitle() + "\n";
 			for (int i = 0; i < d.getNumSections(); i++) {
 			    newline += d.getSection(i).getSection();
-			    if (d.getSection(i).getSlotSize() > 0)
+			    if (d.getSection(i).getSlotSize() > 0) {
 				for (int j = 0; j < d.getSection(i).getSlotSize(); j++) {
 				    Slot t = d.getSection(i).getSlot(j);
 				    newline += "\t" + t + "\n";
 				}
-			    else
+			    } else {
 				newline += "\n";
+			    }
 			}
-			if (textAreaConsole.getText() == null)
+			if (textAreaConsole.getText() == null) {
 			    textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
-			else
+			} else {
 			    textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+			}
 		    }
+		}
 		String newline = textAreaConsole.getText() + "\n\n" + "The following sections are enrolled:" + "\n";
-		for (final Section s : Controller.EnrolledSection)
+		for (final Section s : Controller.EnrolledSection) {
 		    newline += s.getCourseCode() + " " + s.getSection() + " " + s.getCourseName() + " "
 			    + s.getInstructor() + " \n";
-		if (textAreaConsole.getText() == null)
+		}
+		if (textAreaConsole.getText() == null) {
 		    textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
-		else
+		} else {
 		    textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+		}
 	    });
 	    return new SimpleObjectProperty<>(checkBox);
 	});
 	if (Controller.FilteredCourse.isEmpty()) {
 	    data.clear();
-	    for (final Course c : Controller.scrapedCourse)
+	    for (final Course c : Controller.scrapedCourse) {
 		data.addAll(c.sections);
+	    }
 	    ListTable.setItems(data);
 	} else {
 	    data.clear();
-	    for (final Course c : Controller.FilteredCourse)
+	    for (final Course c : Controller.FilteredCourse) {
 		data.addAll(c.sections);
+	    }
 	    ListTable.setItems(data);
 	}
     }
@@ -487,18 +498,21 @@ public class Controller {
 
 	    for (final Course c : v) {
 		// Check the number of sections.
-		if (c.getNumSections() == 0)
+		if (c.getNumSections() == 0) {
 		    continue;
+		}
 		String newline = c.getTitle() + "\n";
 
 		for (int i = 0; i < c.getNumSections(); i++) {
 		    ArrayList<String> instructorNamesList = c.getSection(i).getInstructorNames();
 		    for (String instructorName : instructorNamesList) {
-			if (!instructors.contains(instructorName))
+			if (!instructors.contains(instructorName)) {
 			    instructors.add(c.getSection(i).getInstructor());
+			}
 			if (checkInRange(c.getSection(i)))
-			    if (!instructorsWithAssignment.contains(c.getSection(i).getInstructor()))
+			    if (!instructorsWithAssignment.contains(c.getSection(i).getInstructor())) {
 				instructorsWithAssignment.add(instructorName);
+			    }
 		    }
 		    newline += c.getSection(i).getSection() + ":\n";
 		    for (int j = 0; j < c.getSection(i).getSlotSize(); j++) {
@@ -508,8 +522,9 @@ public class Controller {
 		}
 		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
 		numSection += c.getNumSections();
-		if (c.getNumSections() != 0)
+		if (c.getNumSections() != 0) {
 		    numCourse++;
+		}
 	    }
 	    String addLine = "Total Number of difference sections in this search: " + numSection.toString() + "\n\n";
 	    addLine += "Total Number of Course in this search: " + numCourse.toString() + "\n\n";
@@ -526,8 +541,9 @@ public class Controller {
 		    System.out.println(s);
 		    instructorNames += s;
 		    isFirst = false;
-		} else
+		} else {
 		    instructorNames += ", " + s;
+		}
 
 	    textAreaConsole.setText(textAreaConsole.getText() + instructorNames);
 
@@ -574,59 +590,75 @@ public class Controller {
 	final List<Course> found = new ArrayList<>();
 	for (final Course c : v) {
 	    if (AM.isSelected()) {
-		if (!c.containsAM())
+		if (!c.containsAM()) {
 		    found.add(c);
-		if (found.contains(c))
+		}
+		if (found.contains(c)) {
 		    continue;
+		}
 	    }
 
 	    if (PM.isSelected()) {
-		if (!c.containsPM())
+		if (!c.containsPM()) {
 		    found.add(c);
-		if (found.contains(c))
+		}
+		if (found.contains(c)) {
 		    continue;
+		}
 	    }
 
 	    if (Mon.isSelected()) {
-		if (!c.containsMon())
+		if (!c.containsMon()) {
 		    found.add(c);
-		if (found.contains(c))
+		}
+		if (found.contains(c)) {
 		    continue;
+		}
 	    }
 
 	    if (Tue.isSelected()) {
-		if (!c.containsTue())
+		if (!c.containsTue()) {
 		    found.add(c);
-		if (found.contains(c))
+		}
+		if (found.contains(c)) {
 		    continue;
+		}
 	    }
 
 	    if (Wed.isSelected()) {
-		if (!c.containsWed())
+		if (!c.containsWed()) {
 		    found.add(c);
-		if (found.contains(c))
+		}
+		if (found.contains(c)) {
 		    continue;
+		}
 	    }
 
 	    if (Thur.isSelected()) {
-		if (!c.containsThurs())
+		if (!c.containsThurs()) {
 		    found.add(c);
-		if (found.contains(c))
+		}
+		if (found.contains(c)) {
 		    continue;
+		}
 	    }
 
 	    if (Fri.isSelected()) {
-		if (!c.containsFri())
+		if (!c.containsFri()) {
 		    found.add(c);
-		if (found.contains(c))
+		}
+		if (found.contains(c)) {
 		    continue;
+		}
 	    }
 
 	    if (Sat.isSelected()) {
-		if (!c.containsSat())
+		if (!c.containsSat()) {
 		    found.add(c);
-		if (found.contains(c))
+		}
+		if (found.contains(c)) {
 		    continue;
+		}
 	    }
 
 	    if (CommonCore.isSelected())
@@ -642,10 +674,12 @@ public class Controller {
 		}
 
 	    if (WithLabsorTutorial.isSelected()) {
-		if (!c.containsLab())
+		if (!c.containsLab()) {
 		    found.add(c);
-		if (found.contains(c))
+		}
+		if (found.contains(c)) {
 		    continue;
+		}
 	    }
 	}
 	v.removeAll(found);// found is the union that doesn't satisfy any of requirement ,remove all of
@@ -658,18 +692,20 @@ public class Controller {
 	    for (int i = 0; i < c.getNumSections(); i++) {
 		Section sec = c.getSection(i);
 		newline += sec.getSection();
-		if (sec.getSlotSize() > 0)
+		if (sec.getSlotSize() > 0) {
 		    for (int j = 0; j < sec.getSlotSize(); j++) {
 			Slot t = sec.getSlot(j);
 			newline += "\t" + t + "\n";
 		    }
-		else
+		} else {
 		    newline += '\n';
+		}
 	    }
-	    if (textAreaConsole.getText() == null)
+	    if (textAreaConsole.getText() == null) {
 		textAreaConsole.setText("" + newline);// WTF? get Null WILL be "NULL"????
-	    else
+	    } else {
 		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+	    }
 	}
 	List();
     }

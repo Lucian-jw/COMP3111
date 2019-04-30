@@ -30,8 +30,9 @@ public class Course {
     public Course() {
 	slots = new Slot[Course.DEFAULT_MAX_SLOT];
 	sections = new ArrayList<>();
-	for (int i = 0; i < Course.DEFAULT_MAX_SLOT; i++)
+	for (int i = 0; i < Course.DEFAULT_MAX_SLOT; i++) {
 	    slots[i] = null;
+	}
 	numSlots = 0;
 
     }

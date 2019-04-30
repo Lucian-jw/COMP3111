@@ -63,8 +63,9 @@ public class Scraper {
 	s.setCourseName(CourseName);
 	s.setInstructor(ins);
 	s.setEnrolledStatus(false);
-	if (s.getSection() != null && (s.getSection().startsWith("L") || s.getSection().startsWith("T")))
+	if (s.getSection() != null && (s.getSection().startsWith("L") || s.getSection().startsWith("T"))) {
 	    c.addSection(s);
+	}
 	return s;
     }
 
@@ -77,8 +78,9 @@ public class Scraper {
 	for (int j = 0; j < times[0].length(); j += 2) {
 	    final String code = times[0].substring(j, j + 2);
 
-	    if (Slot.DAYS_MAP.get(code) == null)
+	    if (Slot.DAYS_MAP.get(code) == null) {
 		break;
+	    }
 	    final Slot s = new Slot();
 	    s.setDay(Slot.DAYS_MAP.get(code));
 	    s.setStart(times[1]);
@@ -87,8 +89,9 @@ public class Scraper {
 	    s.setinstructor(ins);
 	    s.setSectionType(sectionType);
 	    if (s.getSectionType() != null
-		    && (s.getSectionType().startsWith("L") || s.getSectionType().startsWith("T")))
+		    && (s.getSectionType().startsWith("L") || s.getSectionType().startsWith("T"))) {
 		c.addSlot(s);
+	    }
 	    section.addSlot(s);
 	}
     }
@@ -139,10 +142,12 @@ public class Scraper {
 		for (final HtmlElement e : (List<HtmlElement>) popupdetailslist) {
 		    final HtmlElement t = (HtmlElement) e.getFirstByXPath(".//th");
 		    final HtmlElement d = (HtmlElement) e.getFirstByXPath(".//td");
-		    if (t.asText().equals("EXCLUSION"))
+		    if (t.asText().equals("EXCLUSION")) {
 			exclusion = d;
-		    if (t.asText().equals("ATTRIBUTES"))
+		    }
+		    if (t.asText().equals("ATTRIBUTES")) {
 			commoncore = d;
+		    }
 		}
 		c.setExclusion(exclusion == null ? "null" : exclusion.asText());
 		c.setCommoncore(commoncore == null ? "null" : commoncore.asText());
@@ -154,18 +159,20 @@ public class Scraper {
 		    String ins = e.getChildNodes().get(5).asText();
 		    final String sectiontype = section == null ? "null" : section.asText();
 		    String sec = null;
-		    if (sectiontype.startsWith("LA"))
+		    if (sectiontype.startsWith("LA")) {
 			sec = sectiontype.substring(0, 3);
-		    else if (sectiontype.startsWith("L"))
+		    } else if (sectiontype.startsWith("L")) {
 			sec = sectiontype.substring(0, 3);
-		    else if (sectiontype.startsWith("T"))
+		    } else if (sectiontype.startsWith("T")) {
 			sec = sectiontype.substring(0, 3);
+		    }
 		    if (sectiontype.startsWith("LA") || sectiontype.startsWith("L") || sectiontype.startsWith("T")) {
 			final Section addedSection = addSection(c, ins, sec);
 			addSlot(addedSection, e, c, false, ins, sectiontype);
 			e = (HtmlElement) e.getNextSibling();
-			if (e != null && !e.getAttribute("class").contains("newsect"))
+			if (e != null && !e.getAttribute("class").contains("newsect")) {
 			    addSlot(addedSection, e, c, true, ins, sectiontype);
+			}
 		    }
 
 		}
@@ -229,8 +236,9 @@ public class Scraper {
 			break;
 		    }
 		    curRow = (HtmlElement) curRow.getNextElementSibling();
-		    if (curRow == null)
+		    if (curRow == null) {
 			break;
+		    }
 		}
 	    }
 	    return courseScoreList;
@@ -259,8 +267,9 @@ public class Scraper {
 		for (int j = 0; j < tableRows.size(); j++) {
 		    final HtmlElement tableRow = (HtmlElement) tableRows.get(j);
 		    final List<?> tableEntries = tableRow.getByXPath(".//td");
-		    if (tableEntries.size() != 8)
+		    if (tableEntries.size() != 8) {
 			continue;
+		    }
 		    final HtmlElement tableEntryTest = (HtmlElement) tableEntries.get(2);
 		    final String testString = tableEntryTest.asText().trim();
 		    if (testString.matches("[A-Z][\\s\\S]+")) {
@@ -270,8 +279,9 @@ public class Scraper {
 				final HtmlElement scoreElement = (HtmlElement) tableEntries.get(4);
 				final String scoreRaw = scoreElement.asText();
 				final String scoreProc = scoreRaw.substring(0, scoreRaw.indexOf("("));
-				if (!Scraper.isNullScore(scoreProc))
+				if (!Scraper.isNullScore(scoreProc)) {
 				    instScoreList.get(k).score.add(scoreProc);
+				}
 				isFound = true;
 				break;
 			    }

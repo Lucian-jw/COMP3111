@@ -36,7 +36,7 @@ public class Section {
     /**
      * This is a class method to get a list of instructors in case there are
      * multiple instructors for one section.
-     * 
+     *
      * @param color the color that needs to be added to the list stored in the
      *              object
      */
@@ -46,7 +46,7 @@ public class Section {
 
     /**
      * This is a class method to get the number of colors stored in the list.
-     * 
+     *
      * @return the number of colors stored in the list
      */
     public int getNumColor() {
@@ -56,7 +56,7 @@ public class Section {
     /**
      * This is a class method to get the color according to the index provided in
      * the parameter.
-     * 
+     *
      * @param i the index used to retrieve the color
      * @return the color extracted according to the index
      */
@@ -66,7 +66,7 @@ public class Section {
 
     /**
      * This is a class method to add a slot to the object of Section.
-     * 
+     *
      * @param s the Slot object that needs to be added to the slot list stored in
      *          the object.
      */
@@ -94,23 +94,25 @@ public class Section {
     /**
      * This is a class method to get a list of instructors in case there are
      * multiple instructors for one section.
-     * 
+     *
      * @return a list of instructor names for one section.
      */
     public ArrayList<String> getInstructorNames() {
 	ArrayList<String> instructorNames = new ArrayList<>();
 	if (getInstructor().contains("\n")) {
 	    String[] instructorNamesMultiple = getInstructor().split("\n");
-	    for (String element : instructorNamesMultiple)
+	    for (String element : instructorNamesMultiple) {
 		instructorNames.add(element);
-	} else
+	    }
+	} else {
 	    instructorNames.add(getInstructor());
+	}
 	return instructorNames;
     }
 
     /**
      * This class method will add a label to the label list stored in the object.
-     * 
+     *
      * @return the number of labels stored in the object
      */
     public int getNumLabels() {
@@ -119,7 +121,7 @@ public class Section {
 
     /**
      * This class method will add a label to the label list stored in the object.
-     * 
+     *
      * @param label the label that needs to be added to the label list stored in the
      *              object
      */
@@ -129,7 +131,7 @@ public class Section {
 
     /**
      * This class method will get the label from the list stored in the object.
-     * 
+     *
      * @param i a number of index in a list of labels
      * @return the desired label according to the index
      */
@@ -167,7 +169,7 @@ public class Section {
     /**
      * This class method will check whether the object have the same content with
      * the given Section object.
-     * 
+     *
      * @param s the given object that needs to be checked by this class method.
      * @return whether the passed object have the same content with this Section
      *         object.
@@ -237,7 +239,7 @@ public class Section {
 
     /**
      * This class method will get the slot object according to the index.
-     * 
+     *
      * @param i the given index that is needed to retrieve the object
      * @return the retrieved slot according to the index
      */

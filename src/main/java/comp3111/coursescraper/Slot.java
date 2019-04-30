@@ -24,8 +24,9 @@ public class Slot {
      */
     public static final Map<String, Integer> DAYS_MAP = new HashMap<>();
     static {
-	for (int i = 0; i < Slot.DAYS.length; i++)
+	for (int i = 0; i < Slot.DAYS.length; i++) {
 	    Slot.DAYS_MAP.put(Slot.DAYS[i], i);
+	}
     }
     private int day;
     private LocalTime start;
@@ -40,7 +41,7 @@ public class Slot {
     /**
      * This is a Slot clone() class method overwritten by the clone() method in
      * Object class
-     * 
+     *
      * @return it will construct a new Slot contains all the original information
      */
     public Slot clone() {
@@ -133,7 +134,7 @@ public class Slot {
 
     /**
      * This function determines if this slot has AM quantum
-     * 
+     *
      * @return a boolean value indicates whether the time is AM
      * @author JIANG WEI
      */
@@ -146,7 +147,7 @@ public class Slot {
 
     /**
      * This function determines if this slot has PM quantum
-     * 
+     *
      * @return a boolean value indicates whether the time is PM
      * @author JIANG WEI
      */
@@ -173,7 +174,7 @@ public class Slot {
 
     /**
      * set the ins
-     * 
+     *
      * @param ins the instructor name that needs to be set to the object
      */
     public void setinstructor(final String ins) {
@@ -182,7 +183,7 @@ public class Slot {
 
     /**
      * set the section
-     * 
+     *
      * @param s the section that needs to be set to the object
      */
     public void setSection(final Section s) {
@@ -191,7 +192,7 @@ public class Slot {
 
     /**
      * set the section type
-     * 
+     *
      * @param sectionType the section type that needs to be set to the object
      */
     public void setSectionType(final String sectionType) {

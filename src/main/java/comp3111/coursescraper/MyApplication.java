@@ -23,7 +23,7 @@ public class MyApplication extends Application {
 
     /**
      * Start the program.
-     * 
+     *
      * @param stage The main stage
      * @throws Exception if problem occurs.
      */

@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * This class implements Course
- * 
+ *
  * @author JIANG WEI
  *
  */
@@ -38,7 +38,7 @@ public class Course {
 
     /**
      * This function will return the size of the sections'List.
-     * 
+     *
      * @return The section List's size
      * @author JIANG WEI
      */
@@ -48,7 +48,7 @@ public class Course {
 
     /**
      * This function will add a section into a Section List
-     * 
+     *
      * @param s a Section
      * @author JIANG WEI
      */
@@ -58,7 +58,7 @@ public class Course {
 
     /**
      * Add a slot to this course
-     * 
+     *
      * @param s Slot
      */
     public void addSlot(final Slot s) {
@@ -69,7 +69,7 @@ public class Course {
 
     /**
      * This function will determine whether this course has a AM SLOT
-     * 
+     *
      * @return a boolean value that indicates if this course contains a AM slot
      * @author JIANG WEI
      */
@@ -87,7 +87,7 @@ public class Course {
 
     /**
      * This function will determine whether this course has a Friday SLOT
-     * 
+     *
      * @return a boolean value that indicates if this course contains a Friday slot
      * @author JIANG WEI
      */
@@ -105,28 +105,23 @@ public class Course {
 
     /**
      * This function will determine whether this course has a LAB or Tutorial SLOT
-     * 
+     *
      * @return a boolean value that indicates if this course contains a LAB or
      *         Tutorial slot
      * @author JIANG WEI
      */
     public Boolean containsLab() {
-		if(getNumSections()==0)
-			return false;
-		for(int i=0;i<this.getNumSections();i++){
-			if(getSection(i).getSection().startsWith("T")||getSection(i).getSection().startsWith("LA")){
-				return true;
-			}
-		}
-		return false;
+	if (getNumSections() == 0)
+	    return false;
+	for (int i = 0; i < getNumSections(); i++)
+	    if (getSection(i).getSection().startsWith("T") || getSection(i).getSection().startsWith("LA"))
+		return true;
+	return false;
     }
-	
-	
-    
 
     /**
      * This function will determine whether this course has a Monday SLOT
-     * 
+     *
      * @return a boolean value that indicates if this course contains a Monday slot
      * @author JIANG WEI
      */
@@ -144,7 +139,7 @@ public class Course {
 
     /**
      * This function will determine whether this course has a PM SLOT
-     * 
+     *
      * @return a boolean value that indicates if this course contains a PM slot
      * @author JIANG WEI
      */
@@ -162,7 +157,7 @@ public class Course {
 
     /**
      * This function will determine whether this course has a Saturday SLOT
-     * 
+     *
      * @return a boolean value that indicates if this course contains a Saturday
      *         slot
      * @author JIANG WEI
@@ -181,7 +176,7 @@ public class Course {
 
     /**
      * This function will determine whether this course has a Thursday SLOT
-     * 
+     *
      * @return a boolean value that indicates if this course contains a Thursday
      *         slot
      * @author JIANG WEI
@@ -200,7 +195,7 @@ public class Course {
 
     /**
      * This function will determine whether this course has a Tuesday SLOT
-     * 
+     *
      * @return a boolean value that indicates if this course contains a Tuesday slot
      * @author JIANG WEI
      */
@@ -218,7 +213,7 @@ public class Course {
 
     /**
      * This function will determine whether this course has a Wednesday SLOT
-     * 
+     *
      * @return a boolean value that indicates if this course contains a Wednesday
      *         slot
      * @author JIANG WEI
@@ -237,7 +232,7 @@ public class Course {
 
     /**
      * This function will return common core information
-     * 
+     *
      * @return a string value about common core information
      * @author JIANG WEI
      */
@@ -247,7 +242,7 @@ public class Course {
 
     /**
      * This function will return the course Description information
-     * 
+     *
      * @return a string value about Description information
      * @author JIANG WEI
      */
@@ -257,7 +252,7 @@ public class Course {
 
     /**
      * This function will return Description information
-     * 
+     *
      * @return a string value about Description information
      * @author JIANG WEI
      */
@@ -267,7 +262,7 @@ public class Course {
 
     /**
      * This function will return total number of slots of this course
-     * 
+     *
      * @return a integer value about number of slots
      * @author JIANG WEI
      */
@@ -277,7 +272,7 @@ public class Course {
 
     /**
      * This function will return an assigned section in the Section list
-     * 
+     *
      * @param i the position of a Section list
      * @return the section in position i
      * @author JIANG WEI
@@ -288,7 +283,7 @@ public class Course {
 
     /**
      * This function will return an assigned slot in the slot array
-     * 
+     *
      * @param i the position of a slot array
      * @return the slot in position i
      */
@@ -300,7 +295,7 @@ public class Course {
 
     /**
      * This function will return the course Title
-     * 
+     *
      * @return the title of this course
      */
     public String getTitle() {
@@ -309,7 +304,7 @@ public class Course {
 
     /**
      * This function will set the common core information
-     * 
+     *
      * @param commoncore a string value
      * @author JIANG WEI
      */
@@ -319,7 +314,7 @@ public class Course {
 
     /**
      * This function will set the course Description
-     * 
+     *
      * @param description a string value about the course description
      * @author JIANG WEI
      */
@@ -329,7 +324,7 @@ public class Course {
 
     /**
      * This function will set the exclusion information
-     * 
+     *
      * @param exclusion a string value about the exclusion description
      * @author JIANG WEI
      */
@@ -339,7 +334,7 @@ public class Course {
 
     /**
      * This function will set the number of Slots
-     * 
+     *
      * @param numSlots a integer stands for total number of slots
      */
     public void setNumSlots(final int numSlots) {
@@ -348,7 +343,7 @@ public class Course {
 
     /**
      * This function will set the title of Course
-     * 
+     *
      * @param title a String value stands for the Course Title
      */
     public void setTitle(final String title) {

@@ -9,7 +9,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 /**
  * The class containing scrapers used.
- * 
+ *
  * @author asto1
  */
 public class Scraper {
@@ -17,7 +17,7 @@ public class Scraper {
     /**
      * This class serves as a C++ struct-like data structure to store Courses and
      * their corresponding SFQ scores in a proper way.
-     * 
+     *
      * @author asto18089
      *
      */
@@ -37,7 +37,7 @@ public class Scraper {
     /**
      * This class serves as a C++ struct-like data structure to store Instructors
      * and their corresponding SFQ scores in a proper way.
-     * 
+     *
      * @author asto18089
      *
      */
@@ -95,7 +95,7 @@ public class Scraper {
 
     /**
      * Returns whether the input is a invaild score
-     * 
+     *
      * @param s Input score string to be checked
      * @return whether the score is invaild (='-') or not. Return true if invaild
      *         and false otherwise.
@@ -117,7 +117,7 @@ public class Scraper {
 
     /**
      * Scraper to scrape courses under a specified subject
-     * 
+     *
      * @param baseurl The course offering URL
      * @param term    The term
      * @param sub     The subject
@@ -148,7 +148,7 @@ public class Scraper {
 		c.setCommoncore(commoncore == null ? "null" : commoncore.asText());
 		final List<?> sections = htmlItem.getByXPath(".//tr[contains(@class,'newsect')]");
 		for (HtmlElement e : (List<HtmlElement>) sections) {
-		    final HtmlElement instructor = (HtmlElement) e.getFirstByXPath(".//a");
+		    e.getFirstByXPath(".//a");
 		    final HtmlElement section = (HtmlElement) e.getFirstByXPath(".//td");
 		    // final String ins = instructor == null ? "TBA" : instructor.asText();
 		    String ins = e.getChildNodes().get(5).asText();
@@ -181,7 +181,7 @@ public class Scraper {
 
     /**
      * Scraper to scrape SFQs of enrolled sections.
-     * 
+     *
      * @param baseurl  SFQ URL
      * @param sections Enrolled sections of the user
      * @return A list of CourseSFQStruct, contains a course and a list of its
@@ -242,7 +242,7 @@ public class Scraper {
 
     /**
      * Scraper to scrape all Instructors' SFQ
-     * 
+     *
      * @param baseurl SFQ URL
      * @return List of InstSFQScoreStruct, contains instructor's name and a list of
      *         SFQ scores per element.
@@ -298,7 +298,7 @@ public class Scraper {
 
     /**
      * Scraper to scrape all subjects offered in the specified term.
-     * 
+     *
      * @param baseurl Course schedule URL
      * @param term    Term
      * @return A list of String containing subject code per element.

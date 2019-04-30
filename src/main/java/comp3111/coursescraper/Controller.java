@@ -1,4 +1,3 @@
-
 package comp3111.coursescraper;
 
 import java.io.FileNotFoundException;
@@ -40,7 +39,6 @@ import javafx.scene.text.Font;
 /**
  * The class to hold main program logic and variables.
  */
-
 public class Controller {
     private static List<Course> scrapedCourse = new ArrayList<>();
     private static List<String> subjects = new ArrayList<>(); // List to store subjects searched by first-time All
@@ -214,15 +212,15 @@ public class Controller {
 
     /**
      * Perform all subject search.
-     * 
+     *
      * When the subject list is empty (i.e. No search was performed before), it will
      * retreive all subjects codes from the URL. Upon finish, it will print the
      * total number of subjects found.
-     * 
+     *
      * Later calls it will call Scrape() recursively to retrieve courses from all
      * subjects. When the scraper has finished scraping a subject, it will print
      * "____ is done" and update the progressbar.
-     * 
+     *
      * @author asto18089
      */
     @FXML
@@ -332,9 +330,9 @@ public class Controller {
 
     /**
      * Find all instructors' SFQ scores.
-     * 
+     *
      * It will print all instructor and their taught courses' average SFQ score.
-     * 
+     *
      * @author asto18089
      */
     @FXML
@@ -354,10 +352,10 @@ public class Controller {
 
     /**
      * Find enrolled courses' SFQ scores.
-     * 
+     *
      * It will print user's enrolled courses and their SFQ score (averaging all
      * sections of this course).
-     * 
+     *
      * @author asto18089
      */
     @FXML
@@ -400,26 +398,24 @@ public class Controller {
 		    removeFromTimetable(sec);
 		}
 		textAreaConsole.clear();
-		if (!FilteredCourse.isEmpty()) {
+		if (!FilteredCourse.isEmpty())
 		    for (Course d : FilteredCourse) {
 			String newline = d.getTitle() + "\n";
 			for (int i = 0; i < d.getNumSections(); i++) {
 			    newline += d.getSection(i).getSection();
-			    if (d.getSection(i).getSlotSize() > 0) {
+			    if (d.getSection(i).getSlotSize() > 0)
 				for (int j = 0; j < d.getSection(i).getSlotSize(); j++) {
 				    Slot t = d.getSection(i).getSlot(j);
 				    newline += "\t" + t + "\n";
 				}
-			    } else {
+			    else
 				newline += "\n";
-			    }
 			}
 			if (textAreaConsole.getText() == null)
 			    textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
 			else
 			    textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
 		    }
-		}
 		String newline = textAreaConsole.getText() + "\n\n" + "The following sections are enrolled:" + "\n";
 		for (final Section s : Controller.EnrolledSection)
 		    newline += s.getCourseCode() + " " + s.getSection() + " " + s.getCourseName() + " "
@@ -484,28 +480,24 @@ public class Controller {
 
 	    Integer numSection = 0;
 	    Integer numCourse = 0;
-	    ArrayList<String> instructors = new ArrayList<String>();
-	    ArrayList<String> instructorsWithAssignment = new ArrayList<String>();
+	    ArrayList<String> instructors = new ArrayList<>();
+	    ArrayList<String> instructorsWithAssignment = new ArrayList<>();
 	    textAreaConsole.setText("");
 
 	    for (final Course c : v) {
 		// Check the number of sections.
-		if (c.getNumSections() == 0) {
+		if (c.getNumSections() == 0)
 		    continue;
-		}
 		String newline = c.getTitle() + "\n";
 
 		for (int i = 0; i < c.getNumSections(); i++) {
 		    ArrayList<String> instructorNamesList = c.getSection(i).getInstructorNames();
 		    for (String instructorName : instructorNamesList) {
-			if (!instructors.contains(instructorName)) {
+			if (!instructors.contains(instructorName))
 			    instructors.add(c.getSection(i).getInstructor());
-			}
-			if (checkInRange(c.getSection(i))) {
-			    if (!instructorsWithAssignment.contains(c.getSection(i).getInstructor())) {
+			if (checkInRange(c.getSection(i)))
+			    if (!instructorsWithAssignment.contains(c.getSection(i).getInstructor()))
 				instructorsWithAssignment.add(instructorName);
-			    }
-			}
 		    }
 		    newline += c.getSection(i).getSection() + ":\n";
 		    for (int j = 0; j < c.getSection(i).getSlotSize(); j++) {
@@ -515,13 +507,12 @@ public class Controller {
 		}
 		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
 		numSection += c.getNumSections();
-		if (c.getNumSections() != 0) {
+		if (c.getNumSections() != 0)
 		    numCourse++;
-		}
 	    }
 	    String addLine = "Total Number of difference sections in this search: " + numSection.toString() + "\n\n";
-	    addLine += ("Total Number of Course in this search: " + numCourse.toString() + "\n\n");
-	    addLine += ("Instrctuors who has teaching assignment this term but does not need to teach at Tu 3:10pm: ");
+	    addLine += "Total Number of Course in this search: " + numCourse.toString() + "\n\n";
+	    addLine += "Instrctuors who has teaching assignment this term but does not need to teach at Tu 3:10pm: ";
 
 	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + addLine);
 	    instructors.removeAll(instructorsWithAssignment);
@@ -529,15 +520,13 @@ public class Controller {
 	    Collections.sort(instructors);
 	    boolean isFirst = true;
 	    String instructorNames = "";
-	    for (String s : instructors) {
+	    for (String s : instructors)
 		if (isFirst) {
 		    System.out.println(s);
 		    instructorNames += s;
 		    isFirst = false;
-		} else {
-		    instructorNames += (", " + s);
-		}
-	    }
+		} else
+		    instructorNames += ", " + s;
 
 	    textAreaConsole.setText(textAreaConsole.getText() + instructorNames);
 
@@ -545,7 +534,7 @@ public class Controller {
 	     * edit the tablecolumn after the search @Brother Liang implement it also in
 	     * ALLSbujectSearch;
 	     */
-	    Controller.scrapedCourse = new ArrayList<Course>();
+	    Controller.scrapedCourse = new ArrayList<>();
 	    Controller.scrapedCourse.addAll(v);
 	    List();
 	} catch (final FileNotFoundException e) {
@@ -668,20 +657,18 @@ public class Controller {
 	    for (int i = 0; i < c.getNumSections(); i++) {
 		Section sec = c.getSection(i);
 		newline += sec.getSection();
-		if (sec.getSlotSize() > 0) {
+		if (sec.getSlotSize() > 0)
 		    for (int j = 0; j < sec.getSlotSize(); j++) {
 			Slot t = sec.getSlot(j);
 			newline += "\t" + t + "\n";
 		    }
-		} else {
+		else
 		    newline += '\n';
-		}
 	    }
-	    if (textAreaConsole.getText() == null) {
+	    if (textAreaConsole.getText() == null)
 		textAreaConsole.setText("" + newline);// WTF? get Null WILL be "NULL"????
-	    } else {
+	    else
 		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
-	    }
 	}
 	List();
     }

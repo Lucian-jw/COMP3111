@@ -12,11 +12,10 @@ import javafx.scene.paint.Color;
 
 /**
  * This class implements the "section" which consists of Course
- * 
+ *
  * @author JIANG WEI and ZHANG LUOSHU
  *
  */
-@SuppressWarnings("restriction")
 public class Section {
     private SimpleStringProperty CourseCode;
 
@@ -30,13 +29,16 @@ public class Section {
 
     private final ArrayList<Slot> belongedSlots = new ArrayList<>();
 
-    private ArrayList<Label> labels = new ArrayList<Label>();
+    private ArrayList<Label> labels = new ArrayList<>();
 
-    private ArrayList<Color> colors = new ArrayList<Color>();
+    private ArrayList<Color> colors = new ArrayList<>();
 
     /**
-     * This is a class method to get a list of instructors in case there are multiple instructors for one section.
-     * @param color the color that needs to be added to the list stored in the object
+     * This is a class method to get a list of instructors in case there are
+     * multiple instructors for one section.
+     * 
+     * @param color the color that needs to be added to the list stored in the
+     *              object
      */
     public void addColor(Color color) {
 	colors.add(color);
@@ -44,6 +46,7 @@ public class Section {
 
     /**
      * This is a class method to get the number of colors stored in the list.
+     * 
      * @return the number of colors stored in the list
      */
     public int getNumColor() {
@@ -51,7 +54,9 @@ public class Section {
     }
 
     /**
-     * This is a class method to get the color according to the index provided in the parameter.
+     * This is a class method to get the color according to the index provided in
+     * the parameter.
+     * 
      * @param i the index used to retrieve the color
      * @return the color extracted according to the index
      */
@@ -61,7 +66,9 @@ public class Section {
 
     /**
      * This is a class method to add a slot to the object of Section.
-     * @param s the Slot object that needs to be added to the slot list stored in the object.
+     * 
+     * @param s the Slot object that needs to be added to the slot list stored in
+     *          the object.
      */
     public void addSlot(final Slot s) {
 	belongedSlots.add(s);
@@ -71,7 +78,7 @@ public class Section {
 
     /**
      * This is a Section constructor
-     * 
+     *
      * @return it will construct a new section contains all the original information
      */
     public Section clone() {
@@ -85,24 +92,25 @@ public class Section {
     }
 
     /**
-     * This is a class method to get a list of instructors in case there are multiple instructors for one section.
+     * This is a class method to get a list of instructors in case there are
+     * multiple instructors for one section.
+     * 
      * @return a list of instructor names for one section.
      */
     public ArrayList<String> getInstructorNames() {
-	ArrayList<String> instructorNames = new ArrayList<String>();
+	ArrayList<String> instructorNames = new ArrayList<>();
 	if (getInstructor().contains("\n")) {
 	    String[] instructorNamesMultiple = getInstructor().split("\n");
-	    for (int i = 0; i < instructorNamesMultiple.length; i++) {
-		instructorNames.add(instructorNamesMultiple[i]);
-	    }
-	} else {
+	    for (String element : instructorNamesMultiple)
+		instructorNames.add(element);
+	} else
 	    instructorNames.add(getInstructor());
-	}
 	return instructorNames;
     }
 
     /**
      * This class method will add a label to the label list stored in the object.
+     * 
      * @return the number of labels stored in the object
      */
     public int getNumLabels() {
@@ -111,7 +119,9 @@ public class Section {
 
     /**
      * This class method will add a label to the label list stored in the object.
-     * @param label the label that needs to be added to the label list stored in the object
+     * 
+     * @param label the label that needs to be added to the label list stored in the
+     *              object
      */
     public void addLabel(Label label) {
 	labels.add(label);
@@ -119,6 +129,7 @@ public class Section {
 
     /**
      * This class method will get the label from the list stored in the object.
+     * 
      * @param i a number of index in a list of labels
      * @return the desired label according to the index
      */
@@ -128,7 +139,7 @@ public class Section {
 
     /**
      * This function returns the CourseCode Property
-     * 
+     *
      * @return the CourseCode property
      */
     public StringProperty CourseCodeProperty() {
@@ -137,7 +148,7 @@ public class Section {
 
     /**
      * This function returns the CourseName Property
-     * 
+     *
      * @return the CourseName property
      */
     public StringProperty CourseNameProperty() {
@@ -146,7 +157,7 @@ public class Section {
 
     /**
      * This function returns the EnrolledStatus Property
-     * 
+     *
      * @return the EnrolledStatus property
      */
     public BooleanProperty EnrolledStatusProperty() {
@@ -154,22 +165,24 @@ public class Section {
     }
 
     /**
-     * This class method will check whether the object have the same content with the given Section object.
+     * This class method will check whether the object have the same content with
+     * the given Section object.
+     * 
      * @param s the given object that needs to be checked by this class method.
-     * @return whether the passed object have the same content with this Section object.
+     * @return whether the passed object have the same content with this Section
+     *         object.
      */
     @Override
     public boolean equals(Object s) {
-    if (!(s instanceof Section)) {
-    	return false;
-    }
-    Section section = (Section) s;
+	if (!(s instanceof Section))
+	    return false;
+	Section section = (Section) s;
 	return getCourseCode().equals(section.getCourseCode()) && getSection().equals(section.getSection());
     }
 
     /**
      * This function returns the Course Code Value
-     * 
+     *
      * @return the CourseCode Value
      */
     public String getCourseCode() {
@@ -180,7 +193,7 @@ public class Section {
 
     /**
      * This function returns the Course Name Value
-     * 
+     *
      * @return the CourseName Value
      */
     public String getCourseName() {
@@ -191,7 +204,7 @@ public class Section {
 
     /**
      * This function returns the EnrolledStatus Value
-     * 
+     *
      * @return the EnrolledStatus Value
      */
     public Boolean getEnrolledStatus() {
@@ -202,7 +215,7 @@ public class Section {
 
     /**
      * This function returns the instructor Value
-     * 
+     *
      * @return the instructor Value
      */
     public String getInstructor() {
@@ -213,7 +226,7 @@ public class Section {
 
     /**
      * This function returns the Section Value
-     * 
+     *
      * @return the Section Value
      */
     public String getSection() {
@@ -221,9 +234,10 @@ public class Section {
 	return Section.get();
 
     }
-    
+
     /**
      * This class method will get the slot object according to the index.
+     * 
      * @param i the given index that is needed to retrieve the object
      * @return the retrieved slot according to the index
      */
@@ -233,7 +247,7 @@ public class Section {
 
     /**
      * This function returns the number of slots in the section object
-     * 
+     *
      * @return the number of slots in the section object
      */
     public int getSlotSize() {
@@ -242,7 +256,7 @@ public class Section {
 
     /**
      * This function returns the Instructor Property
-     * 
+     *
      * @return the Instructor property
      */
     public StringProperty InstructorProperty() {
@@ -251,7 +265,7 @@ public class Section {
 
     /**
      * This function returns the Section Property
-     * 
+     *
      * @return the Section property
      */
     public StringProperty SectionProperty() {
@@ -260,7 +274,7 @@ public class Section {
 
     /**
      * This function will set the Section with CourseCode
-     * 
+     *
      * @param CCode a string value stands for the CourseCode
      */
     public void setCourseCode(final String CCode) {
@@ -269,7 +283,7 @@ public class Section {
 
     /**
      * This function will set the Section with CourseName
-     * 
+     *
      * @param CName a string value stands for the CourseName
      */
     public void setCourseName(final String CName) {
@@ -278,7 +292,7 @@ public class Section {
 
     /**
      * This function will set the Section with Status
-     * 
+     *
      * @param status a boolean value stands for the status
      */
     public void setEnrolledStatus(final Boolean status) {
@@ -287,7 +301,7 @@ public class Section {
 
     /**
      * This function will set the Section with Instructor
-     * 
+     *
      * @param Instructor a string value stands for the Instructor
      */
     public void setInstructor(final String Instructor) {
@@ -296,12 +310,11 @@ public class Section {
 
     /**
      * This function will set the Section with section
-     * 
+     *
      * @param section string value stands for the section information
      */
     public void setSection(final String section) {
 	Section = new SimpleStringProperty(section);
     }
-
 
 }

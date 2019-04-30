@@ -243,7 +243,7 @@ public class Scraper {
 	    }
 	    return courseScoreList;
 	} catch (final Exception e) {
-	    System.out.println(e);
+
 	}
 	return null;
     }
@@ -301,7 +301,7 @@ public class Scraper {
 	    }
 	    return instScoreList;
 	} catch (final Exception e) {
-	    System.out.println(e);
+
 	}
 	return null;
     }

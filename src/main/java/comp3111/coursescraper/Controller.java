@@ -367,6 +367,12 @@ public class Controller {
     void findInstructorSfq() {
 	final List<InstSFQScoreStruct> out = scraper.scrapeInstSFQ(textfieldSfqUrl.getText());
 	textAreaConsole.clear();
+	if ((out == null) || (out.size() == 0)) {
+	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Scraper returned no result. Either:" + "\n"
+		    + "1. The webpage contains no SFQ data." + "\n"
+		    + "2. Or error occured when accessing through URL provided. (e.g. HTTP code 404)");
+	    return;
+	}
 	for (int i = 0; i < out.size(); i++) {
 	    final List<String> curScore = out.get(i).score;
 	    float total = 0;
@@ -391,6 +397,12 @@ public class Controller {
     void findSfqEnrollCourse() {
 	final List<CourseSFQStruct> out = scraper.scrapeCourseSFQ(textfieldSfqUrl.getText(), EnrolledSection);
 	textAreaConsole.clear();
+	if ((out == null) || (out.size() == 0)) {
+	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Scraper returned no result. Either:" + "\n"
+		    + "1. The webpage contains no SFQ data." + "\n"
+		    + "2. Or error occured when accessing through URL provided. (e.g. HTTP code 404)");
+	    return;
+	}
 	for (int i = 0; i < out.size(); i++) {
 	    final List<String> curScore = out.get(i).score;
 	    float total = 0;

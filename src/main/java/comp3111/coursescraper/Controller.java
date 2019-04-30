@@ -36,6 +36,9 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
+/**
+ * The class to hold main program logic and variables.
+ */
 @SuppressWarnings("restriction")
 public class Controller {
     private static List<Course> scrapedCourse = new ArrayList<>();

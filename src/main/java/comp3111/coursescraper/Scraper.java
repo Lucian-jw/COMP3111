@@ -7,7 +7,13 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
+/**
+ * The class containing scrapers used.
+ * 
+ * @author asto1
+ */
 public class Scraper {
+
     /**
      * This class serves as a C++ struct-like data structure to store Courses and
      * their corresponding SFQ scores in a proper way.
@@ -16,7 +22,15 @@ public class Scraper {
      *
      */
     public class CourseSFQStruct {
+
+	/**
+	 * The code of the course
+	 */
 	public String courseCode;
+
+	/**
+	 * List of scores
+	 */
 	public List<String> score = new ArrayList<>();
     }
 
@@ -28,22 +42,30 @@ public class Scraper {
      *
      */
     public class InstSFQScoreStruct {
+
+	/**
+	 * The name of the instructor
+	 */
 	public String name;
+
+	/**
+	 * List of scores
+	 */
 	public List<String> score = new ArrayList<>();
     }
 
     private static Section addSection(final Course c, final String ins, final String sec) {
-		final String CourseCode = c.getTitle().substring(0, 10);
-		final String CourseName = c.getTitle().substring(12, c.getTitle().length());
-		final Section s = new Section();
-		s.setCourseCode(CourseCode);
-		s.setSection(sec);
-		s.setCourseName(CourseName);
-		s.setInstructor(ins);
-		s.setEnrolledStatus(false);
-		if (s.getSection() != null && (s.getSection().startsWith("L") || s.getSection().startsWith("T")))
-		    c.addSection(s);
-		return s;
+	final String CourseCode = c.getTitle().substring(0, 10);
+	final String CourseName = c.getTitle().substring(12, c.getTitle().length());
+	final Section s = new Section();
+	s.setCourseCode(CourseCode);
+	s.setSection(sec);
+	s.setCourseName(CourseName);
+	s.setInstructor(ins);
+	s.setEnrolledStatus(false);
+	if (s.getSection() != null && (s.getSection().startsWith("L") || s.getSection().startsWith("T")))
+	    c.addSection(s);
+	return s;
     }
 
     private static void addSlot(final Section section, final HtmlElement e, final Course c, final boolean secondRow,
@@ -91,6 +113,14 @@ public class Scraper {
 	client.getOptions().setJavaScriptEnabled(false);
     }
 
+    /**
+     * Scraper to scrape courses under a specified subject
+     * 
+     * @param baseurl The course offering URL
+     * @param term    The term
+     * @param sub     The subject
+     * @return A list of Course
+     */
     public List<Course> scrape(final String baseurl, final String term, final String sub) {
 	try {
 	    final HtmlPage page = client.getPage(baseurl + "/" + term + "/subject/" + sub);
@@ -125,11 +155,11 @@ public class Scraper {
 		    final String sectiontype = section == null ? "null" : section.asText();
 		    String sec = null;
 		    if (sectiontype.startsWith("LA"))
-		    	sec = sectiontype.substring(0, 3);
+			sec = sectiontype.substring(0, 3);
 		    else if (sectiontype.startsWith("L"))
-		    	sec = sectiontype.substring(0, 3);
+			sec = sectiontype.substring(0, 3);
 		    else if (sectiontype.startsWith("T"))
-		    	sec = sectiontype.substring(0, 3);
+			sec = sectiontype.substring(0, 3);
 		    final Section addedSection = addSection(c, ins, sec);
 		    addSlot(addedSection, e, c, false, ins, sectiontype);
 		    e = (HtmlElement) e.getNextSibling();

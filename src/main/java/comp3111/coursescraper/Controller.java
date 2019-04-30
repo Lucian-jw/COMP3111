@@ -202,6 +202,7 @@ public class Controller {
 		final List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(), cur);
 		Controller.scrapedCourse.addAll(v);
 		totalCourseNum += v.size();
+		System.out.println(cur + " is done");
 	    }
 	    textAreaConsole
 		    .setText(textAreaConsole.getText() + "\n" + "Total Number of Courses fetched: " + totalCourseNum);

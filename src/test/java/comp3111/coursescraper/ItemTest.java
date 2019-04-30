@@ -78,31 +78,7 @@ public class ItemTest {
 	assertEquals(i.getTitle(), "ABCDE");
     }
 
-    @Test
-    public void testType() {
-	final Slot i1 = new Slot();
-	final Slot i2 = new Slot();
-	final Slot i3 = new Slot();
-	final Slot i4 = new Slot();
-	final Slot i5 = new Slot();
-	final Slot i6 = new Slot();
-	i1.setSectionType("L1");
-	i2.setSectionType("L2");
-	i3.setSectionType("T1");
-	i4.setSectionType("R1");
-	i5.setSectionType("LA1");
-	i6.setSectionType("X1");
-	final Course a = new Course();
-	a.addSlot(i1);
-	a.addSlot(i2);
-	a.addSlot(i3);
-	final Course b = new Course();
-	b.addSlot(i4);
-	b.addSlot(i5);
-	b.addSlot(i6);
-	assertEquals(a.containsLab(), true);
-	assertEquals(b.containsLab(), true);
-    }
+   
 
     @Test
     public void testWeekday() {

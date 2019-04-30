@@ -54,7 +54,18 @@ public class FxTest extends ApplicationTest {
 	clickOn("#CommonCore");
 	clickOn("#NoExclusion");
 	clickOn("#NoExclusion");
-    }
+	clickOn("#Mon");
+	clickOn("#Mon");
+	clickOn("#Tue");
+	clickOn("#Tue");
+	clickOn("#Wed");
+	clickOn("#Wed");
+	clickOn("#Thur");
+	clickOn("#Thur");
+	clickOn("#Fri");
+	clickOn("#Wed");
+	assertTrue(a.getText() != null);
+	}
 
     @Test
     public void testselectall() {

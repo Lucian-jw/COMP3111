@@ -76,17 +76,18 @@ public class Scraper {
 	    return;
 	for (int j = 0; j < times[0].length(); j += 2) {
 	    final String code = times[0].substring(j, j + 2);
+	    
 	    if (Slot.DAYS_MAP.get(code) == null)
 		break;
 	    final Slot s = new Slot();
 	    s.setDay(Slot.DAYS_MAP.get(code));
 	    s.setStart(times[1]);
-	    s.setEnd(times[3]);
-	    s.setVenue(venue);
+		s.setEnd(times[3]);
+		s.setVenue(venue);
 	    s.setinstructor(ins);
 	    s.setSectionType(sectionType);
-	    if (s.getSectionType().startsWith("L") || s.getSectionType().startsWith("T"))
-		c.addSlot(s);
+	    if (s.getSectionType()!= null&&(s.getSectionType().startsWith("L") || s.getSectionType().startsWith("T")))
+	    	c.addSlot(s);
 	    section.addSlot(s);
 	}
     }

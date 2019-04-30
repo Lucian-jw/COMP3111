@@ -1,3 +1,4 @@
+
 package comp3111.coursescraper;
 
 import java.io.FileNotFoundException;
@@ -39,7 +40,7 @@ import javafx.scene.text.Font;
 /**
  * The class to hold main program logic and variables.
  */
-@SuppressWarnings("restriction")
+
 public class Controller {
     private static List<Course> scrapedCourse = new ArrayList<>();
     private static List<String> subjects = new ArrayList<>(); // List to store subjects searched by first-time All
@@ -402,10 +403,18 @@ public class Controller {
 		if (!FilteredCourse.isEmpty()) {
 		    for (Course d : FilteredCourse) {
 			String newline = d.getTitle() + "\n";
-			for (int i = 0; i < d.getNumSlots(); i++) {
-			    Slot t = d.getSlot(i);
-			    newline += t.getSectionType() + " " + t + "\n";
-			}
+			for (int i = 0; i < d.getNumSections(); i++) {
+				newline+=d.getSection(i).getSection();
+				if(d.getSection(i).getSlotSize()>0){
+					for(int j=0;j<d.getSection(i).getSlotSize();j++){
+						Slot t=d.getSection(i).getSlot(j);
+						newline += "\t"+t + "\n";
+					}
+				}
+				else{
+					newline+="\n";
+				}
+		    }
 			if (textAreaConsole.getText() == null)
 			    textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
 			else
@@ -421,7 +430,6 @@ public class Controller {
 		else
 		    textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
 	    });
-
 	    return new SimpleObjectProperty<>(checkBox);
 	});
 	if (Controller.FilteredCourse.isEmpty()) {
@@ -658,14 +666,25 @@ public class Controller {
 
 	for (final Course c : v) {
 	    String newline = c.getTitle() + "\n";
-	    for (int i = 0; i < c.getNumSlots(); i++) {
-		final Slot t = c.getSlot(i);
-		newline += t.getSectionType() + " Slot " + i + ":" + t + "\n";
+	    for (int i = 0; i < c.getNumSections(); i++) {
+			Section sec=c.getSection(i);
+			newline+=sec.getSection();
+			if(sec.getSlotSize()>0){
+				for(int j=0;j<sec.getSlotSize();j++){
+					Slot t=sec.getSlot(j);
+					newline += "\t"+t +"\n";
+				}
+			}
+			else{
+				newline+='\n';
+			}
 	    }
-	    if (textAreaConsole.getText() == null)
-		textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
-	    else
+	    if (textAreaConsole.getText() == null){
+	    	textAreaConsole.setText(""+ newline);// WTF? get Null WILL be "NULL"????
+	    }
+	    else{
 		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+	    }
 	}
 	List();
     }
@@ -723,4 +742,5 @@ public class Controller {
     void WithLabsorTutorial_selection() {
 	select();
     }
+
 }

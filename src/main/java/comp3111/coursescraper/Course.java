@@ -10,7 +10,7 @@ import java.util.List;
  *
  */
 public class Course {
-    private static final int DEFAULT_MAX_SLOT = 20;
+    private static final int DEFAULT_MAX_SLOT = 200;
 
     private String title;
     private String description;
@@ -111,17 +111,18 @@ public class Course {
      * @author JIANG WEI
      */
     public Boolean containsLab() {
-	int i = 0;
-	if (getNumSlots() == 0)
-	    return false;
-	while (getSlot(i).getSectionType() == null
-		|| !getSlot(i).getSectionType().startsWith("LA") && !getSlot(i).getSectionType().startsWith("T")) {
-	    if (i == getNumSlots() - 1)
+		if(getNumSections()==0)
+			return false;
+		for(int i=0;i<this.getNumSections();i++){
+			if(getSection(i).getSection().startsWith("T")||getSection(i).getSection().startsWith("LA")){
+				return true;
+			}
+		}
 		return false;
-	    i++;
-	}
-	return true;
     }
+	
+	
+    
 
     /**
      * This function will determine whether this course has a Monday SLOT

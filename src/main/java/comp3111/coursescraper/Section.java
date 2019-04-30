@@ -1,3 +1,4 @@
+
 package comp3111.coursescraper;
 
 import java.util.ArrayList;
@@ -301,5 +302,6 @@ public class Section {
     public void setSection(final String section) {
 	Section = new SimpleStringProperty(section);
     }
+
 
 }

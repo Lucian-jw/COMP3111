@@ -34,16 +34,15 @@ public class Slot {
     private String venue;
     private String instructor;
     private String sectionType;
-
     private Section belongedSection;
 
-    @Override
     /**
      * This is a Slot clone() class method overwritten by the clone() method in
      * Object class
      *
      * @return it will construct a new Slot contains all the original information
      */
+    @Override
     public Slot clone() {
 	final Slot s = new Slot();
 	s.day = day;
@@ -57,6 +56,7 @@ public class Slot {
 
     /**
      * this method gets the day
+     * 
      * @return the day
      */
     public int getDay() {
@@ -65,6 +65,7 @@ public class Slot {
 
     /**
      * this method gets the end
+     * 
      * @return the end
      */
     public LocalTime getEnd() {
@@ -73,6 +74,7 @@ public class Slot {
 
     /**
      * this method get the hour
+     * 
      * @return the end hour
      */
     public int getEndHour() {
@@ -81,6 +83,7 @@ public class Slot {
 
     /**
      * this method gets the end minute
+     * 
      * @return the end minute
      */
     public int getEndMinute() {
@@ -89,6 +92,7 @@ public class Slot {
 
     /**
      * this method gets the instructor name
+     * 
      * @return the instructor
      */
     public String getinstructor() {
@@ -97,6 +101,7 @@ public class Slot {
 
     /**
      * this method gets the section
+     * 
      * @return the belonged section of the current slot
      */
     public Section getSection() {
@@ -105,6 +110,7 @@ public class Slot {
 
     /**
      * this method gets the section type
+     * 
      * @return the section type starting from L, LA, T
      */
     public String getSectionType() {
@@ -113,6 +119,7 @@ public class Slot {
 
     /**
      * this method get the start
+     * 
      * @return the start time of the slot
      */
     public LocalTime getStart() {
@@ -121,6 +128,7 @@ public class Slot {
 
     /**
      * this method get the start hour
+     * 
      * @return the start hour of the slot
      */
     public int getStartHour() {
@@ -129,6 +137,7 @@ public class Slot {
 
     /**
      * this method gets the start minute
+     * 
      * @return the start minute of the slot
      */
     public int getStartMinute() {
@@ -137,6 +146,7 @@ public class Slot {
 
     /**
      * this method gets the venue
+     * 
      * @return the venue
      */
     public String getVenue() {
@@ -153,7 +163,6 @@ public class Slot {
 	if (start != null)
 	    return start.isBefore(LocalTime.NOON);
 	return false;
-
     }
 
     /**
@@ -171,6 +180,7 @@ public class Slot {
 
     /**
      * set the day
+     * 
      * @param day the day to set
      */
     public void setDay(final int day) {
@@ -179,6 +189,7 @@ public class Slot {
 
     /**
      * set the end time
+     * 
      * @param end the end to set
      */
     public void setEnd(final String end) {
@@ -214,6 +225,7 @@ public class Slot {
 
     /**
      * set the start time
+     * 
      * @param start the start to set
      */
     public void setStart(final String start) {
@@ -222,17 +234,19 @@ public class Slot {
 
     /**
      * set the venue
+     * 
      * @param venue the venue to set
      */
     public void setVenue(final String venue) {
 	this.venue = venue;
     }
 
-    @Override
     /**
      * this method change the object to string
+     * 
      * @return a text version of the object
      */
+    @Override
     public String toString() {
 	return Slot.DAYS[day] + start.toString() + "-" + end.toString() + ":" + venue;
     }

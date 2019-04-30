@@ -74,13 +74,12 @@ public class Section {
 	belongedSlots.add(s);
     }
 
-    @Override
-
     /**
      * This is a Section constructor
      *
      * @return it will construct a new section contains all the original information
      */
+    @Override
     public Section clone() {
 	final Section s = new Section();
 	s.setCourseCode(getCourseCode());

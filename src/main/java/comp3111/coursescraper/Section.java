@@ -9,13 +9,11 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 
+
 /**
- * This class implements the "section" which consists of Course
- * 
+ * This class implements the "section" which consists of Course 
  * @author JIANG WEI and ZHANG LUOSHU
- *
  */
-@SuppressWarnings("restriction")
 public class Section {
     private SimpleStringProperty CourseCode;
 

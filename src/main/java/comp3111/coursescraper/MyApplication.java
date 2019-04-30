@@ -23,6 +23,9 @@ public class MyApplication extends Application {
 
     /**
      * Start the program.
+     * 
+     * @param stage The main stage
+     * @throws Exception if problem occurs.
      */
     @Override
     public void start(final Stage stage) throws Exception {

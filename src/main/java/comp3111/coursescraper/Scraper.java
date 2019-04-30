@@ -160,11 +160,14 @@ public class Scraper {
 			sec = sectiontype.substring(0, 3);
 		    else if (sectiontype.startsWith("T"))
 			sec = sectiontype.substring(0, 3);
+		    if (sectiontype.startsWith("LA")||sectiontype.startsWith("L")||sectiontype.startsWith("T")) {
 		    final Section addedSection = addSection(c, ins, sec);
 		    addSlot(addedSection, e, c, false, ins, sectiontype);
 		    e = (HtmlElement) e.getNextSibling();
 		    if (e != null && !e.getAttribute("class").contains("newsect"))
 			addSlot(addedSection, e, c, true, ins, sectiontype);
+		    }
+		    
 		}
 		result.add(c);
 	    }

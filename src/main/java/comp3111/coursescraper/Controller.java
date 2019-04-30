@@ -496,14 +496,14 @@ public class Controller {
 	    ArrayList<String> instructors = new ArrayList<>();
 	    ArrayList<String> instructorsWithAssignment = new ArrayList<>();
 	    textAreaConsole.setText("");
-
+	    String contentConsole = "";
 	    for (final Course c : v) {
 		// Check the number of sections.
 		if (c.getNumSections() == 0) {
 		    continue;
 		}
 		String newline = c.getTitle() + "\n";
-
+		
 		for (int i = 0; i < c.getNumSections(); i++) {
 		    ArrayList<String> instructorNamesList = c.getSection(i).getInstructorNames();
 		    for (String instructorName : instructorNamesList) {
@@ -521,17 +521,19 @@ public class Controller {
 			newline += " " + t + "\n";
 		    }
 		}
-		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+		
 		numSection += c.getNumSections();
 		if (c.getNumSections() != 0) {
 		    numCourse++;
 		}
+		contentConsole += newline;
 	    }
+	    
 	    String addLine = "Total Number of difference sections in this search: " + numSection.toString() + "\n\n";
 	    addLine += "Total Number of Course in this search: " + numCourse.toString() + "\n\n";
 	    addLine += "Instrctuors who has teaching assignment this term but does not need to teach at Tu 3:10pm: ";
 
-	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + addLine);
+	    
 	    instructors.removeAll(instructorsWithAssignment);
 	    instructors.remove("TBA");
 	    Collections.sort(instructors);
@@ -545,9 +547,10 @@ public class Controller {
 		} else {
 		    instructorNames += ", " + s;
 		}
-
-	    textAreaConsole.setText(textAreaConsole.getText() + instructorNames);
-
+	    addLine += instructorNames;
+	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + addLine + "\n");
+	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + contentConsole);
+	    
 	    /*
 	     * edit the tablecolumn after the search @Brother Liang implement it also in
 	     * ALLSbujectSearch;

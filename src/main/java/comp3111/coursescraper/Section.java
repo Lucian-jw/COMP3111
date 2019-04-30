@@ -12,9 +12,10 @@ import javafx.scene.paint.Color;
 /**
  * This class implements the "section" which consists of Course
  * 
- * @author JIANG WEI and Zhang LuoShu
+ * @author JIANG WEI and ZHANG LUOSHU
  *
  */
+@SuppressWarnings("restriction")
 public class Section {
     private SimpleStringProperty CourseCode;
 
@@ -65,6 +66,10 @@ public class Section {
 	return s;
     }
 
+    /**
+     * This is a class method to get a list of instructors in case there are multiple instructors for one section.
+     * @return a list of instructor names for one section.
+     */
     public ArrayList<String> getInstructorNames() {
 	ArrayList<String> instructorNames = new ArrayList<String>();
 	if (getInstructor().contains("\n")) {
@@ -78,14 +83,27 @@ public class Section {
 	return instructorNames;
     }
 
+    /**
+     * This class method will add a label to the label list stored in the object.
+     * @return the number of labels stored in the object
+     */
     public int getNumLabels() {
 	return labels.size();
     }
 
+    /**
+     * This class method will add a label to the label list stored in the object.
+     * @param label the label that needs to be added to the label list stored in the object
+     */
     public void addLabel(Label label) {
 	labels.add(label);
     }
 
+    /**
+     * This class method will get the label from the list stored in the object.
+     * @param i a number of index in a list of labels
+     * @return the desired label according to the index
+     */
     public Label getLabel(int i) {
 	return labels.get(i);
     }
@@ -117,8 +135,18 @@ public class Section {
 	return EnrolledStatus;
     }
 
-    public boolean equals(final Section s) {
-	return getCourseCode().equals(s.getCourseCode()) && getSection().equals(s.getSection());
+    /**
+     * This class method will check whether the object have the same content with the given Section object.
+     * @param s the given object that needs to be checked by this class method.
+     * @return whether the passed object have the same content with this Section object.
+     */
+    @Override
+    public boolean equals(Object s) {
+    if (!(s instanceof Section)) {
+    	return false;
+    }
+    Section section = (Section) s;
+	return getCourseCode().equals(section.getCourseCode()) && getSection().equals(section.getSection());
     }
 
     /**
@@ -175,11 +203,21 @@ public class Section {
 	return Section.get();
 
     }
-
+    
+    /**
+     * This class method will get the slot object according to the index.
+     * @param i the given index that is needed to retrieve the object
+     * @return the retrieved slot according to the index
+     */
     public Slot getSlot(final int i) {
 	return belongedSlots.get(i);
     }
 
+    /**
+     * This function returns the number of slots in the section object
+     * 
+     * @return the number of slots in the section object
+     */
     public int getSlotSize() {
 	return belongedSlots.size();
     }

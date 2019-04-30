@@ -464,6 +464,9 @@ public class Controller {
 	select();
     }
 
+    /**
+     * this class method search on the web site of HKUST class schedule.
+     */
     @FXML
     void search() {
 	try {

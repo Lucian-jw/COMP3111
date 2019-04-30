@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.HashSet;
 
 import comp3111.coursescraper.Scraper.CourseSFQStruct;
 import comp3111.coursescraper.Scraper.InstSFQScoreStruct;

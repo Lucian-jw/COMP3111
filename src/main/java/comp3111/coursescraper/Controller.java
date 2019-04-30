@@ -1,3 +1,4 @@
+
 package comp3111.coursescraper;
 
 import java.io.FileNotFoundException;
@@ -36,7 +37,10 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-@SuppressWarnings("restriction")
+/**
+ * The class to hold main program logic and variables.
+ */
+
 public class Controller {
     private static List<Course> scrapedCourse = new ArrayList<>();
     private static List<String> subjects = new ArrayList<>(); // List to store subjects searched by first-time All
@@ -346,7 +350,6 @@ public class Controller {
 	    textAreaConsole.setText(
 		    textAreaConsole.getText() + "\n" + "Instructor: " + out.get(i).name + "\n" + "SFQ Score: " + total);
 	}
-
     }
 
     /**
@@ -427,7 +430,6 @@ public class Controller {
 		else
 		    textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
 	    });
-
 	    return new SimpleObjectProperty<>(checkBox);
 	});
 	if (Controller.FilteredCourse.isEmpty()) {
@@ -470,6 +472,9 @@ public class Controller {
 	select();
     }
 
+    /**
+     * this class method search on the web site of HKUST class schedule.
+     */
     @FXML
     void search() {
 	try {
@@ -670,10 +675,12 @@ public class Controller {
 				newline+='\n';
 			}
 	    }
-	    if (textAreaConsole.getText() == null)
-		textAreaConsole.setText(""+ newline);// WTF? get Null WILL be "NULL"????
-	    else
+	    if (textAreaConsole.getText() == null){
+	    	textAreaConsole.setText(""+ newline);// WTF? get Null WILL be "NULL"????
+	    }
+	    else{
 		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
+	    }
 	}
 	List();
     }
@@ -731,4 +738,5 @@ public class Controller {
     void WithLabsorTutorial_selection() {
 	select();
     }
+
 }

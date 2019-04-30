@@ -226,17 +226,41 @@ public class Controller {
      */
     @FXML
     void allSubjectSearch() {
-	textAreaConsole.clear();
-	if (Controller.subjects.isEmpty()) {
-	    Controller.subjects.addAll(scraper.scrapeSubjects(textfieldURL.getText(), textfieldTerm.getText()));
-	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Total Number of Categories/Code Prefix: "
-		    + Controller.subjects.size());
-	} else {
-	    Controller.scrapedCourse.clear();
-	    progressbar.progressProperty().bind(allSSThread.progressProperty());
-	    final Thread thread = new Thread(allSSThread, "AllSS-thread");
-	    thread.setDaemon(true);
-	    thread.start();
+	try {
+	    checkValidURL(
+		    textfieldURL.getText() + "/" + textfieldTerm.getText() + "/subject/" + textfieldSubject.getText());
+	    textAreaConsole.clear();
+	    if (Controller.subjects.isEmpty()) {
+		Controller.subjects.addAll(scraper.scrapeSubjects(textfieldURL.getText(), textfieldTerm.getText()));
+		textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Total Number of Categories/Code Prefix: "
+			+ Controller.subjects.size());
+	    } else {
+		Controller.scrapedCourse.clear();
+		progressbar.progressProperty().bind(allSSThread.progressProperty());
+		final Thread thread = new Thread(allSSThread, "AllSS-thread");
+		thread.setDaemon(true);
+		thread.start();
+	    }
+	} catch (final FileNotFoundException e) {
+	    String consoleComponent = "Invalid URL for " + e.getMessage();
+	    consoleComponent += ". Please input a valid HKUST URL.";
+	    String instructionNamesLineFeed = "";
+	    String line = "";
+	    for (int i = 0; i < consoleComponent.length(); i++) {
+		instructionNamesLineFeed += consoleComponent.charAt(i);
+		line += consoleComponent.charAt(i);
+		if (line.length() >= 80) {
+		    instructionNamesLineFeed += "\n";
+		    line = "";
+		}
+	    }
+	    textAreaConsole.setText(instructionNamesLineFeed);
+	    instructionText1.setText("* Cannot find the valid URL from HKUST class schedule and quota for");
+	    instructionText2.setText("* " + e.getMessage());
+	    instructionText3.setText("* Some instructions provided below.");
+	    displayText1.setText("You need to provide a valid URL from HKUST class schedule and quota.");
+	    displayText2.setText("You need to provide a valid time period.");
+	    displayText3.setText("You need to provide a valid subject.");
 	}
     }
 

@@ -482,6 +482,10 @@ public class Controller {
 	    textAreaConsole.setText("");
 
 	    for (final Course c : v) {
+	    // Check the number of sections.
+	    if (c.getNumSections() == 0) {
+	    	continue;
+	    }
 		String newline = c.getTitle() + "\n";
 
 		for (int i = 0; i < c.getNumSections(); i++) {

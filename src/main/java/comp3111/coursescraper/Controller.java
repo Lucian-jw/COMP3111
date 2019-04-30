@@ -203,7 +203,7 @@ public class Controller {
 		final List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(), cur);
 		Controller.scrapedCourse.addAll(v);
 		totalCourseNum += v.size();
-		textAreaConsole.setText(textAreaConsole.getText() + "\n" + cur + " is done");
+		System.out.println(cur + " is done");
 	    }
 	    textAreaConsole
 		    .setText(textAreaConsole.getText() + "\n" + "Total Number of Courses fetched: " + totalCourseNum);
@@ -404,17 +404,16 @@ public class Controller {
 		    for (Course d : FilteredCourse) {
 			String newline = d.getTitle() + "\n";
 			for (int i = 0; i < d.getNumSections(); i++) {
-				newline+=d.getSection(i).getSection();
-				if(d.getSection(i).getSlotSize()>0){
-					for(int j=0;j<d.getSection(i).getSlotSize();j++){
-						Slot t=d.getSection(i).getSlot(j);
-						newline += "\t"+t + "\n";
-					}
+			    newline += d.getSection(i).getSection();
+			    if (d.getSection(i).getSlotSize() > 0) {
+				for (int j = 0; j < d.getSection(i).getSlotSize(); j++) {
+				    Slot t = d.getSection(i).getSlot(j);
+				    newline += "\t" + t + "\n";
 				}
-				else{
-					newline+="\n";
-				}
-		    }
+			    } else {
+				newline += "\n";
+			    }
+			}
 			if (textAreaConsole.getText() == null)
 			    textAreaConsole.setText('\n' + newline);// WTF? get Null WILL be "NULL"????
 			else
@@ -490,10 +489,10 @@ public class Controller {
 	    textAreaConsole.setText("");
 
 	    for (final Course c : v) {
-	    // Check the number of sections.
-	    if (c.getNumSections() == 0) {
-	    	continue;
-	    }
+		// Check the number of sections.
+		if (c.getNumSections() == 0) {
+		    continue;
+		}
 		String newline = c.getTitle() + "\n";
 
 		for (int i = 0; i < c.getNumSections(); i++) {
@@ -667,22 +666,20 @@ public class Controller {
 	for (final Course c : v) {
 	    String newline = c.getTitle() + "\n";
 	    for (int i = 0; i < c.getNumSections(); i++) {
-			Section sec=c.getSection(i);
-			newline+=sec.getSection();
-			if(sec.getSlotSize()>0){
-				for(int j=0;j<sec.getSlotSize();j++){
-					Slot t=sec.getSlot(j);
-					newline += "\t"+t +"\n";
-				}
-			}
-			else{
-				newline+='\n';
-			}
+		Section sec = c.getSection(i);
+		newline += sec.getSection();
+		if (sec.getSlotSize() > 0) {
+		    for (int j = 0; j < sec.getSlotSize(); j++) {
+			Slot t = sec.getSlot(j);
+			newline += "\t" + t + "\n";
+		    }
+		} else {
+		    newline += '\n';
+		}
 	    }
-	    if (textAreaConsole.getText() == null){
-	    	textAreaConsole.setText(""+ newline);// WTF? get Null WILL be "NULL"????
-	    }
-	    else{
+	    if (textAreaConsole.getText() == null) {
+		textAreaConsole.setText("" + newline);// WTF? get Null WILL be "NULL"????
+	    } else {
 		textAreaConsole.setText(textAreaConsole.getText() + "\n" + newline);
 	    }
 	}

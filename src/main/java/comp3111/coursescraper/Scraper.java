@@ -76,18 +76,19 @@ public class Scraper {
 	    return;
 	for (int j = 0; j < times[0].length(); j += 2) {
 	    final String code = times[0].substring(j, j + 2);
-	    
+
 	    if (Slot.DAYS_MAP.get(code) == null)
 		break;
 	    final Slot s = new Slot();
 	    s.setDay(Slot.DAYS_MAP.get(code));
 	    s.setStart(times[1]);
-		s.setEnd(times[3]);
-		s.setVenue(venue);
+	    s.setEnd(times[3]);
+	    s.setVenue(venue);
 	    s.setinstructor(ins);
 	    s.setSectionType(sectionType);
-	    if (s.getSectionType()!= null&&(s.getSectionType().startsWith("L") || s.getSectionType().startsWith("T")))
-	    	c.addSlot(s);
+	    if (s.getSectionType() != null
+		    && (s.getSectionType().startsWith("L") || s.getSectionType().startsWith("T")))
+		c.addSlot(s);
 	    section.addSlot(s);
 	}
     }
@@ -151,8 +152,6 @@ public class Scraper {
 		    final HtmlElement section = (HtmlElement) e.getFirstByXPath(".//td");
 		    // final String ins = instructor == null ? "TBA" : instructor.asText();
 		    String ins = e.getChildNodes().get(5).asText();
-		    System.out.println("Here");
-		    System.out.println(ins);
 		    final String sectiontype = section == null ? "null" : section.asText();
 		    String sec = null;
 		    if (sectiontype.startsWith("LA"))
@@ -161,14 +160,14 @@ public class Scraper {
 			sec = sectiontype.substring(0, 3);
 		    else if (sectiontype.startsWith("T"))
 			sec = sectiontype.substring(0, 3);
-		    if (sectiontype.startsWith("LA")||sectiontype.startsWith("L")||sectiontype.startsWith("T")) {
-		    final Section addedSection = addSection(c, ins, sec);
-		    addSlot(addedSection, e, c, false, ins, sectiontype);
-		    e = (HtmlElement) e.getNextSibling();
-		    if (e != null && !e.getAttribute("class").contains("newsect"))
-			addSlot(addedSection, e, c, true, ins, sectiontype);
+		    if (sectiontype.startsWith("LA") || sectiontype.startsWith("L") || sectiontype.startsWith("T")) {
+			final Section addedSection = addSection(c, ins, sec);
+			addSlot(addedSection, e, c, false, ins, sectiontype);
+			e = (HtmlElement) e.getNextSibling();
+			if (e != null && !e.getAttribute("class").contains("newsect"))
+			    addSlot(addedSection, e, c, true, ins, sectiontype);
 		    }
-		    
+
 		}
 		result.add(c);
 	    }

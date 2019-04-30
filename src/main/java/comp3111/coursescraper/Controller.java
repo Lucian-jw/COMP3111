@@ -39,6 +39,7 @@ import javafx.scene.text.Font;
 /**
  * The class to hold main program logic and variables.
  */
+@SuppressWarnings("restriction")
 public class Controller {
     private static List<Course> scrapedCourse = new ArrayList<>();
     private static List<String> subjects = new ArrayList<>(); // List to store subjects searched by first-time All
@@ -201,7 +202,6 @@ public class Controller {
 		final List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(), cur);
 		Controller.scrapedCourse.addAll(v);
 		totalCourseNum += v.size();
-		System.out.println(cur + " is done");
 	    }
 	    textAreaConsole
 		    .setText(textAreaConsole.getText() + "\n" + "Total Number of Courses fetched: " + totalCourseNum);
@@ -290,7 +290,7 @@ public class Controller {
 	    c = Color.rgb(35 + random.nextInt(150), 35 + random.nextInt(150), 35 + random.nextInt(150));
 	}
 	section.addColor(c);
-	System.out.println(section.getSlotSize());
+	
 	// Get the slot information of the section.
 	for (int i = 0; i < section.getSlotSize(); i++) {
 	    // Display the content to the timetable.
@@ -538,7 +538,7 @@ public class Controller {
 	    String instructorNames = "";
 	    for (String s : instructors)
 		if (isFirst) {
-		    System.out.println(s);
+		    
 		    instructorNames += s;
 		    isFirst = false;
 		} else {
@@ -562,7 +562,7 @@ public class Controller {
 	    for (int i = 0; i < consoleComponent.length(); i++) {
 		instructionNamesLineFeed += consoleComponent.charAt(i);
 		line += consoleComponent.charAt(i);
-		System.out.println(line);
+		
 		if (line.length() >= 80) {
 		    instructionNamesLineFeed += "\n";
 		    line = "";

@@ -291,7 +291,7 @@ public class Controller {
 	    c = Color.rgb(35 + random.nextInt(150), 35 + random.nextInt(150), 35 + random.nextInt(150));
 	}
 	section.addColor(c);
-	
+
 	// Get the slot information of the section.
 	for (int i = 0; i < section.getSlotSize(); i++) {
 	    // Display the content to the timetable.
@@ -488,14 +488,18 @@ public class Controller {
 	try {
 	    checkValidURL(
 		    textfieldURL.getText() + "/" + textfieldTerm.getText() + "/subject/" + textfieldSubject.getText());
+	    textAreaConsole.setText("");
+	    if (Controller.subjects.isEmpty()) {
+		Controller.subjects.addAll(scraper.scrapeSubjects(textfieldURL.getText(), textfieldTerm.getText()));
+		textAreaConsole.setText(textAreaConsole.getText() + "\n" + "Total Number of Categories/Code Prefix: "
+			+ Controller.subjects.size() + "\n");
+	    }
 	    final List<Course> v = scraper.scrape(textfieldURL.getText(), textfieldTerm.getText(),
 		    textfieldSubject.getText());
-
 	    Integer numSection = 0;
 	    Integer numCourse = 0;
 	    ArrayList<String> instructors = new ArrayList<>();
 	    ArrayList<String> instructorsWithAssignment = new ArrayList<>();
-	    textAreaConsole.setText("");
 	    String contentConsole = "";
 	    for (final Course c : v) {
 		// Check the number of sections.
@@ -503,7 +507,7 @@ public class Controller {
 		    continue;
 		}
 		String newline = c.getTitle() + "\n";
-		
+
 		for (int i = 0; i < c.getNumSections(); i++) {
 		    ArrayList<String> instructorNamesList = c.getSection(i).getInstructorNames();
 		    for (String instructorName : instructorNamesList) {
@@ -521,19 +525,18 @@ public class Controller {
 			newline += " " + t + "\n";
 		    }
 		}
-		
+
 		numSection += c.getNumSections();
 		if (c.getNumSections() != 0) {
 		    numCourse++;
 		}
 		contentConsole += newline;
 	    }
-	    
+
 	    String addLine = "Total Number of difference sections in this search: " + numSection.toString() + "\n\n";
 	    addLine += "Total Number of Course in this search: " + numCourse.toString() + "\n\n";
 	    addLine += "Instrctuors who has teaching assignment this term but does not need to teach at Tu 3:10pm: ";
 
-	    
 	    instructors.removeAll(instructorsWithAssignment);
 	    instructors.remove("TBA");
 	    Collections.sort(instructors);
@@ -541,7 +544,7 @@ public class Controller {
 	    String instructorNames = "";
 	    for (String s : instructors)
 		if (isFirst) {
-		    
+
 		    instructorNames += s;
 		    isFirst = false;
 		} else {
@@ -550,7 +553,7 @@ public class Controller {
 	    addLine += instructorNames;
 	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + addLine + "\n");
 	    textAreaConsole.setText(textAreaConsole.getText() + "\n" + contentConsole);
-	    
+
 	    /*
 	     * edit the tablecolumn after the search @Brother Liang implement it also in
 	     * ALLSbujectSearch;
@@ -566,7 +569,7 @@ public class Controller {
 	    for (int i = 0; i < consoleComponent.length(); i++) {
 		instructionNamesLineFeed += consoleComponent.charAt(i);
 		line += consoleComponent.charAt(i);
-		
+
 		if (line.length() >= 80) {
 		    instructionNamesLineFeed += "\n";
 		    line = "";

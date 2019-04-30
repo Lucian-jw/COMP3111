@@ -33,18 +33,35 @@ public class Section {
 
     private ArrayList<Color> colors = new ArrayList<Color>();
 
+    /**
+     * This is a class method to get a list of instructors in case there are multiple instructors for one section.
+     * @param color the color that needs to be added to the list stored in the object
+     */
     public void addColor(Color color) {
 	colors.add(color);
     }
 
+    /**
+     * This is a class method to get the number of colors stored in the list.
+     * @return the number of colors stored in the list
+     */
     public int getNumColor() {
 	return colors.size();
     }
 
+    /**
+     * This is a class method to get the color according to the index provided in the parameter.
+     * @param i the index used to retrieve the color
+     * @return the color extracted according to the index
+     */
     public Color getColor(int i) {
 	return colors.get(i);
     }
 
+    /**
+     * This is a class method to add a slot to the object of Section.
+     * @param s the Slot object that needs to be added to the slot list stored in the object.
+     */
     public void addSlot(final Slot s) {
 	belongedSlots.add(s);
     }

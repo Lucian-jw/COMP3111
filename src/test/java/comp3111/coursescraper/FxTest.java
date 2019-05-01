@@ -35,6 +35,11 @@ public class FxTest extends ApplicationTest {
 	final Button b = (Button) s.lookup("#buttonSfqEnrollCourse");
 	sleep(1000);
 	assertTrue(b.isDisabled());
+	clickOn("#tabAllSubject");
+	clickOn("#ASS");
+	clickOn("#ASS");
+	clickOn("#tabFilter");
+	clickOn("#PM");
     }
 
     @Test
@@ -65,6 +70,9 @@ public class FxTest extends ApplicationTest {
 	clickOn("#Fri");
 	clickOn("#Wed");
 	assertTrue(a.getText() != null);
+	clickOn("#Sat");
+	clickOn("#AM");
+	
 	}
 
     @Test

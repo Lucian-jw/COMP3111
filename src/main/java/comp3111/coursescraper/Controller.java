@@ -193,6 +193,12 @@ public class Controller {
     private final Scraper scraper = new Scraper();
 
     final Task<Void> allSSThread = new Task<Void>() {
+
+	/**
+	 * Task to perform all subject search.
+	 * 
+	 * @throws Exception when errors happen.
+	 */
 	@Override
 	protected Void call() throws Exception {
 	    int totalCourseNum = 0;
@@ -521,7 +527,7 @@ public class Controller {
      */
     @FXML
     void search() {
-    Controller.scrapedCourse = new ArrayList<>();
+	Controller.scrapedCourse = new ArrayList<>();
 	try {
 	    checkValidURL(
 		    textfieldURL.getText() + "/" + textfieldTerm.getText() + "/subject/" + textfieldSubject.getText());
@@ -546,9 +552,9 @@ public class Controller {
 		String newline = c.getTitle() + "\n";
 		Controller.scrapedCourse.add(c);
 		for (int i = 0; i < c.getNumSections(); i++) {
-			// Get the name of instructors.
+		    // Get the name of instructors.
 		    ArrayList<String> instructorNamesList = c.getSection(i).getInstructorNames();
-		   
+
 		    instructorNamesList.remove("\n");
 		    for (String instructorName : instructorNamesList) {
 			if (!instructors.contains(instructorName)) {

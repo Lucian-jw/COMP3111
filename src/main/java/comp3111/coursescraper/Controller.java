@@ -521,6 +521,7 @@ public class Controller {
      */
     @FXML
     void search() {
+    Controller.scrapedCourse = new ArrayList<>();
 	try {
 	    checkValidURL(
 		    textfieldURL.getText() + "/" + textfieldTerm.getText() + "/subject/" + textfieldSubject.getText());
@@ -543,7 +544,7 @@ public class Controller {
 		    continue;
 		}
 		String newline = c.getTitle() + "\n";
-
+		Controller.scrapedCourse.add(c);
 		for (int i = 0; i < c.getNumSections(); i++) {
 		    ArrayList<String> instructorNamesList = c.getSection(i).getInstructorNames();
 		    for (String instructorName : instructorNamesList) {
@@ -594,8 +595,6 @@ public class Controller {
 	     * edit the tablecolumn after the search @Brother Liang implement it also in
 	     * ALLSbujectSearch;
 	     */
-	    Controller.scrapedCourse = new ArrayList<>();
-	    Controller.scrapedCourse.addAll(v);
 	    List();
 	} catch (final FileNotFoundException e) {
 	    String consoleComponent = "Invalid URL for " + e.getMessage();

@@ -546,6 +546,7 @@ public class Controller {
 		String newline = c.getTitle() + "\n";
 		Controller.scrapedCourse.add(c);
 		for (int i = 0; i < c.getNumSections(); i++) {
+			// Get the name of instructors.
 		    ArrayList<String> instructorNamesList = c.getSection(i).getInstructorNames();
 		   
 		    instructorNamesList.remove("\n");

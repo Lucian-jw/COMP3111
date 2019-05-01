@@ -72,6 +72,9 @@ public class Controller {
 
     @FXML
     private Tab tabMain;
+    
+    @FXML
+    private Button ASS;
 
     @FXML
     private TextField textfieldTerm;

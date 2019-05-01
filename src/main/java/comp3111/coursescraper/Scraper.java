@@ -202,19 +202,30 @@ public class Scraper {
 	    for (final Section curSection : sections) {
 		final String courseCode = curSection.getCourseCode();
 		final String courseSub = courseCode.substring(0, 4);
-		final String courseNum = courseCode.substring(5, 9);
+		String courseNum = courseCode.substring(5);
+		courseNum = courseNum.trim();
 		final String courseCodeProc = courseSub + courseNum;
+		boolean isExist = false;
+		for (final CourseSFQStruct cur : courseScoreList)
+		    if (cur.courseCode.equals(courseCodeProc)) {
+			isExist = true;
+			break;
+		    }
+		if (isExist)
+		    continue;
 		final String XPathIn = ".//b[@id='" + courseSub + "']";
 		final HtmlElement header = page.getFirstByXPath(XPathIn);
 		final HtmlElement table = (HtmlElement) header.getNextSibling().getNextSibling();
 		final HtmlElement tableRow = table.getFirstByXPath(".//tr[td[contains(text(),'" + courseNum + "')]]");
 		HtmlElement curRow = (HtmlElement) tableRow.getNextElementSibling();
 		while (true) {
+		    HtmlElement testEndAttr = (HtmlElement) curRow.getFirstByXPath(".//td[@colspan='3']");
+		    if (testEndAttr != null)
+			break;
 		    final List<?> tableEntries = curRow.getByXPath(".//td");
 		    final HtmlElement testSectionAttr = (HtmlElement) tableEntries.get(1);
 		    final String testSection = testSectionAttr.asText().trim();
-		    final String curSectionCode = curSection.getSection().trim();
-		    if (testSection.equals(curSectionCode)) {
+		    if (!testSection.equals("")) {
 			final HtmlElement sectScore = (HtmlElement) tableEntries.get(3);
 			final String scoreRaw = sectScore.asText();
 			final String scoreProc = scoreRaw.substring(0, scoreRaw.indexOf("("));
@@ -233,7 +244,6 @@ public class Scraper {
 				courseScoreList.add(out);
 			    }
 			}
-			break;
 		    }
 		    curRow = (HtmlElement) curRow.getNextElementSibling();
 		    if (curRow == null) {

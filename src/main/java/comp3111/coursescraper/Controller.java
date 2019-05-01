@@ -547,9 +547,11 @@ public class Controller {
 		Controller.scrapedCourse.add(c);
 		for (int i = 0; i < c.getNumSections(); i++) {
 		    ArrayList<String> instructorNamesList = c.getSection(i).getInstructorNames();
+		   
+		    instructorNamesList.remove("\n");
 		    for (String instructorName : instructorNamesList) {
 			if (!instructors.contains(instructorName)) {
-			    instructors.add(c.getSection(i).getInstructor());
+			    instructors.add(instructorName);
 			}
 			if (checkInRange(c.getSection(i)))
 			    if (!instructorsWithAssignment.contains(c.getSection(i).getInstructor())) {

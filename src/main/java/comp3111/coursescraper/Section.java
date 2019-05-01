@@ -101,6 +101,7 @@ public class Section {
 	if (getInstructor().contains("\n")) {
 	    String[] instructorNamesMultiple = getInstructor().split("\n");
 	    for (String element : instructorNamesMultiple) {
+	    element = element.replaceAll("\r", "").replaceAll("\n", "");
 		instructorNames.add(element);
 	    }
 	} else {
